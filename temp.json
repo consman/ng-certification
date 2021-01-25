@@ -1,0 +1,43 @@
+{
+  "coord": {
+    "lon": -90.4271,
+    "lat": 38.6383
+  },
+  "weather": [
+    {
+      "id": 804,
+      "main": "Clouds",
+      "description": "overcast clouds",
+      "icon": "04n"
+    }
+  ],
+  "base": "stations",
+  "main": {
+    "temp": 36.41,
+    "feels_like": 21,
+    "temp_min": 35.01,
+    "temp_max": 37.99,
+    "pressure": 1022,
+    "humidity": 35
+  },
+  "visibility": 10000,
+  "wind": {
+    "speed": 17.27,
+    "deg": 130
+  },
+  "clouds": {
+    "all": 90
+  },
+  "dt": 1611446281,
+  "sys": {
+    "type": 1,
+    "id": 5931,
+    "country": "US",
+    "sunrise": 1611407637,
+    "sunset": 1611443580
+  },
+  "timezone": -21600,
+  "id": 0,
+  "name": "Fenton",
+  "cod": 200
+}

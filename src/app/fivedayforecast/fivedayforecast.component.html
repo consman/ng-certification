@@ -1,0 +1,19 @@
+
+<div>
+  <div>
+    <fieldset class="wellflex" >
+      <legend><h3>{{location.name}} ({{location.zip}})</h3></legend>
+
+      <table *ngIf="location != null && location.forecasts != null" >
+        <tr *ngFor="let forecastForDay of location.forecasts" >
+          <td> {{forecastForDay.day | date: 'EEEE'}}:  {{forecastForDay.description}} - High: {{forecastForDay.max}} - Low {{forecastForDay.min}} </td>
+          <td>  <img class="iconimg" src="https://www.angulartraining.com/images/weather/{{forecastForDay.forecastIcon}}.png" alt="icon" width="50" height="auto" /> </td>
+        </tr>
+      </table>
+    </fieldset>
+
+
+
+  </div>
+  <button class="btn btn-success" tabindex="0" id="mainPageBtn" (click)="navigateBackToMain()">Back to main page</button>
+</div>
