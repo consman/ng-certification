@@ -2,7 +2,7 @@
 <div>
   <div>
     <fieldset class="wellflex" >
-      <legend><h3>{{location.name}} ({{location.zip}})</h3></legend>
+      <legend><h2>{{location.name}} ({{location.zip}})</h2></legend>
 
       <table *ngIf="location != null && location.forecasts != null" >
         <tr *ngFor="let forecastForDay of location.forecasts" >
@@ -11,8 +11,6 @@
         </tr>
       </table>
     </fieldset>
-
-
 
   </div>
   <button class="btn btn-success" tabindex="0" id="mainPageBtn" (click)="navigateBackToMain()">Back to main page</button>

@@ -1,7 +1,7 @@
-<div >
-  <div class="wellflex">
-    <div class="parentofclose">
-      <h3>{{location.name}} </h3>
+
+
+    <fieldset class="parentofclose wellflex">
+      <legend><h2>{{location.name}} </h2></legend>
 
       <div *ngFor="let forecast of location.forecasts; index as ind">
         <div *ngIf="ind == 0">
@@ -10,12 +10,12 @@
           <h4>Max today: {{forecast.max}} - Min today: {{forecast.min}}</h4>
 
           <div class="close" (click)="handleClose()">x</div>
-          <img class="iconimg" src="https://www.angulartraining.com/images/weather/{{forecast.forecastIcon}}.png" alt="icon" width="50" height="auto" />
+          <img class="iconimg" src="https://www.angulartraining.com/images/weather/{{forecast.forecastIcon}}.png" alt="icon" width="80" height="auto" />
         </div>
       </div>
-    </div>
+
     <a routerLink="/forecast/{{location.zip}}"> Five Day Forecast for {{location.name}}</a>
-  </div>
-</div>
+    </fieldset>
+
 
 

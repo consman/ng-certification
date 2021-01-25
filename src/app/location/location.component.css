@@ -1,4 +1,4 @@
-.close{position:absolute;right:0;top:-15px; cursor: pointer; }
+.close{position:absolute;right:0;top:-35px; cursor: pointer; }
 .parentofclose{position: relative }
-.wellflex{border-width: thin; border-style: solid; padding-bottom: 10px; width: 70%}
+.wellflex{border-width: medium; border-style: solid; padding-bottom: 1px; width: 70%}
 .iconimg{position:absolute; right: 0; top: 0;  bottom: 0;  margin: auto;}
