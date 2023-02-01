@@ -16,6 +16,13 @@ export const LOCATIONS: Location[]=[
     "lat": 11,
     forecasts:[]
   },
+  {
+    "name":"Locthree",
+    "zip":"96760",
+    "lon": 9,
+    "lat": 13,
+    forecasts:[]
+  }
 ];
 
 export const FORECASTS: Forecast[]=[

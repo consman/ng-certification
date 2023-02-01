@@ -16,14 +16,14 @@ export const FAKE_HTTP_CLIENT_FORECASTS = {
 
 export const FAKE_ROUTE = new ActivatedRoute();
 FAKE_ROUTE.snapshot = new ActivatedRouteSnapshot();
-FAKE_ROUTE.snapshot.params =["zipcode","96760"];
 
 describe('FivedayforecastComponent', () => {
   let component: FivedayforecastComponent;
   let fixture: ComponentFixture<FivedayforecastComponent>;
-  let weatherService = new WeatherService(FAKE_HTTP_CLIENT_LOCATIONS);
+
 
   beforeEach(async () => {
+    let weatherService = new WeatherService(FAKE_HTTP_CLIENT_LOCATIONS);
     await TestBed.configureTestingModule({
       declarations: [ FivedayforecastComponent ],
       providers: [ {provide: HttpClient, useValue: {FAKE_HTTP_CLIENT_FORECASTS, FAKE_HTTP_CLIENT_LOCATIONS} },
@@ -44,4 +44,9 @@ describe('FivedayforecastComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should have a location', () => {
+    expect(component.location).toBeTruthy();
+  });
+
 });
