@@ -4,7 +4,7 @@ import {of} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {LOCATIONS} from './mock-data';
 import {Location} from "./location";
-import {subscribeOn} from "rxjs/operators";
+import {Subscription} from "rxjs";
 
 export const FAKE_HTTP_CLIENT_LOCATIONS = {
   get: (url:string|null) => of(LOCATIONS)
@@ -12,43 +12,30 @@ export const FAKE_HTTP_CLIENT_LOCATIONS = {
 
 
 describe('WeatherService', () => {
-  let service: WeatherService;
+  let service: WeatherService =new WeatherService(FAKE_HTTP_CLIENT_LOCATIONS);
+  let subscription: Subscription;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [ {provide: HttpClient, useValue: FAKE_HTTP_CLIENT_LOCATIONS}  ]
     });
     service = TestBed.inject(WeatherService);
+    service.locations = LOCATIONS;
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
-  it('can use the adapter',()=>{
-    expect(service.getWeatherServiceAdapter()).toBeTruthy();
+
+  it('validates a zip code',()=>{
+    expect(service.validateZip('94930')).toEqual(true);
   });
 
-  /*
-  it('can get a location from the service',()=>{
-    let result: Location;
-    waitForAsync(()=>{
-      service.getLocationFromService("94903").subscribe({
-        next:(v)=>{
-          result = v;
-          console.log(' the name is: '+v);
-        },
-        error:()=>{
-          console.error('Error');
-        },
-        complete:()=>{
-          console.log('complete');
-        }
-      });
-    });
-    console.log(' result = ' + result);
-    expect(result.name).toEqual("Loctwo");
+  it('reverts a location',()=>{
+    expect(service.locations.length).toEqual(3);
+    service.revertLocation(LOCATIONS[1],"94903");
+    expect(service.locations.length).toEqual(2);
   });
 
-   */
 });

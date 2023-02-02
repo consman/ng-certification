@@ -16,17 +16,16 @@ export class FivedayforecastComponent implements OnInit {
 
   constructor(route: ActivatedRoute, private _router: Router, private weatherService: WeatherService) {
     let zipParam = route.snapshot.paramMap.get('zipcode');
-    this.location = this.weatherService.getWeatherServiceAdapter().findLocationByZipcode(zipParam, this.subscription);
+    this.location = this.weatherService.findLocationByZipcode(zipParam, this.subscription);
 
     if (null != this.location.lat && null != this.location.lon) {
-      this.weatherService.getWeatherServiceAdapter().searchForFiveDayForecast(this.location, this.subscription);
+      this.weatherService.searchForFiveDayForecast(this.location, this.subscription);
     }
   }
 
   navigateBackToMain(): void {
     this._router.navigate(['/']);
   }
-
 
   ngOnInit(): void {
   }
@@ -36,7 +35,5 @@ export class FivedayforecastComponent implements OnInit {
       this.subscription.unsubscribe();
     }
   }
-
-
 
 }

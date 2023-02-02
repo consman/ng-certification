@@ -20,7 +20,7 @@ export class SearchComponent implements OnInit {
   }
 
   search():void{
-    this.weatherService.getWeatherServiceAdapter().searchForZip(this.newZip, this.weatherService.locations, this.subscription);
+    this.weatherService.searchForZip(this.newZip, this.weatherService.locations, this.subscription);
     this.newZip='';
   }
 
@@ -28,7 +28,7 @@ export class SearchComponent implements OnInit {
     for (let localStorageKey in localStorage) {
       if (localStorageKey.startsWith('storedZipCode')){
         let derivedZip =  localStorage.getItem(localStorageKey);
-        let storedZipLoc = this.weatherService.getWeatherServiceAdapter().findLocationByZipcode(derivedZip, this.subscription);
+        let storedZipLoc = this.weatherService.findLocationByZipcode(derivedZip, this.subscription);
         if ( null == storedZipLoc){
           console.log('WARNING!! A previously cached location with a zip code of , '+derivedZip+', is no longer found by the service!');
         }
