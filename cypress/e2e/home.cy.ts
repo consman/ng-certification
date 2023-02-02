@@ -1,4 +1,4 @@
-describe("Test GDG Raffle App", () => {
+describe("Test the Ng-Certification Weather App", () => {
   beforeEach(() => {
     cy.visit("http://localhost:4200");
   });
