@@ -7,6 +7,6 @@ export default defineConfig({
       // implement node event listeners here
     },
     baseUrl:"http://localhost:4200",
-    projectId:"myxx15"
+    projectId:"rj979m"
   },
 });
