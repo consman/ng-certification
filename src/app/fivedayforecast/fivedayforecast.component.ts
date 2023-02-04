@@ -27,16 +27,19 @@ export class FivedayforecastComponent implements OnInit {
     console.log(' Data from zip  param is: ' + zp);
     if ( null != zp && zp !== '' && zp.length > 0) {
       const parts = zp.split('+');
-      if ( null != parts && parts.length < 4){
+      if ( null != parts && parts.length === 4){
         this.location = new LocationImpl();
         this.location.zip = parts[0];
         this.location.name = this.dashesToSpaces((parts[1]));
-        this.location.lat = parseInt(parts[2], 0);
-        this.location.lon = parseInt(parts[3], 0);
+        console.log(' Location name is ' + this.location.name);
+        this.location.lat = parseFloat(parts[2]);
+        console.log('lat = ' + this.location.lat );
+        this.location.lon = parseFloat(parts[3]);
+        console.log('lon = ' + this.location.lon );
         this.readyToCallService = true;
       }
       else{
-        console.error('Something is wrong! not enough parts! ');
+        console.error('Something is wrong! not enough parts! Only ' + parts.length );
       }
     }
   }

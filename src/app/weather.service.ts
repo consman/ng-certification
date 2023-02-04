@@ -17,7 +17,7 @@ export class WeatherService {
 
 
   getLocationFromService(zipcode: string): Observable<any>{
-     return this.http.get('http://api.openweathermap.org/data/2.5/weather?zip= ' + zipcode + ',us&units=imperial&appid=42b0cd87da0e1ba5a9580ed019511475');
+     return this.http.get('http://api.openweathermap.org/data/2.5/weather?zip=' + zipcode + ',us&units=imperial&appid=42b0cd87da0e1ba5a9580ed019511475');
   }
 
   getFiveDayForecastsFromService(lat: number, lon: number): Observable<any>{
@@ -25,7 +25,7 @@ export class WeatherService {
   }
 
   getFiveDay(location: Location): void{
-    this.getFiveDayForecastsFromService(location.lon, location.lat).subscribe({
+    this.getFiveDayForecastsFromService(location.lat, location.lon).subscribe({
       next: (data) => {
         location.forecasts = [];
         let counter = 0;
@@ -48,7 +48,7 @@ export class WeatherService {
         }else {
           console.error('Some other error besides 404 occurred getting forceast from service. error status = ' + err.status);
         }
-        alert('Unable to find forecast data for ' + location.lon + + ' , ' + location.lat + '  . Please try a different location. ');
+        alert('Unable to find forecast data for ' + location.lon + ' , ' + location.lat + '  . Please try a different location. ');
       },
       complete: () => {
         console.log('Five Day Forecast subscription completed for ' + location.name );
@@ -76,6 +76,7 @@ export class WeatherService {
             location.forecasts[0].min = data.main.temp_min;
             location.forecasts[0].max = data.main.temp_max;
             location.forecasts[0].forecastIcon = this.getIconFrom(data.weather[0].main);
+
             locations.push(location);
             localStorage.setItem('storedZipCode' + (zip), zip);
           },
@@ -88,7 +89,7 @@ export class WeatherService {
             alert('Unable to find any weather data for ' + zip + '. Please try a different zip code. ');
           },
           complete: () => {
-            console.log('subscription completed for ' + zip);
+            console.log('subscription completed for ' + zip + ' and the number of locations is ' + locations.length);
           }
         });
     } else {

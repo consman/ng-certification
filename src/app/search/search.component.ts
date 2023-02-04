@@ -15,12 +15,14 @@ export class SearchComponent implements OnInit {
   locations: Location[];
 
   constructor(private weatherService: WeatherService) {
+    this.locations = [];
     this.loadLocationsFromLocalStorage();
   }
 
   search(): void{
     console.log('SearchComponent going for new zip of: ' + this.newZip);
     this.weatherService.addNewLocation(this.newZip, this.locations);
+    console.log(' after calling service the number of locations is ' + this.locations.length);
     this.newZip = '';
   }
 
@@ -31,6 +33,7 @@ export class SearchComponent implements OnInit {
         this.weatherService.addNewLocation(derivedZip, this.locations);
       }
     }
+    console.log(' loadLocationsFromLocalStorage the number of locations is ' + this.locations.length);
   }
 
 
