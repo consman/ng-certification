@@ -16,8 +16,8 @@ describe('LocationComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(LocationComponent);
     component = fixture.componentInstance;
-    component.location =LOCATIONS[0];
-    component.locations =LOCATIONS;
+    component.location = LOCATIONS[0];
+    component.locations = LOCATIONS;
     fixture.detectChanges();
   });
 
@@ -25,20 +25,20 @@ describe('LocationComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('removes the zip from local storage when closing',()=>{
-    localStorage.setItem('storedZipCode' + "95630", "95630");
+  it('removes the zip from local storage when closing', () => {
+    localStorage.setItem('storedZipCode' + '95630', '95630');
     component.handleClose();
 
     let found = false;
-    for (let localStorageKey in localStorage) {
+    for (const localStorageKey in localStorage) {
       if (localStorageKey.startsWith('storedZipCode')){
-        if (localStorage.getItem(localStorageKey) == "storedZipCode95630"){
+        if (localStorage.getItem(localStorageKey) === 'storedZipCode95630'){
           found = true;
         }
       }
     }
     expect(found ).toBeFalse();
-  })
+  });
 
 
 });

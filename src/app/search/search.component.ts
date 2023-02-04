@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {Location} from "../location";
-import {WeatherService} from "../weather.service";
-import {Subscription} from "rxjs";
+import {Location} from '../location';
+import {WeatherService} from '../weather.service';
+import {LocationImpl} from '../locationImpl';
+import {ForecastImpl} from '../forecastImpl';
 
 @Component({
   selector: 'app-search',
@@ -10,38 +11,31 @@ import {Subscription} from "rxjs";
 })
 export class SearchComponent implements OnInit {
 
-  newZip:string;
-  subscription: Subscription;
+  newZip: string;
   locations: Location[];
 
   constructor(private weatherService: WeatherService) {
-    this.locations = this.weatherService.locations;
     this.loadLocationsFromLocalStorage();
   }
 
-  search():void{
-    this.weatherService.searchForZip(this.newZip, this.weatherService.locations, this.subscription);
-    this.newZip='';
+  search(): void{
+    console.log('SearchComponent going for new zip of: ' + this.newZip);
+    this.weatherService.addNewLocation(this.newZip, this.locations);
+    this.newZip = '';
   }
 
   loadLocationsFromLocalStorage(): void {
-    for (let localStorageKey in localStorage) {
+    for (const localStorageKey in localStorage) {
       if (localStorageKey.startsWith('storedZipCode')){
-        let derivedZip =  localStorage.getItem(localStorageKey);
-        let storedZipLoc = this.weatherService.findLocationByZipcode(derivedZip, this.subscription);
-        if ( null == storedZipLoc){
-          console.log('WARNING!! A previously cached location with a zip code of , '+derivedZip+', is no longer found by the service!');
-        }
+        const derivedZip =  localStorage.getItem(localStorageKey);
+        this.weatherService.addNewLocation(derivedZip, this.locations);
       }
     }
   }
 
+
   ngOnInit(): void {
   }
 
-  ngOnDestroy(){
-     if ( null != this.subscription ) {
-       this.subscription.unsubscribe();
-     }
-  }
+
 }

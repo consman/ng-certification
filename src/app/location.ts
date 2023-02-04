@@ -1,12 +1,12 @@
-import {Forecast} from "./forecast";
+import {Forecast} from './forecast';
 
 export interface Location {
 
-  name:string;
-  zip:string;
-  lon:number;
-  lat:number;
+  name: string;
+  zip: string;
+  lon: number;
+  lat: number;
 
-  forecasts:Forecast[];
+  forecasts: Forecast[];
 
 }

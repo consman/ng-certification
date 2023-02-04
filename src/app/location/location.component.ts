@@ -1,7 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Location} from "../location";
-import {SearchComponent} from "../search/search.component";
-import {Forecast} from "../forecast";
+import {Location} from '../location';
 
 @Component({
   selector: 'app-location',
@@ -20,23 +18,31 @@ export class LocationComponent implements OnInit {
   }
 
   handleClose(): void {
-    let index = this.locations.findIndex( d => d.zip === this.location.zip );
-    this.locations.splice(index,1);
+// we need to have the list of locations from the search results so that we can remove
+// the closed location from it here as well as remove it from local storage.
+    const index = this.locations.findIndex( d => d.zip === this.location.zip );
+    this.locations.splice(index, 1);
     let found = false;
-    for (let localStorageKey in localStorage) {
+    for (const localStorageKey in localStorage) {
       if (localStorageKey.startsWith('storedZipCode')){
-        if (localStorage.getItem(localStorageKey) == this.location.zip){
+        if (localStorage.getItem(localStorageKey) === this.location.zip){
           localStorage.removeItem(localStorageKey);
           found = true;
         }
       }
     }
     if (!found){
-      console.log( 'WARNING!!  Unable to find a stored zip code of: '+ this.location.zip + ' in the cache that needed to be removed. Check to see why is was never added.');
+      console.log( 'WARNING!!  Unable to find a stored zip code of: ' + this.location.zip + ' in the cache that needed to be removed. Check to see why is was never added.');
     }
   }
 
   ngOnInit(): void {
+  }
+
+  spacesToDashes(locationNameWithSpaces: string): string {
+    let result = '';
+    result = result = locationNameWithSpaces.replace(' ', '-');
+    return result;
   }
 
 }

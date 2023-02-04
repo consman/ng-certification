@@ -14,7 +14,7 @@
         </div>
       </div>
 
-    <a data-test="fiveDayForecastLink" routerLink="/forecast/{{location.zip}}"> Five Day Forecast for {{location.name}}</a>
+    <a data-test="fiveDayForecastLink" routerLink="/forecast/{{location.zip}}+{{spacesToDashes( location.name)}}+{{location.lat}}+{{location.lon}}"> Five Day Forecast for {{location.name}}</a>
     </fieldset>
 
 
