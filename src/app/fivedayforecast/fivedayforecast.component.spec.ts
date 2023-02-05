@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FivedayforecastComponent } from './fivedayforecast.component';
 import {of} from 'rxjs';
-import {FORECASTS, LOCATIONS} from '../mock-data';
+import {FORECAST, LOCATIONS} from '../mock-data';
 import {HttpClient} from '@angular/common/http';
 import {ActivatedRoute, ActivatedRouteSnapshot, Router} from '@angular/router';
 import {WeatherService} from '../weather.service';
@@ -11,24 +11,22 @@ export const FAKE_HTTP_CLIENT_LOCATIONS = {
 } as HttpClient;
 
 export const FAKE_HTTP_CLIENT_FORECASTS = {
-  get: (url:string|null) => of(FORECASTS)
+  get: (url:string|null) => of(FORECAST)
 } as HttpClient;
 
 export const FAKE_ROUTE = new ActivatedRoute();
-FAKE_ROUTE.snapshot = new ActivatedRouteSnapshot();
 
 describe('FivedayforecastComponent', () => {
   let component: FivedayforecastComponent;
   let fixture: ComponentFixture<FivedayforecastComponent>;
 
-
   beforeEach(async () => {
-    let weatherService = new WeatherService(FAKE_HTTP_CLIENT_LOCATIONS);
+    const weatherService = new WeatherService(FAKE_HTTP_CLIENT_FORECASTS);
     await TestBed.configureTestingModule({
       declarations: [ FivedayforecastComponent ],
       providers: [ {provide: HttpClient, useValue: {FAKE_HTTP_CLIENT_FORECASTS, FAKE_HTTP_CLIENT_LOCATIONS} },
-        {provide: ActivatedRoute, useValue: FAKE_ROUTE},
-        {provide: Router, useValue: ""},
+        {provide: ActivatedRoute,  useValue: FAKE_ROUTE},
+        {provide: Router, useValue: ''},
         {provide: WeatherService, useValue: weatherService}
       ]
     })
@@ -43,10 +41,15 @@ describe('FivedayforecastComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+    expect(component.readyToCallService).toEqual(true);
   });
 
   it('should have a location', () => {
-    expect(component.location).toBeTruthy();
+    expect(component.location.zip).toEqual('95630');
+  });
+
+  it('can convert spaces to dashes', () => {
+      expect(component.dashesToSpaces('Saint-Croy')).toEqual('Saint Croy');
   });
 
 });

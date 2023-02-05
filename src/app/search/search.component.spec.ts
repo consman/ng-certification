@@ -1,14 +1,19 @@
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import { SearchComponent } from './search.component';
 import {WeatherService} from '../weather.service';
-import {FORECASTS, LOCATIONS} from '../mock-data';
+import {FORECAST, LOCATIONS} from '../mock-data';
 import {of} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
-import {FAKE_HTTP_CLIENT_FORECASTS} from "../fivedayforecast/fivedayforecast.component.spec";
+// import {FAKE_HTTP_CLIENT_FORECASTS} from "../fivedayforecast/fivedayforecast.component.spec";
+
+export const FAKE_HTTP_CLIENT_FORECASTS = {
+  get: (url:string|null) => of(FORECAST)
+} as HttpClient;
 
 export const FAKE_HTTP_CLIENT_LOCATIONS = {
-  get: (url:string|null) => of(LOCATIONS)
+  get: (url: string |null) => of(LOCATIONS)
 } as HttpClient;
+
 
 describe('SearchComponent', () => {
   let component: SearchComponent;

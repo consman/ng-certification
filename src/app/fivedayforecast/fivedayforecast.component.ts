@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import {Location} from '../location';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Route, Router} from '@angular/router';
 import {WeatherService} from '../weather.service';
-import {Subscription} from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
 import {LocationImpl} from "../locationImpl";
+import {Forecast} from "../forecast";
 
 @Component({
   selector: 'app-fivedayforecast',
@@ -14,32 +15,37 @@ export class FivedayforecastComponent implements OnInit {
 
   location: Location;
   readyToCallService = false;
+  zipParam: string;
+  forecast: Forecast;
 
   constructor(route: ActivatedRoute, private router: Router, private weatherService: WeatherService) {
-    const zipParam = route.snapshot.paramMap.get('zipcode');
-    this.getDataFromZipParam(zipParam);
-    if (this.readyToCallService){
-      this.weatherService.getFiveDay(this.location);
+    if (route.snapshot === undefined){
+      // TODO Very bad hack until I can find how to mock route snapshot params
+      this.zipParam = '95630+Folsom+38.6709+-121.1529';
+      console.error('ERROR! Unable to read the zipcode passed in the the location! Using Test Data');
+    } else{
+      this.zipParam = route.snapshot.paramMap.get('zipcode');
     }
+    this.getDataFromZipParam(this.zipParam);
   }
 
   getDataFromZipParam(zp: string): void{
-    console.log(' Data from zip  param is: ' + zp);
+
     if ( null != zp && zp !== '' && zp.length > 0) {
       const parts = zp.split('+');
       if ( null != parts && parts.length === 4){
         this.location = new LocationImpl();
         this.location.zip = parts[0];
         this.location.name = this.dashesToSpaces((parts[1]));
-        console.log(' Location name is ' + this.location.name);
         this.location.lat = parseFloat(parts[2]);
-        console.log('lat = ' + this.location.lat );
         this.location.lon = parseFloat(parts[3]);
-        console.log('lon = ' + this.location.lon );
         this.readyToCallService = true;
       }
       else{
         console.error('Something is wrong! not enough parts! Only ' + parts.length );
+      }
+      if (this.readyToCallService){
+        this.forecast = this.weatherService.getFiveDay(this.location);
       }
     }
   }
@@ -49,11 +55,13 @@ export class FivedayforecastComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
   }
 
   dashesToSpaces(locationNameWithDashes: string): string {
+
     let result = '';
-    result = result = locationNameWithDashes.replace('-', '');
+    result = result = locationNameWithDashes.replace('-', ' ');
     return result;
   }
 

@@ -4,6 +4,7 @@ import {HttpClient} from '@angular/common/http';
 import {Observable, Subscription} from 'rxjs';
 import {ForecastImpl} from './forecastImpl';
 import {LocationImpl} from './locationImpl';
+import {Forecast} from "./forecast";
 
 @Injectable({
   providedIn: 'root'
@@ -24,14 +25,16 @@ export class WeatherService {
     return this.http.get('http://api.openweathermap.org/data/2.5/onecall?lat=' + lat + '&lon=' + lon + '&units=imperial&exclude=minutely,hourly,alerts&appid=42b0cd87da0e1ba5a9580ed019511475');
   }
 
-  getFiveDay(location: Location): void{
+  getFiveDay(location: Location): Forecast {
+    let resultForecast: Forecast;
     this.getFiveDayForecastsFromService(location.lat, location.lon).subscribe({
       next: (data) => {
         location.forecasts = [];
+        // console.log('Weatherservice.Forecast data = ' + JSON.stringify(data, null, 2));
         let counter = 0;
         data.daily.forEach(forecastDataFromService => {
-            if ( counter < 5 ) {
-              const forecast = new ForecastImpl();
+          const forecast = new ForecastImpl();
+          if ( counter < 5 ) {
               forecast.day = this.convertEpocToDayofWeek(forecastDataFromService.dt);
               forecast.description = forecastDataFromService.weather[0].main;
               forecast.max = forecastDataFromService.temp.max;
@@ -40,6 +43,7 @@ export class WeatherService {
               location.forecasts.push(forecast);
               counter++;
             }
+          resultForecast = forecast;
         });
       },
       error: (err) => {
@@ -54,16 +58,17 @@ export class WeatherService {
         console.log('Five Day Forecast subscription completed for ' + location.name );
       }
     });
+    return resultForecast;
   }
 
   addNewLocation(zip: string, locations: Location[]): void{
-    console.log('Weatherservice.addNewLocation going for new zip of: ' + zip);
+    // console.log('Weatherservice.addNewLocation going for new zip of: ' + zip);
     if (this.validateZip(zip)) {
       const location = new LocationImpl();
       this.getLocationFromService(zip)
         .subscribe({
           next: (data) => {
-            console.log('Weatherservice.addNewLocation data = ' + JSON.stringify(data, null, 2));
+            // console.log('Weatherservice.addNewLocation data = ' + JSON.stringify(data, null, 2));
             location.zip = zip;
             location.name = data.name;
             location.lon = data.coord.lon;
@@ -89,7 +94,7 @@ export class WeatherService {
             alert('Unable to find any weather data for ' + zip + '. Please try a different zip code. ');
           },
           complete: () => {
-            console.log('subscription completed for ' + zip + ' and the number of locations is ' + locations.length);
+            // console.log('subscription completed for ' + zip + ' and the number of locations is ' + locations.length);
           }
         });
     } else {
