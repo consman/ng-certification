@@ -4,7 +4,6 @@ import {WeatherService} from '../weather.service';
 import {FORECAST, LOCATIONS} from '../mock-data';
 import {of} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
-// import {FAKE_HTTP_CLIENT_FORECASTS} from "../fivedayforecast/fivedayforecast.component.spec";
 
 export const FAKE_HTTP_CLIENT_FORECASTS = {
   get: (url:string|null) => of(FORECAST)
@@ -18,10 +17,10 @@ export const FAKE_HTTP_CLIENT_LOCATIONS = {
 describe('SearchComponent', () => {
   let component: SearchComponent;
   let fixture: ComponentFixture<SearchComponent>;
-  let weatherService = new WeatherService(FAKE_HTTP_CLIENT_LOCATIONS);
 
 
   beforeEach(async () => {
+    const weatherService = new WeatherService(FAKE_HTTP_CLIENT_FORECASTS);
     await TestBed.configureTestingModule({
       declarations: [ SearchComponent ],
       providers: [{provide: HttpClient, useValue: {FAKE_HTTP_CLIENT_FORECASTS, FAKE_HTTP_CLIENT_LOCATIONS} },
@@ -30,7 +29,7 @@ describe('SearchComponent', () => {
       ]
     })
     .compileComponents();
-    //weatherService.locations=LOCATIONS;
+
   });
 
   beforeEach(() => {
@@ -42,5 +41,12 @@ describe('SearchComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('validates a zip code', () => {
+    expect(component.validateZip('94930')).toBeTruthy();
+    expect(component.validateZip('94i30')).toBeFalse();
+    expect(component.validateZip('9430')).toBeFalse();
+  });
+
 
 });

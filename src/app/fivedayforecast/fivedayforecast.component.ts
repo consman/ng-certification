@@ -5,6 +5,7 @@ import {WeatherService} from '../weather.service';
 import {Observable, Subscription} from 'rxjs';
 import {LocationImpl} from "../locationImpl";
 import {Forecast} from "../forecast";
+import {ForecastImpl} from "../forecastImpl";
 
 @Component({
   selector: 'app-fivedayforecast',
@@ -45,7 +46,7 @@ export class FivedayforecastComponent implements OnInit {
         console.error('Something is wrong! not enough parts! Only ' + parts.length );
       }
       if (this.readyToCallService){
-        this.forecast = this.weatherService.getFiveDay(this.location);
+        this.forecast = this.getFiveDay(this.location);
       }
     }
   }
@@ -55,11 +56,67 @@ export class FivedayforecastComponent implements OnInit {
   }
 
   ngOnInit(): void {
+  }
 
+
+  getFiveDay(location: Location): Forecast {
+    let resultForecast: Forecast;
+    this.weatherService.getFiveDayForecastsFromService(location.lat, location.lon).subscribe({
+      next: (data) => {
+        location.forecasts = [];
+        // console.log('Weatherservice.Forecast data = ' + JSON.stringify(data, null, 2));
+        let counter = 0;
+        data.daily.forEach(forecastDataFromService => {
+          const forecast = new ForecastImpl();
+          if ( counter < 5 ) {
+            forecast.day = this.convertEpocToDayofWeek(forecastDataFromService.dt);
+            forecast.description = forecastDataFromService.weather[0].main;
+            forecast.max = forecastDataFromService.temp.max;
+            forecast.min = forecastDataFromService.temp.min;
+            forecast.forecastIcon = this.getIconFrom(forecastDataFromService.weather[0].main);
+            location.forecasts.push(forecast);
+            counter++;
+          }
+          resultForecast = forecast;
+        });
+      },
+      error: (err) => {
+        if (err.status === 404) {
+          console.error('404 occurred getting forecast from service.');
+        }else {
+          console.error('Some other error besides 404 occurred getting forceast from service. error status = ' + err.status);
+        }
+        alert('Unable to find forecast data for ' + location.lon + ' , ' + location.lat + '  . Please try a different location. ');
+      },
+      complete: () => {
+        console.log('Five Day Forecast subscription completed for ' + location.name );
+      }
+    });
+    return resultForecast;
+  }
+
+  getIconFrom(input: string): string{
+    if ( input === 'Clouds'){
+      return 'clouds';
+    }
+    if ( input === 'Sunny'){
+      return 'sun';
+    }
+    if ( input === 'Rain'){
+      return 'rain';
+    }
+    if ( input === 'Snow'){
+      return 'snow';
+    }
+    return 'sun';
+  }
+
+  convertEpocToDayofWeek(epoc: number ): Date{
+    const date = new Date(epoc * 1000);
+    return date;
   }
 
   dashesToSpaces(locationNameWithDashes: string): string {
-
     let result = '';
     result = result = locationNameWithDashes.replace('-', ' ');
     return result;

@@ -26,11 +26,6 @@ describe('WeatherService', () => {
     expect(service).toBeTruthy();
   });
 
-
-  it('validates a zip code', () => {
-    expect(service.validateZip('94930')).toBeTruthy();
-  });
-
 /*  Fix these after resolving HTTP mock issue
 
   it('gets the 5 day forecast', () => {

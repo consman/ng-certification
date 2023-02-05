@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {Location} from '../location';
 import {WeatherService} from '../weather.service';
-import {LocationImpl} from '../locationImpl';
-import {ForecastImpl} from '../forecastImpl';
+import {LocationImpl} from "../locationImpl";
+import {ForecastImpl} from "../forecastImpl";
 
 @Component({
   selector: 'app-search',
@@ -21,7 +21,7 @@ export class SearchComponent implements OnInit {
 
   search(): void{
     // console.log('SearchComponent going for new zip of: ' + this.newZip);
-    this.weatherService.addNewLocation(this.newZip, this.locations);
+    this.addNewLocation(this.newZip, this.locations);
     // console.log(' after calling service the number of locations is ' + this.locations.length);
     this.newZip = '';
   }
@@ -30,15 +30,76 @@ export class SearchComponent implements OnInit {
     for (const localStorageKey in localStorage) {
       if (localStorageKey.startsWith('storedZipCode')){
         const derivedZip =  localStorage.getItem(localStorageKey);
-        this.weatherService.addNewLocation(derivedZip, this.locations);
+        this.addNewLocation(derivedZip, this.locations);
       }
     }
     // console.log(' loadLocationsFromLocalStorage the number of locations is ' + this.locations.length);
   }
 
+  addNewLocation(zip: string, locations: Location[]): void{
+    // console.log('Weatherservice.addNewLocation going for new zip of: ' + zip);
+    if (this.validateZip(zip)) {
+      const location = new LocationImpl();
+      this.weatherService.getLocationFromService(zip)
+        .subscribe({
+          next: (data) => {
+            // console.log('Weatherservice.addNewLocation data = ' + JSON.stringify(data, null, 2));
+            location.zip = zip;
+            location.name = data.name;
+            location.lon = data.coord.lon;
+            location.lat = data.coord.lat;
+            location.forecasts = [];
+            location.forecasts.push(new ForecastImpl());
+            location.forecasts[0].description = data.weather[0].main;
+
+            location.forecasts[0].current = data.main.temp;
+            location.forecasts[0].min = data.main.temp_min;
+            location.forecasts[0].max = data.main.temp_max;
+            location.forecasts[0].forecastIcon = this.getIconFrom(data.weather[0].main);
+
+            locations.push(location);
+            localStorage.setItem('storedZipCode' + (zip), zip);
+          },
+          error: (err) => {
+            if (err.status === 404) {
+              console.error('404 occurred getting ' + zip + ' from service.');
+            }else {
+              console.error('Some other error besides 404 occurred getting ' + zip + ' from service. error status = ' + err.status);
+            }
+            alert('Unable to find any weather data for ' + zip + '. Please try a different zip code. ');
+          },
+          complete: () => {
+            // console.log('subscription completed for ' + zip + ' and the number of locations is ' + locations.length);
+          }
+        });
+    } else {
+      alert('Zip ' +  zip + 'is not valid.');
+    }
+  }
+
+  validateZip(unVaidatedZip: string): boolean {
+    let result = false;
+    result = /(^\d{5}$)|(^\d{5}-\d{4}$)/.test(unVaidatedZip);
+    return result;
+  }
+
+  getIconFrom(input: string): string{
+    if ( input === 'Clouds'){
+      return 'clouds';
+    }
+    if ( input === 'Sunny'){
+      return 'sun';
+    }
+    if ( input === 'Rain'){
+      return 'rain';
+    }
+    if ( input === 'Snow'){
+      return 'snow';
+    }
+    return 'sun';
+  }
 
   ngOnInit(): void {
   }
-
 
 }
