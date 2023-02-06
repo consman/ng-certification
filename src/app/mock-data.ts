@@ -1,99 +1,34 @@
-import { Location} from './location';
-import {Weather} from "./Weather";
-
-export const LOCATIONS: Location[]=[
+export const RAWFORECASTS = [
   {
-    "name":"Locone",
-    "zip":"95630",
-    "lon": 5,
-    "lat": 9,
-    forecasts:[]
-  },
-  {
-    "name":"Loctwo",
-    "zip":"94903",
-    "lon": 7,
-    "lat": 11,
-    forecasts:[]
-  },
-  {
-    "name":"Locthree",
-    "zip":"96760",
-    "lon": 9,
-    "lat": 13,
-    forecasts:[]
-  }
-];
-
-export const FORECAST: Weather = {
     "lat": 38.6709,
     "lon": -121.1529,
     "timezone": "America/Los_Angeles",
     "timezone_offset": -28800,
     "current": {
-      "dt": 1675555295,
-      "sunrise": 1675523268,
-      "sunset": 1675560554,
-      "temp": 56.25,
-      "feels_like": 55.18,
-      "pressure": 1015,
-      "humidity": 77,
-      "dew_point": 49.14,
-      "uvi": 0.21,
-      "clouds": 75,
+      "dt": 1675655292,
+      "sunrise": 1675609610,
+      "sunset": 1675647024,
+      "temp": 46.02,
+      "feels_like": 45.18,
+      "pressure": 1024,
+      "humidity": 85,
+      "dew_point": 41.77,
+      "uvi": 0,
+      "clouds": 67,
       "visibility": 10000,
-      "wind_speed": 6.91,
-      "wind_deg": 210,
+      "wind_speed": 3,
+      "wind_deg": 105,
+      "wind_gust": 4,
       "weather": [
         {
-          "id": 501,
-          "main": "Rain",
-          "description": "moderate rain",
-          "icon": "10d"
+          "id": 803,
+          "main": "Clouds",
+          "description": "broken clouds",
+          "icon": "04n"
         }
-      ],
+      ]
     },
     "daily": [
-      {
-        "dt": 1675540800,
-        "sunrise": 1675523268,
-        "sunset": 1675560554,
-        "moonrise": 1675557120,
-        "moonset": 1675522620,
-        "moon_phase": 0.47,
-        "temp": {
-          "day": 56.66,
-          "min": 43.38,
-          "max": 57.96,
-          "night": 51.64,
-          "eve": 54.79,
-          "morn": 43.88
-        },
-        "feels_like": {
-          "day": 54.75,
-          "night": 51.01,
-          "eve": 53.78,
-          "morn": 43.88
-        },
-        "pressure": 1020,
-        "humidity": 58,
-        "dew_point": 42.08,
-        "wind_speed": 12.55,
-        "wind_deg": 151,
-        "wind_gust": 32.23,
-        "weather": [
-          {
-            "id": 501,
-            "main": "Rain",
-            "description": "moderate rain",
-            "icon": "10d"
-          }
-        ],
-        "clouds": 95,
-        "pop": 1,
-        "rain": 9.32,
-        "uvi": 2.51
-      },
       {
         "dt": 1675627200,
         "sunrise": 1675609610,
@@ -102,25 +37,25 @@ export const FORECAST: Weather = {
         "moonset": 1675611000,
         "moon_phase": 0.5,
         "temp": {
-          "day": 51.22,
-          "min": 42.62,
-          "max": 51.22,
-          "night": 42.62,
-          "eve": 46.27,
-          "morn": 45.7
+          "day": 52.34,
+          "min": 44.28,
+          "max": 52.97,
+          "night": 44.28,
+          "eve": 46.08,
+          "morn": 45.55
         },
         "feels_like": {
-          "day": 49.71,
-          "night": 42.62,
-          "eve": 46.27,
-          "morn": 42.62
+          "day": 50.9,
+          "night": 44.28,
+          "eve": 46.08,
+          "morn": 42.22
         },
         "pressure": 1022,
-        "humidity": 78,
-        "dew_point": 43.93,
-        "wind_speed": 10.6,
-        "wind_deg": 204,
-        "wind_gust": 23.55,
+        "humidity": 77,
+        "dew_point": 44.82,
+        "wind_speed": 10.11,
+        "wind_deg": 210,
+        "wind_gust": 22.41,
         "weather": [
           {
             "id": 501,
@@ -129,10 +64,10 @@ export const FORECAST: Weather = {
             "icon": "10d"
           }
         ],
-        "clouds": 89,
-        "pop": 0.94,
-        "rain": 10.95,
-        "uvi": 1.69
+        "clouds": 78,
+        "pop": 0.93,
+        "rain": 13.49,
+        "uvi": 1.75
       },
       {
         "dt": 1675713600,
@@ -142,25 +77,25 @@ export const FORECAST: Weather = {
         "moonset": 1675699140,
         "moon_phase": 0.53,
         "temp": {
-          "day": 51.44,
-          "min": 37.15,
-          "max": 55.81,
-          "night": 41.74,
-          "eve": 46.76,
-          "morn": 37.63
+          "day": 51.66,
+          "min": 36.88,
+          "max": 55.62,
+          "night": 42.24,
+          "eve": 46.98,
+          "morn": 37.47
         },
         "feels_like": {
-          "day": 49.15,
-          "night": 40.21,
-          "eve": 44.38,
-          "morn": 34.11
+          "day": 49.33,
+          "night": 40.51,
+          "eve": 45.86,
+          "morn": 34.79
         },
-        "pressure": 1028,
-        "humidity": 61,
-        "dew_point": 37.81,
-        "wind_speed": 9.46,
-        "wind_deg": 326,
-        "wind_gust": 16.98,
+        "pressure": 1029,
+        "humidity": 60,
+        "dew_point": 37.78,
+        "wind_speed": 7.92,
+        "wind_deg": 306,
+        "wind_gust": 12.88,
         "weather": [
           {
             "id": 800,
@@ -169,9 +104,9 @@ export const FORECAST: Weather = {
             "icon": "01d"
           }
         ],
-        "clouds": 4,
+        "clouds": 1,
         "pop": 0,
-        "uvi": 2.83
+        "uvi": 2.86
       },
       {
         "dt": 1675800000,
@@ -181,25 +116,25 @@ export const FORECAST: Weather = {
         "moonset": 1675786980,
         "moon_phase": 0.56,
         "temp": {
-          "day": 53.65,
-          "min": 39.27,
-          "max": 55.31,
-          "night": 44.22,
-          "eve": 46.2,
-          "morn": 39.27
+          "day": 52.38,
+          "min": 38.93,
+          "max": 55.96,
+          "night": 43.75,
+          "eve": 47.26,
+          "morn": 39.43
         },
         "feels_like": {
-          "day": 51.55,
-          "night": 43.03,
-          "eve": 45.14,
-          "morn": 39.27
+          "day": 50.27,
+          "night": 43.75,
+          "eve": 47.26,
+          "morn": 37.65
         },
         "pressure": 1029,
-        "humidity": 60,
-        "dew_point": 39.87,
-        "wind_speed": 3.96,
-        "wind_deg": 111,
-        "wind_gust": 5.19,
+        "humidity": 63,
+        "dew_point": 39.63,
+        "wind_speed": 4.47,
+        "wind_deg": 115,
+        "wind_gust": 6.76,
         "weather": [
           {
             "id": 804,
@@ -210,7 +145,7 @@ export const FORECAST: Weather = {
         ],
         "clouds": 100,
         "pop": 0,
-        "uvi": 2.61
+        "uvi": 2.11
       },
       {
         "dt": 1675886400,
@@ -220,25 +155,25 @@ export const FORECAST: Weather = {
         "moonset": 1675874760,
         "moon_phase": 0.59,
         "temp": {
-          "day": 58.64,
-          "min": 40.89,
-          "max": 58.64,
-          "night": 45.84,
-          "eve": 48.13,
-          "morn": 40.89
+          "day": 57.81,
+          "min": 40.69,
+          "max": 57.81,
+          "night": 46.15,
+          "eve": 48.2,
+          "morn": 40.93
         },
         "feels_like": {
-          "day": 56.79,
-          "night": 45.84,
-          "eve": 46.78,
-          "morn": 40.89
+          "day": 55.98,
+          "night": 46.15,
+          "eve": 46.96,
+          "morn": 40.93
         },
         "pressure": 1027,
-        "humidity": 55,
-        "dew_point": 41.95,
-        "wind_speed": 6.8,
-        "wind_deg": 321,
-        "wind_gust": 12.53,
+        "humidity": 57,
+        "dew_point": 42.35,
+        "wind_speed": 6.38,
+        "wind_deg": 320,
+        "wind_gust": 9.62,
         "weather": [
           {
             "id": 801,
@@ -247,9 +182,9 @@ export const FORECAST: Weather = {
             "icon": "02d"
           }
         ],
-        "clouds": 14,
+        "clouds": 13,
         "pop": 0,
-        "uvi": 3
+        "uvi": 3.06
       },
       {
         "dt": 1675972800,
@@ -259,36 +194,36 @@ export const FORECAST: Weather = {
         "moonset": 1675962480,
         "moon_phase": 0.62,
         "temp": {
-          "day": 59.83,
-          "min": 41.2,
-          "max": 60.04,
-          "night": 48.58,
-          "eve": 50.56,
-          "morn": 41.2
+          "day": 59.72,
+          "min": 42.06,
+          "max": 60.03,
+          "night": 47.88,
+          "eve": 50.47,
+          "morn": 42.06
         },
         "feels_like": {
-          "day": 57.87,
-          "night": 47.39,
-          "eve": 48.79,
-          "morn": 41.2
+          "day": 58.12,
+          "night": 46.49,
+          "eve": 49.15,
+          "morn": 42.06
         },
-        "pressure": 1024,
-        "humidity": 50,
-        "dew_point": 40.69,
-        "wind_speed": 3.78,
-        "wind_deg": 68,
-        "wind_gust": 3.42,
+        "pressure": 1025,
+        "humidity": 58,
+        "dew_point": 44.42,
+        "wind_speed": 3.91,
+        "wind_deg": 108,
+        "wind_gust": 4.7,
         "weather": [
           {
-            "id": 800,
-            "main": "Clear",
-            "description": "clear sky",
-            "icon": "01d"
+            "id": 804,
+            "main": "Clouds",
+            "description": "overcast clouds",
+            "icon": "04d"
           }
         ],
-        "clouds": 0,
+        "clouds": 92,
         "pop": 0,
-        "uvi": 3
+        "uvi": 3.2
       },
       {
         "dt": 1676059200,
@@ -298,36 +233,37 @@ export const FORECAST: Weather = {
         "moonset": 1676050260,
         "moon_phase": 0.66,
         "temp": {
-          "day": 60.22,
-          "min": 46.24,
-          "max": 60.22,
-          "night": 50.38,
-          "eve": 50.94,
-          "morn": 46.24
+          "day": 52.16,
+          "min": 41.58,
+          "max": 52.45,
+          "night": 41.58,
+          "eve": 44.38,
+          "morn": 42.98
         },
         "feels_like": {
-          "day": 58.48,
-          "night": 49.01,
-          "eve": 49.53,
-          "morn": 46.24
+          "day": 50.32,
+          "night": 41.58,
+          "eve": 44.38,
+          "morn": 40.3
         },
-        "pressure": 1021,
-        "humidity": 54,
-        "dew_point": 43.21,
-        "wind_speed": 3.11,
-        "wind_deg": 40,
-        "wind_gust": 3.33,
+        "pressure": 1023,
+        "humidity": 69,
+        "dew_point": 41.77,
+        "wind_speed": 7.47,
+        "wind_deg": 332,
+        "wind_gust": 15.57,
         "weather": [
           {
-            "id": 804,
-            "main": "Clouds",
-            "description": "overcast clouds",
-            "icon": "04d"
+            "id": 500,
+            "main": "Rain",
+            "description": "light rain",
+            "icon": "10d"
           }
         ],
-        "clouds": 100,
-        "pop": 0,
-        "uvi": 3
+        "clouds": 60,
+        "pop": 0.32,
+        "rain": 0.61,
+        "uvi": 4
       },
       {
         "dt": 1676145600,
@@ -337,37 +273,169 @@ export const FORECAST: Weather = {
         "moonset": 1676138040,
         "moon_phase": 0.69,
         "temp": {
-          "day": 63.59,
-          "min": 47.35,
-          "max": 63.59,
-          "night": 51.67,
-          "eve": 53.92,
-          "morn": 47.35
+          "day": 53.64,
+          "min": 35.44,
+          "max": 53.64,
+          "night": 40.93,
+          "eve": 44.02,
+          "morn": 35.44
         },
         "feels_like": {
-          "day": 62.13,
-          "night": 50.45,
-          "eve": 52.74,
-          "morn": 47.35
+          "day": 50.77,
+          "night": 38.43,
+          "eve": 41.2,
+          "morn": 31.15
         },
-        "pressure": 1015,
-        "humidity": 53,
-        "dew_point": 45.75,
-        "wind_speed": 3.24,
-        "wind_deg": 343,
-        "wind_gust": 4.65,
+        "pressure": 1020,
+        "humidity": 44,
+        "dew_point": 31.87,
+        "wind_speed": 11.01,
+        "wind_deg": 313,
+        "wind_gust": 18.81,
         "weather": [
           {
-            "id": 803,
-            "main": "Clouds",
-            "description": "broken clouds",
-            "icon": "04d"
+            "id": 800,
+            "main": "Clear",
+            "description": "clear sky",
+            "icon": "01d"
           }
         ],
-        "clouds": 81,
+        "clouds": 1,
         "pop": 0,
-        "uvi": 3
+        "uvi": 4
+      },
+      {
+        "dt": 1676232000,
+        "sunrise": 1676213965,
+        "sunset": 1676252307,
+        "moonrise": 0,
+        "moonset": 1676226000,
+        "moon_phase": 0.72,
+        "temp": {
+          "day": 56.59,
+          "min": 36.27,
+          "max": 57.96,
+          "night": 45,
+          "eve": 48.11,
+          "morn": 36.27
+        },
+        "feels_like": {
+          "day": 54.1,
+          "night": 43.75,
+          "eve": 48.11,
+          "morn": 36.27
+        },
+        "pressure": 1019,
+        "humidity": 46,
+        "dew_point": 35.76,
+        "wind_speed": 4.92,
+        "wind_deg": 299,
+        "wind_gust": 9.53,
+        "weather": [
+          {
+            "id": 801,
+            "main": "Clouds",
+            "description": "few clouds",
+            "icon": "02d"
+          }
+        ],
+        "clouds": 16,
+        "pop": 0,
+        "uvi": 4
       }
     ]
   }
-;
+];
+
+export const RAWLOCATIONS = [{
+  "zip": "95630",
+  "coord": {
+    "lon": -121.1529,
+    "lat": 38.6709
+  },
+  "weather": [
+    {
+      "id": 803,
+      "main": "Clouds",
+      "description": "broken clouds",
+      "icon": "04d"
+    }
+  ],
+  "base": "stations",
+  "main": {
+    "temp": 49.06,
+    "feels_like": 49.06,
+    "temp_min": 41.99,
+    "temp_max": 60.49,
+    "pressure": 1021,
+    "humidity": 71
+  },
+  "visibility": 10000,
+  "wind": {
+    "speed": 1.99,
+    "deg": 113,
+    "gust": 3
+  },
+  "clouds": {
+    "all": 75
+  },
+  "dt": 1675530075,
+  "sys": {
+    "type": 2,
+    "id": 2006213,
+    "country": "US",
+    "sunrise": 1675523268,
+    "sunset": 1675560554
+  },
+  "timezone": -28800,
+  "id": 0,
+  "name": "Folsom",
+  "cod": 200
+},
+  {
+    "zip":"95678",
+    "coord": {
+      "lon": -121.2867,
+      "lat": 38.7609
+    },
+    "weather": [
+      {
+        "id": 804,
+        "main": "Clouds",
+        "description": "overcast clouds",
+        "icon": "04d"
+      }
+    ],
+    "base": "stations",
+    "main": {
+      "temp": 48.9,
+      "feels_like": 48.9,
+      "temp_min": 42.48,
+      "temp_max": 59.29,
+      "pressure": 1021,
+      "humidity": 80
+    },
+    "visibility": 10000,
+    "wind": {
+      "speed": 1.99,
+      "deg": 113,
+      "gust": 3
+    },
+    "clouds": {
+      "all": 100
+    },
+    "dt": 1675530573,
+    "sys": {
+      "type": 2,
+      "id": 2037770,
+      "country": "US",
+      "sunrise": 1675523310,
+      "sunset": 1675560576
+    },
+    "timezone": -28800,
+    "id": 0,
+    "name": "Roseville",
+    "cod": 200
+  }];
+
+

@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Location} from '../location';
 import {ActivatedRoute, Route, Router} from '@angular/router';
-import {WeatherService} from '../weather.service';
-import {Observable, Subscription} from 'rxjs';
+import {ProdweatherService} from '../Prodweather.service';
 import {LocationImpl} from "../locationImpl";
 import {Forecast} from "../forecast";
 import {ForecastImpl} from "../forecastImpl";
@@ -19,9 +18,11 @@ export class FivedayforecastComponent implements OnInit {
   zipParam: string;
   forecast: Forecast;
 
-  constructor(route: ActivatedRoute, private router: Router, private weatherService: WeatherService) {
+  constructor(route: ActivatedRoute, private router: Router, private weatherService: ProdweatherService) {
+    console.log('Going for PROD weather service');
     if (route.snapshot === undefined){
       // TODO Very bad hack until I can find how to mock route snapshot params
+      // see https://www.mycodingblog.com/post/mocking-out-angulars-activated-route-for-unit-tests/
       this.zipParam = '95630+Folsom+38.6709+-121.1529';
       console.error('ERROR! Unable to read the zipcode passed in the the location! Using Test Data');
     } else{

@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LocationComponent } from './location.component';
-import {LOCATIONS} from '../mock-data';
+import {LocationImpl} from '../locationImpl';
 
 describe('LocationComponent', () => {
   let component: LocationComponent;
@@ -16,8 +16,12 @@ describe('LocationComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(LocationComponent);
     component = fixture.componentInstance;
-    component.location = LOCATIONS[0];
-    component.locations = LOCATIONS;
+    const tempLoc = new LocationImpl();
+    const tempLocArray = [];
+    tempLocArray.push(tempLoc);
+    component.location = tempLoc;
+    tempLoc.name = 'Folsom';
+    component.locations = tempLocArray;
     fixture.detectChanges();
   });
 

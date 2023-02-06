@@ -1,16 +1,16 @@
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import { SearchComponent } from './search.component';
-import {WeatherService} from '../weather.service';
-import {FORECAST, LOCATIONS} from '../mock-data';
+import {ProdweatherService} from '../Prodweather.service';
+import {RAWFORECASTS, RAWLOCATIONS} from '../mock-data';
 import {of} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 
 export const FAKE_HTTP_CLIENT_FORECASTS = {
-  get: (url:string|null) => of(FORECAST)
+  get: (url:string|null) => of(RAWFORECASTS)
 } as HttpClient;
 
 export const FAKE_HTTP_CLIENT_LOCATIONS = {
-  get: (url: string |null) => of(LOCATIONS)
+  get: (url: string |null) => of(RAWLOCATIONS)
 } as HttpClient;
 
 
@@ -20,12 +20,12 @@ describe('SearchComponent', () => {
 
 
   beforeEach(async () => {
-    const weatherService = new WeatherService(FAKE_HTTP_CLIENT_FORECASTS);
+    const weatherService = new ProdweatherService(FAKE_HTTP_CLIENT_FORECASTS);
     await TestBed.configureTestingModule({
       declarations: [ SearchComponent ],
       providers: [{provide: HttpClient, useValue: {FAKE_HTTP_CLIENT_FORECASTS, FAKE_HTTP_CLIENT_LOCATIONS} },
-        {provide: WeatherService, useValue: weatherService},
-        {provide: Location, useValue: LOCATIONS[0]}
+        {provide: ProdweatherService, useValue: weatherService},
+        {provide: Location, useValue: RAWLOCATIONS[0]}
       ]
     })
     .compileComponents();

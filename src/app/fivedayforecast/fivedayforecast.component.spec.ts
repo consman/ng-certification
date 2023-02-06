@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FivedayforecastComponent } from './fivedayforecast.component';
 import {of} from 'rxjs';
-import {FORECAST, LOCATIONS} from '../mock-data';
+import {RAWFORECASTS, RAWLOCATIONS} from '../mock-data';
 import {HttpClient} from '@angular/common/http';
 import {ActivatedRoute, ActivatedRouteSnapshot, Router} from '@angular/router';
-import {WeatherService} from '../weather.service';
+import {ProdweatherService} from '../Prodweather.service';
 
 export const FAKE_HTTP_CLIENT_LOCATIONS = {
-  get: (url:string|null) => of(LOCATIONS)
+  get: (url:string|null) => of(RAWLOCATIONS)
 } as HttpClient;
 
 export const FAKE_HTTP_CLIENT_FORECASTS = {
-  get: (url:string|null) => of(FORECAST)
+  get: (url:string|null) => of(RAWFORECASTS)
 } as HttpClient;
 
 export const FAKE_ROUTE = new ActivatedRoute();
@@ -21,13 +21,13 @@ describe('FivedayforecastComponent', () => {
   let fixture: ComponentFixture<FivedayforecastComponent>;
 
   beforeEach(async () => {
-    const weatherService = new WeatherService(FAKE_HTTP_CLIENT_FORECASTS);
+    const weatherService = new ProdweatherService(FAKE_HTTP_CLIENT_FORECASTS);
     await TestBed.configureTestingModule({
       declarations: [ FivedayforecastComponent ],
       providers: [ {provide: HttpClient, useValue: {FAKE_HTTP_CLIENT_FORECASTS, FAKE_HTTP_CLIENT_LOCATIONS} },
         {provide: ActivatedRoute,  useValue: FAKE_ROUTE},
         {provide: Router, useValue: ''},
-        {provide: WeatherService, useValue: weatherService}
+        {provide: ProdweatherService, useValue: weatherService}
       ]
     })
     .compileComponents();

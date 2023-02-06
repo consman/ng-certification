@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {Location} from '../location';
-import {WeatherService} from '../weather.service';
+import {ProdweatherService} from '../Prodweather.service';
 import {LocationImpl} from "../locationImpl";
 import {ForecastImpl} from "../forecastImpl";
 
@@ -14,7 +14,7 @@ export class SearchComponent implements OnInit {
   newZip: string;
   locations: Location[];
 
-  constructor(private weatherService: WeatherService) {
+  constructor(private weatherService: ProdweatherService) {
     this.locations = [];
     this.loadLocationsFromLocalStorage();
   }
