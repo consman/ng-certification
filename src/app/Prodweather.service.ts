@@ -4,7 +4,6 @@ import {HttpClient} from '@angular/common/http';
 import {Observable, of, from} from 'rxjs';
 import {WeatherService} from './weather.service';
 
-
 @Injectable({
   providedIn: 'root'
 })
@@ -17,6 +16,7 @@ export class ProdweatherService extends WeatherService {
     console.log('Going for PROD weather service');
   }
 
+  // TODO DO NOT USE any!!!
   getLocationFromService(zipcode: string): Observable<any> {
     console.log('Going for PROD weather service getLocationFromService and the zipcode is: ' + zipcode);
     return this.http.get('http://api.openweathermap.org/data/2.5/weather?zip=' + zipcode + ',us&units=imperial&appid=42b0cd87da0e1ba5a9580ed019511475');

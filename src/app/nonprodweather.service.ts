@@ -5,7 +5,7 @@ import {Observable, of, from} from 'rxjs';
 import {filter} from 'rxjs/operators';
 import {RAWFORECASTS, RAWLOCATIONS} from './mock-data';
 import {WeatherService} from "./weather.service";
-import {HttpHandlerImpl} from "./HttpHandlerImpl";
+
 
 @Injectable({
   providedIn: 'root'
@@ -13,13 +13,13 @@ import {HttpHandlerImpl} from "./HttpHandlerImpl";
 export class NonprodweatherService extends WeatherService {
 
   location: Location;
-  http: HttpClient = new HttpClient( new HttpHandlerImpl());
 
   constructor() {
     super();
     console.log('Going for NON-PROD weather service');
   }
 
+  // TODO DO NOT USE any!!!
   getLocationFromService(zipcode: string): Observable<any>{
     console.log('Going for NON-PROD weather service getLocationFromService for zip: ' + zipcode);
     return from(RAWLOCATIONS).pipe(filter(loc => loc.zip === zipcode));

@@ -1,8 +1,8 @@
 import {Location} from './location';
-import {Forecast} from './forecast';
+import {ForecastImpl} from "./forecastImpl";
 
 export class LocationImpl implements Location {
-  forecasts: Forecast[];
+  forecasts: ForecastImpl[];
   name: string;
   zip: string;
   lat: number;

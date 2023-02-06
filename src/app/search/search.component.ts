@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import {Location} from '../location';
-//import {ProdweatherService} from '../Prodweather.service';
 import {LocationImpl} from "../locationImpl";
 import {ForecastImpl} from "../forecastImpl";
 import {WeatherService} from "../weather.service";
+import {RawForecastImpl} from "../RawForecastImpl";
 
 @Component({
   selector: 'app-search',
@@ -38,6 +38,7 @@ export class SearchComponent implements OnInit {
   }
 
   addNewLocation(zip: string, locations: Location[]): void{
+    // console.log('Weatherservice.addNewLocation going for new zip of: ' + zip);
     if (this.validateZip(zip)) {
       const location = new LocationImpl();
       this.weatherService.getLocationFromService(zip)
