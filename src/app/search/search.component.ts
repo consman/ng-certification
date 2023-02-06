@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import {Location} from '../location';
-import {ProdweatherService} from '../Prodweather.service';
+//import {ProdweatherService} from '../Prodweather.service';
 import {LocationImpl} from "../locationImpl";
 import {ForecastImpl} from "../forecastImpl";
+import {WeatherService} from "../weather.service";
 
 @Component({
   selector: 'app-search',
@@ -14,7 +15,7 @@ export class SearchComponent implements OnInit {
   newZip: string;
   locations: Location[];
 
-  constructor(private weatherService: ProdweatherService) {
+  constructor(private weatherService: WeatherService) {
     this.locations = [];
     this.loadLocationsFromLocalStorage();
   }
@@ -37,13 +38,12 @@ export class SearchComponent implements OnInit {
   }
 
   addNewLocation(zip: string, locations: Location[]): void{
-    // console.log('Weatherservice.addNewLocation going for new zip of: ' + zip);
     if (this.validateZip(zip)) {
       const location = new LocationImpl();
       this.weatherService.getLocationFromService(zip)
         .subscribe({
           next: (data) => {
-            // console.log('Weatherservice.addNewLocation data = ' + JSON.stringify(data, null, 2));
+            // console.log('addNewLocation data = ' + JSON.stringify(data, null, 2));
             location.zip = zip;
             location.name = data.name;
             location.lon = data.coord.lon;
@@ -63,8 +63,9 @@ export class SearchComponent implements OnInit {
           error: (err) => {
             if (err.status === 404) {
               console.error('404 occurred getting ' + zip + ' from service.');
-            }else {
-              console.error('Some other error besides 404 occurred getting ' + zip + ' from service. error status = ' + err.status);
+            }else{
+              console.error('Some other error besides 404 occurred getting ' + zip + ' from service. error status = '
+                + err.status + err);
             }
             alert('Unable to find any weather data for ' + zip + '. Please try a different zip code. ');
           },

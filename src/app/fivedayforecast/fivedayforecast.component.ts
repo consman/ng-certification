@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import {Location} from '../location';
 import {ActivatedRoute, Route, Router} from '@angular/router';
-import {ProdweatherService} from '../Prodweather.service';
 import {LocationImpl} from "../locationImpl";
 import {Forecast} from "../forecast";
 import {ForecastImpl} from "../forecastImpl";
+import {WeatherService} from "../weather.service";
 
 @Component({
   selector: 'app-fivedayforecast',
@@ -18,7 +18,7 @@ export class FivedayforecastComponent implements OnInit {
   zipParam: string;
   forecast: Forecast;
 
-  constructor(route: ActivatedRoute, private router: Router, private weatherService: ProdweatherService) {
+  constructor(route: ActivatedRoute, private router: Router, private weatherService: WeatherService) {
     console.log('Going for PROD weather service');
     if (route.snapshot === undefined){
       // TODO Very bad hack until I can find how to mock route snapshot params

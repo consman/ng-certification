@@ -1,11 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FivedayforecastComponent } from './fivedayforecast.component';
 import {of} from 'rxjs';
-import {RAWFORECASTS, RAWLOCATIONS} from '../mock-data';
+// import {RAWFORECASTS, RAWLOCATIONS} from '../mock-data';
 import {HttpClient} from '@angular/common/http';
 import {ActivatedRoute, ActivatedRouteSnapshot, Router} from '@angular/router';
-import {ProdweatherService} from '../Prodweather.service';
-
+import {WeatherService} from "../weather.service";
+import {weatherServiceFactory} from "../weatherservice.factory";
+import {environment} from "../../environments/environment";
+    /*
 export const FAKE_HTTP_CLIENT_LOCATIONS = {
   get: (url:string|null) => of(RAWLOCATIONS)
 } as HttpClient;
@@ -13,7 +15,7 @@ export const FAKE_HTTP_CLIENT_LOCATIONS = {
 export const FAKE_HTTP_CLIENT_FORECASTS = {
   get: (url:string|null) => of(RAWFORECASTS)
 } as HttpClient;
-
+*/
 export const FAKE_ROUTE = new ActivatedRoute();
 
 describe('FivedayforecastComponent', () => {
@@ -21,13 +23,14 @@ describe('FivedayforecastComponent', () => {
   let fixture: ComponentFixture<FivedayforecastComponent>;
 
   beforeEach(async () => {
-    const weatherService = new ProdweatherService(FAKE_HTTP_CLIENT_FORECASTS);
+    //const weatherService = new ProdweatherService(); // FAKE_HTTP_CLIENT_FORECASTS);
     await TestBed.configureTestingModule({
       declarations: [ FivedayforecastComponent ],
-      providers: [ {provide: HttpClient, useValue: {FAKE_HTTP_CLIENT_FORECASTS, FAKE_HTTP_CLIENT_LOCATIONS} },
+      providers: [ // {provide: HttpClient, useValue: {FAKE_HTTP_CLIENT_FORECASTS, FAKE_HTTP_CLIENT_LOCATIONS} },
+        {provide: WeatherService, useFactory: weatherServiceFactory, deps: ['IS_PROD_ENVIRONMENT']},
+        {provide: 'IS_PROD_ENVIRONMENT', useValue: environment.production},
         {provide: ActivatedRoute,  useValue: FAKE_ROUTE},
-        {provide: Router, useValue: ''},
-        {provide: ProdweatherService, useValue: weatherService}
+        {provide: Router, useValue: ''}
       ]
     })
     .compileComponents();
