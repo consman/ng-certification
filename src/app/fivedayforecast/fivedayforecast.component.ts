@@ -20,7 +20,6 @@ export class FivedayforecastComponent implements OnInit {
 
   constructor(route: ActivatedRoute, private router: Router, private weatherService: WeatherService) {
     this.zipParam = route.snapshot.paramMap.get('zipcode');
-    console.log('the zipParam is: ' + this.zipParam );
     this.getDataFromZipParam(this.zipParam);
   }
 

@@ -6,9 +6,8 @@ import {WeatherService} from "../weather.service";
 import {weatherServiceFactory} from "../weatherservice.factory";
 import {environment} from "../../environments/environment";
 
-
 export const FAKE_ROUTE = {
-  snapshot: { paramMap: of({get: () => '95630+Folsom+38.6709+-121.1529'}) }
+  snapshot: { paramMap: {get: () => '95630+Folsom+38.6709+-121.1529'}}
 };
 
 describe('FivedayforecastComponent', () => {
@@ -17,15 +16,12 @@ describe('FivedayforecastComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FivedayforecastComponent ],
       providers: [
         {provide: WeatherService, useFactory: weatherServiceFactory, deps: ['IS_PROD_ENVIRONMENT']},
         {provide: 'IS_PROD_ENVIRONMENT', useValue: environment.production},
-        {provide: ActivatedRoute,  useValue: FAKE_ROUTE},
-        {provide: Router, useValue: ''}
-      ]
-    })
-    .compileComponents();
+        {provide: ActivatedRoute, useValue: FAKE_ROUTE}],
+      declarations: [ FivedayforecastComponent ],
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -34,8 +30,7 @@ describe('FivedayforecastComponent', () => {
     fixture.detectChanges();
   });
 
-  /*
-  //TODO Fix these when we can mock the snapshot
+  // TODO Fix these when we can mock the snapshot
   it('should create', () => {
     expect(component).toBeTruthy();
     expect(component.readyToCallService).toEqual(true);
@@ -48,5 +43,5 @@ describe('FivedayforecastComponent', () => {
   it('can convert spaces to dashes', () => {
       expect(component.dashesToSpaces('Saint-Croy')).toEqual('Saint Croy');
   });
-*/
+
 });
