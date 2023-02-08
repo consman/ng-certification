@@ -21,11 +21,12 @@ export class NonprodweatherService extends WeatherService {
 
   // TODO DO NOT USE any!!!
   getLocationFromService(zipcode: string): Observable<any>{
-    console.log('Going for NON-PROD weather service getLocationFromService for zip: ' + zipcode);
+
     return from(RAWLOCATIONS).pipe(filter(loc => loc.zip === zipcode));
   }
 
   getFiveDayForecastsFromService(lat: number, lon: number): Observable<any>{
+    console.log('Going for NON-PROD weather service getFiveDayForecastsFromService');
     return from(RAWFORECASTS).pipe(filter(forc => forc.lat === lat && forc.lon === lon));
   }
 

@@ -4,12 +4,14 @@
     <fieldset class="wellflex" >
       <legend><h2>{{location.name}} ({{location.zip}})</h2></legend>
 
-      <table *ngIf="location != null && location.forecasts != null" >
-        <tr *ngFor="let forecastForDay of location.forecasts" >
-          <td data-test="tdForecastItem"> {{forecastForDay.day | date: 'EEEE'}}:  {{forecastForDay.description}} - High: {{forecastForDay.max}} - Low {{forecastForDay.min}} </td>
-          <td>  <img class="iconimg" src="https://www.angulartraining.com/images/weather/{{forecastForDay.forecastIcon}}.png" alt="icon" width="50" height="auto" /> </td>
+      <table *ngIf="getLocFromObservable(obsForecast$ | async) != null " >
+        <tr *ngFor="let forecastForDay of getLocFromObservable(obsForecast$ | async).forecasts[0].daily" >
+          <td data-test="tdForecastItem"> {{convertEpocToDayofWeek(forecastForDay.dt) | date: 'EEEE'}}:  {{forecastForDay.weather[0].description}} - High: {{forecastForDay.temp.max}} - Low {{forecastForDay.temp.min}} </td>
+          <td>  <img class="iconimg" src="https://www.angulartraining.com/images/weather/{{getIconFrom(forecastForDay.weather[0].main)}}.png" alt="icon" width="50" height="auto" /> </td>
+          <td>{{forecastForDay.weather[0].main}}</td>
         </tr>
       </table>
+
     </fieldset>
 
   </div>

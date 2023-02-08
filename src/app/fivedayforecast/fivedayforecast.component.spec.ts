@@ -1,10 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FivedayforecastComponent } from './fivedayforecast.component';
-import {of} from 'rxjs';
-import {ActivatedRoute, Router} from '@angular/router';
-import {WeatherService} from "../weather.service";
-import {weatherServiceFactory} from "../weatherservice.factory";
-import {environment} from "../../environments/environment";
+import {ActivatedRoute} from '@angular/router';
+import {WeatherService} from '../weather.service';
+import {weatherServiceFactory} from '../weatherservice.factory';
+import {environment} from '../../environments/environment';
 
 export const FAKE_ROUTE = {
   snapshot: { paramMap: {get: () => '95630+Folsom+38.6709+-121.1529'}}
@@ -33,7 +32,6 @@ describe('FivedayforecastComponent', () => {
   // TODO Fix these when we can mock the snapshot
   it('should create', () => {
     expect(component).toBeTruthy();
-    expect(component.readyToCallService).toEqual(true);
   });
 
   it('should have a location', () => {

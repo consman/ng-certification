@@ -5,16 +5,16 @@
 
       <div *ngFor="let forecast of location.forecasts; index as ind">
         <div *ngIf="ind == 0">
-          <h4>Current conditions: {{forecast.description}}</h4>
+          <h4>Current conditions: {{forecast.weather.description}}</h4>
           <h4>Temperature: {{forecast.current}}</h4>
-          <h4>Max today: {{forecast.max}} - Min today: {{forecast.min}}</h4>
+          <h4>Max today: {{forecast.daily[0].temp.max}} - Min today: {{forecast.daily[0].temp.min}}</h4>
 
           <div data-test="closeSearchResult" class="close" (click)="handleClose()">x</div>
-          <img class="iconimg" src="https://www.angulartraining.com/images/weather/{{forecast.forecastIcon}}.png" alt="icon" width="80" height="auto" />
+          <img class="iconimg" src="https://www.angulartraining.com/images/weather/{{forecast.weather.icon}}.png" alt="icon" width="80" height="auto" />
         </div>
       </div>
 
-    <a data-test="fiveDayForecastLink" routerLink="/forecast/{{location.zip}}+{{spacesToDashes( location.name)}}+{{location.lat}}+{{location.lon}}"> Five Day Forecast for {{location.name}}</a>
+    <a data-test="fiveDayForecastLink" routerLink="/forecast/{{location.zip}}+{{spacesToDashes( location.name)}}+{{location.coord.lat}}+{{location.coord.lon}}"> Five Day Forecast for {{location.name}}</a>
     </fieldset>
 
 

@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import {Location} from '../location';
 import {ActivatedRoute, Route, Router} from '@angular/router';
-import {LocationImpl} from "../locationImpl";
-import {Forecast} from "../forecast";
-import {ForecastImpl} from "../forecastImpl";
-import {WeatherService} from "../weather.service";
+import {LocationImpl} from '../locationImpl';
+import {Daily, Forecast, Weather2} from '../forecast';
+import {DailyImpl, ForecastImpl, TempImpl, Weather2Impl} from '../ForecastImpl';
+import {WeatherService} from '../weather.service';
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-fivedayforecast',
@@ -14,13 +15,23 @@ import {WeatherService} from "../weather.service";
 export class FivedayforecastComponent implements OnInit {
 
   location: Location;
-  readyToCallService = false;
   zipParam: string;
-  forecast: Forecast;
+  obsForecast$: Observable<ForecastImpl>;
 
   constructor(route: ActivatedRoute, private router: Router, private weatherService: WeatherService) {
     this.zipParam = route.snapshot.paramMap.get('zipcode');
+    this.location = new LocationImpl();
+    this.location.forecasts = new Array<ForecastImpl>();
+    console.log(' The zip  param is: ' + this.zipParam);
     this.getDataFromZipParam(this.zipParam);
+    this.obsForecast$ = this.weatherService.getFiveDayForecastsFromService(this.location.coord.lat, this.location.coord.lon);
+  }
+
+  getLocFromObservable(forecast: Forecast): Location {
+    if (forecast) {
+      this.location.forecasts[0] = forecast;
+    }
+    return this.location;
   }
 
   getDataFromZipParam(zp: string): void{
@@ -28,18 +39,15 @@ export class FivedayforecastComponent implements OnInit {
     if ( null != zp && zp !== '' && zp.length > 0) {
       const parts = zp.split('+');
       if ( null != parts && parts.length === 4){
-        this.location = new LocationImpl();
+        // this.location = new LocationImpl();
         this.location.zip = parts[0];
         this.location.name = this.dashesToSpaces((parts[1]));
-        this.location.lat = parseFloat(parts[2]);
-        this.location.lon = parseFloat(parts[3]);
-        this.readyToCallService = true;
+        this.location.coord.lat = parseFloat(parts[2]);
+        this.location.coord.lon = parseFloat(parts[3]);
+
       }
       else{
         console.error('Something is wrong! not enough parts! Only ' + parts.length );
-      }
-      if (this.readyToCallService){
-        this.forecast = this.getFiveDay(this.location);
       }
     }
   }
@@ -51,40 +59,10 @@ export class FivedayforecastComponent implements OnInit {
   ngOnInit(): void {
   }
 
-
   getFiveDay(location: Location): Forecast {
-    let resultForecast: Forecast;
-    this.weatherService.getFiveDayForecastsFromService(location.lat, location.lon).subscribe({
-      next: (data) => {
-        location.forecasts = [];
-        // console.log('Weatherservice.Forecast data = ' + JSON.stringify(data, null, 2));
-        let counter = 0;
-        data.daily.forEach(forecastDataFromService => {
-          const forecast = new ForecastImpl();
-          if ( counter < 5 ) {
-            forecast.day = this.convertEpocToDayofWeek(forecastDataFromService.dt);
-            forecast.description = forecastDataFromService.weather[0].main;
-            forecast.max = forecastDataFromService.temp.max;
-            forecast.min = forecastDataFromService.temp.min;
-            forecast.forecastIcon = this.getIconFrom(forecastDataFromService.weather[0].main);
-            location.forecasts.push(forecast);
-            counter++;
-          }
-          resultForecast = forecast;
-        });
-      },
-      error: (err) => {
-        if (err.status === 404) {
-          console.error('404 occurred getting forecast from service.');
-        }else {
-          console.error('Some other error besides 404 occurred getting forceast from service. error status = ' + err.status);
-        }
-        alert('Unable to find forecast data for ' + location.lon + ' , ' + location.lat + '  . Please try a different location. ');
-      },
-      complete: () => {
-        console.log('Five Day Forecast subscription completed for ' + location.name );
-      }
-    });
+    // tslint:disable-next-line:prefer-const
+    let resultForecast: ForecastImpl;
+    console.log('003 Done with method  and days of week are ' );
     return resultForecast;
   }
 
@@ -101,7 +79,7 @@ export class FivedayforecastComponent implements OnInit {
     if ( input === 'Snow'){
       return 'snow';
     }
-    return 'sun';
+    return 'sun( not found) ';
   }
 
   convertEpocToDayofWeek(epoc: number ): Date{

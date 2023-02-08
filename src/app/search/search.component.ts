@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import {Location} from '../location';
-import {LocationImpl} from "../locationImpl";
-import {ForecastImpl} from "../forecastImpl";
-import {WeatherService} from "../weather.service";
-import {RawForecastImpl} from "../RawForecastImpl";
+import {LocationImpl} from '../locationImpl';
+import {CurrentImpl, DailyImpl, ForecastImpl, TempImpl, WeatherImpl} from '../ForecastImpl';
+import {WeatherService} from '../weather.service';
+import {Daily} from '../forecast';
 
 @Component({
   selector: 'app-search',
@@ -46,18 +46,27 @@ export class SearchComponent implements OnInit {
           next: (data) => {
             // console.log('addNewLocation data = ' + JSON.stringify(data, null, 2));
             location.zip = zip;
+            /*
             location.name = data.name;
-            location.lon = data.coord.lon;
-            location.lat = data.coord.lat;
+            location.coord.lon = data.coord.lon;
+            location.coord.lat = data.coord.lat;
             location.forecasts = [];
             location.forecasts.push(new ForecastImpl());
-            location.forecasts[0].description = data.weather[0].main;
+            location.forecasts[0].weather = new WeatherImpl();
+            location.forecasts[0].weather.description = data.weather[0].main;
 
+            location.forecasts[0].current = new CurrentImpl();
             location.forecasts[0].current = data.main.temp;
-            location.forecasts[0].min = data.main.temp_min;
-            location.forecasts[0].max = data.main.temp_max;
-            location.forecasts[0].forecastIcon = this.getIconFrom(data.weather[0].main);
 
+            location.forecasts[0].daily = new Array<Daily>();
+            location.forecasts[0].daily.push(new DailyImpl());
+
+
+            location.forecasts[0].daily[0].temp = new TempImpl();
+            location.forecasts[0].daily[0].temp.min = data.main.temp_min;
+            location.forecasts[0].daily[0].temp.max = data.main.temp_max;
+            location.forecasts[0].weather.icon = this.getIconFrom(data.weather[0].main);
+*/
             locations.push(location);
             localStorage.setItem('storedZipCode' + (zip), zip);
           },

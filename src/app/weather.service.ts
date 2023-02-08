@@ -1,5 +1,4 @@
 import {Observable} from "rxjs";
-import {RawForecastImpl} from "./RawForecastImpl";
 
 export abstract class WeatherService{
 
@@ -8,5 +7,5 @@ export abstract class WeatherService{
   }
   // TODO DO NOT USE any!!!
   abstract getLocationFromService(zipcode: string): Observable<any>;
-  abstract getFiveDayForecastsFromService(lat: number, lon: number): Observable<RawForecastImpl>;
+  abstract getFiveDayForecastsFromService(lat: number, lon: number): Observable<any>;
 }
