@@ -46,7 +46,7 @@ export class SearchComponent implements OnInit {
           next: (data) => {
             // console.log('addNewLocation data = ' + JSON.stringify(data, null, 2));
             location.zip = zip;
-            /*
+
             location.name = data.name;
             location.coord.lon = data.coord.lon;
             location.coord.lat = data.coord.lat;
@@ -66,7 +66,7 @@ export class SearchComponent implements OnInit {
             location.forecasts[0].daily[0].temp.min = data.main.temp_min;
             location.forecasts[0].daily[0].temp.max = data.main.temp_max;
             location.forecasts[0].weather.icon = this.getIconFrom(data.weather[0].main);
-*/
+
             locations.push(location);
             localStorage.setItem('storedZipCode' + (zip), zip);
           },

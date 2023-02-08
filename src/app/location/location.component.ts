@@ -41,7 +41,7 @@ export class LocationComponent implements OnInit {
 
   spacesToDashes(locationNameWithSpaces: string): string {
     let result = '';
-    result = result = locationNameWithSpaces.replace(' ', '-');
+    result = locationNameWithSpaces.replace(' ', '-');
     return result;
   }
 

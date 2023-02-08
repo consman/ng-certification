@@ -14,7 +14,7 @@
         </div>
       </div>
 
-    <a data-test="fiveDayForecastLink" routerLink="/forecast/{{location.zip}}+{{spacesToDashes( location.name)}}+{{location.coord.lat}}+{{location.coord.lon}}"> Five Day Forecast for {{location.name}}</a>
+    <a *ngIf="location.name != undefined && location.zip != undefined && location.coord != undefined && location.coord.lon != undefined && location.coord.lat != undefined " data-test="fiveDayForecastLink" routerLink="/forecast/{{location.zip}}+{{spacesToDashes( location.name)}}+{{location.coord.lat}}+{{location.coord.lon}}"> Five Day Forecast for {{location.name}}</a>
     </fieldset>
 
 

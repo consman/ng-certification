@@ -79,7 +79,7 @@ export class FivedayforecastComponent implements OnInit {
     if ( input === 'Snow'){
       return 'snow';
     }
-    return 'sun( not found) ';
+    return 'sun';
   }
 
   convertEpocToDayofWeek(epoc: number ): Date{
