@@ -3,14 +3,14 @@
     <fieldset class="parentofclose wellflex">
       <legend><h2 data-test="searchResultTitle">{{location.name}} </h2></legend>
 
-      <div *ngFor="let forecast of location.forecasts; index as ind">
+      <div *ngFor="let location of locations; index as ind">
         <div *ngIf="ind == 0">
-          <h4>Current conditions: {{forecast.weather.description}}</h4>
-          <h4>Temperature: {{forecast.current}}</h4>
-          <h4>Max today: {{forecast.daily[0].temp.max}} - Min today: {{forecast.daily[0].temp.min}}</h4>
+          <h4>Current conditions: {{location.weather[0].main}}</h4>
+          <h4>Temperature: {{location.main.temp}}</h4>
+          <h4>Max today: {{location.main.temp_max}} - Min today: {{location.main.temp_min}}</h4>
 
           <div data-test="closeSearchResult" class="close" (click)="handleClose()">x</div>
-          <img class="iconimg" src="https://www.angulartraining.com/images/weather/{{forecast.weather.icon}}.png" alt="icon" width="80" height="auto" />
+          <img class="iconimg" src="https://www.angulartraining.com/images/weather/{{location.weather[0].main}}.png" alt="icon" width="80" height="auto" />
         </div>
       </div>
 

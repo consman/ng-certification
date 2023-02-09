@@ -45,4 +45,5 @@ export class LocationComponent implements OnInit {
     return result;
   }
 
+
 }

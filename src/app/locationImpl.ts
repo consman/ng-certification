@@ -26,3 +26,4 @@ export class CoordImpl implements Coord{
   lat: number;
   lon: number;
 }
+
