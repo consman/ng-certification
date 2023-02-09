@@ -42,6 +42,7 @@ export class SearchComponent implements OnInit {
         locations.push(l);
         const temp = this.getIconFrom(l.weather[0].main);
         l.weather[0].main = temp;
+        localStorage.setItem('storedZipCode' + (zip), zip);
       } ));
     } else {
       console.error('ERROR! ' + zip + ' zip is not valid');
