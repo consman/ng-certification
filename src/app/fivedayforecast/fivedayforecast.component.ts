@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import {Location} from '../location';
 import {ActivatedRoute, Route, Router} from '@angular/router';
 import {LocationImpl} from '../locationImpl';
-import {Daily, Forecast, Weather2} from '../forecast';
-import {DailyImpl, ForecastImpl, TempImpl, Weather2Impl} from '../ForecastImpl';
+import {Forecast} from '../forecast';
+import {ForecastImpl} from '../forecastImpl';
 import {WeatherService} from '../weather.service';
 import {Observable} from "rxjs";
 

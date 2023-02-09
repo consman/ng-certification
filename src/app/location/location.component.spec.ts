@@ -4,7 +4,7 @@ import {LocationImpl} from '../locationImpl';
 import {WeatherService} from "../weather.service";
 import {weatherServiceFactory} from "../weatherservice.factory";
 import {environment} from "../../environments/environment";
-import {WeatherImpl} from "../ForecastImpl";
+import {WeatherImpl} from "../forecastImpl";
 import {Main} from "../location";
 
 export const FAKE_ROUTE = {
