@@ -36,6 +36,7 @@ speed-measure-plugin*.json
 /.sass-cache
 /.angular/cache
 /cypress/videos
+cypress/videos/
 /connect.lock
 /coverage
 /libpeerconnection.log

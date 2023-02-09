@@ -3,6 +3,7 @@ import {ForecastImpl} from './ForecastImpl';
 export class LocationImpl implements Location {
   constructor() {
     this.coord = new CoordImpl();
+    this.forecasts = new Array<ForecastImpl>();
   }
   base: string;
   clouds: Clouds;
