@@ -1,10 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Location} from '../location';
-import {LocationImpl} from '../locationImpl';
 import {WeatherService} from '../weather.service';
-
-import {map, tap} from "rxjs/operators";
-import {forkJoin, from, Observable, of, Subscription} from "rxjs";
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-search',
@@ -14,16 +11,11 @@ import {forkJoin, from, Observable, of, Subscription} from "rxjs";
 export class SearchComponent implements OnInit {
 
   newZip: string;
-  // location: LocationImpl;
   locations: Location[];
   locSubscription: Subscription;
 
-  location$: Observable<Location>;
-  locations$: Observable<Location[]>;
-
   constructor(private weatherService: WeatherService) {
     this.locations = [];
-    this.locations$ = of(this.locations);
     this.loadLocationsFromLocalStorage();
    }
 
