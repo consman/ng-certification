@@ -3,8 +3,8 @@ import {Location} from '../location';
 import {LocationImpl} from '../locationImpl';
 import {WeatherService} from '../weather.service';
 
-import {tap} from "rxjs/operators";
-import {Observable, of} from "rxjs";
+import {map, tap} from "rxjs/operators";
+import {from, Observable, of} from "rxjs";
 
 @Component({
   selector: 'app-search',
@@ -15,15 +15,16 @@ export class SearchComponent implements OnInit {
 
   newZip: string;
   locations: Location[];
-  locObservable$: Observable<LocationImpl>;
+  locations$: Observable<Location[]>;
 
   constructor(private weatherService: WeatherService) {
     this.locations = [];
     this.loadLocationsFromLocalStorage();
-  }
+    this.locations$ = of(this.locations);
+      }
 
   search(): void{
-    this.addNewLocation(this.newZip, this.locations);
+    this.addNewLocation(this.newZip);
     this.newZip = '';
   }
 
@@ -31,19 +32,26 @@ export class SearchComponent implements OnInit {
     for (const localStorageKey in localStorage) {
       if (localStorageKey.startsWith('storedZipCode')){
         const derivedZip =  localStorage.getItem(localStorageKey);
-        this.addNewLocation(derivedZip, this.locations);
+        this.addNewLocation(derivedZip);
       }
     }
   }
 
-  addNewLocation(zip: string, locations: Location[]): void{
+  addNewLocation(zip: string): void{
+    // tslint:disable-next-line:prefer-const
+    let myLocation: Location;
     if (this.validateZip(zip)) {
-      this.locObservable$ = this.weatherService.getLocationFromService(zip).pipe(tap((l) => {
-        locations.push(l);
+      console.log(' BEFORE calling this.weatherService.getLocationFromService(zip)  : ');
+      this.weatherService.getLocationFromService(zip).pipe(tap(l => {
+        console.log(' beginning tap for zip : ');
+        this.locations.push(l);
         const temp = this.getIconFrom(l.weather[0].main);
         l.weather[0].main = temp;
         localStorage.setItem('storedZipCode' + (zip), zip);
-      } ));
+        console.log(' done with tap for zip : ' + zip);
+        }
+      ), map(l => myLocation));
+      console.log(' AFTER calling this.weatherService.getLocationFromService(zip)  : ');
     } else {
       console.error('ERROR! ' + zip + ' zip is not valid');
       alert('Unable to find any weather data for ' + zip + '. Please try a different zip code. ');

@@ -3,7 +3,7 @@
   <div>
     <fieldset class="wellflex" >
       <legend><h2>{{location.name}} ({{location.zip}})</h2></legend>
-
+<!-- //TODO getLocFromObservable seems wrong. You a have reference to location just above. -->
       <table *ngIf="getLocFromObservable(obsForecast$ | async) != null " >
         <tr *ngFor="let forecastForDay of getLocFromObservable(obsForecast$ | async).forecasts[0].daily" >
           <td data-test="tdForecastItem"> {{convertEpocToDayofWeek(forecastForDay.dt) | date: 'EEEE'}}:  {{forecastForDay.weather[0].description}} - High: {{forecastForDay.temp.max}} - Low {{forecastForDay.temp.min}} </td>

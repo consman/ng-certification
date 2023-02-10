@@ -9,9 +9,8 @@
       </button>
   </fieldset>
 
-  <span class="hiddenAsync">Thank you for adding location: {{getName(locObservable$ | async)}}</span>
 
-  <div *ngFor="let loc of locations">
+  <div *ngFor="let loc of (locations$ | async)">
     <app-location [location]="loc" [locations]="locations"></app-location>
   </div>
 
