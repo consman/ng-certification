@@ -10,6 +10,8 @@
   </fieldset>
 
 
+  <span class="hiddenAsync">{{(location$ | async)}}</span>
+
   <div *ngFor="let loc of (locations$ | async)">
     <app-location [location]="loc" [locations]="locations"></app-location>
   </div>

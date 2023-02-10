@@ -4,7 +4,7 @@ import {LocationImpl} from '../locationImpl';
 import {WeatherService} from '../weather.service';
 
 import {map, tap} from "rxjs/operators";
-import {from, Observable, of} from "rxjs";
+import {forkJoin, from, Observable, of} from "rxjs";
 
 @Component({
   selector: 'app-search',
@@ -14,23 +14,27 @@ import {from, Observable, of} from "rxjs";
 export class SearchComponent implements OnInit {
 
   newZip: string;
+  // location: LocationImpl;
   locations: Location[];
+
+  location$: Observable<Location>;
   locations$: Observable<Location[]>;
 
   constructor(private weatherService: WeatherService) {
     this.locations = [];
-    this.loadLocationsFromLocalStorage();
     this.locations$ = of(this.locations);
-      }
+   }
 
   search(): void{
     this.addNewLocation(this.newZip);
     this.newZip = '';
+    console.log('search ran..');
   }
 
   loadLocationsFromLocalStorage(): void {
     for (const localStorageKey in localStorage) {
       if (localStorageKey.startsWith('storedZipCode')){
+        console.log(' localStorageKey going for ' + localStorageKey);
         const derivedZip =  localStorage.getItem(localStorageKey);
         this.addNewLocation(derivedZip);
       }
@@ -38,19 +42,16 @@ export class SearchComponent implements OnInit {
   }
 
   addNewLocation(zip: string): void{
-    // tslint:disable-next-line:prefer-const
-    let myLocation: Location;
     if (this.validateZip(zip)) {
       console.log(' BEFORE calling this.weatherService.getLocationFromService(zip)  : ');
-      this.weatherService.getLocationFromService(zip).pipe(tap(l => {
+      this.location$ = this.weatherService.getLocationFromService(zip).pipe(tap(l => {
         console.log(' beginning tap for zip : ');
         this.locations.push(l);
-        const temp = this.getIconFrom(l.weather[0].main);
-        l.weather[0].main = temp;
+        l.weather[0].main = this.getIconFrom(l.weather[0].main);
         localStorage.setItem('storedZipCode' + (zip), zip);
         console.log(' done with tap for zip : ' + zip);
         }
-      ), map(l => myLocation));
+      ));
       console.log(' AFTER calling this.weatherService.getLocationFromService(zip)  : ');
     } else {
       console.error('ERROR! ' + zip + ' zip is not valid');
@@ -89,6 +90,7 @@ export class SearchComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadLocationsFromLocalStorage();
   }
 
 }
