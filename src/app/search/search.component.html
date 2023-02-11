@@ -9,9 +9,11 @@
       </button>
   </fieldset>
 
-  <div *ngFor="let loc of locations">
-    <app-location [location]="loc" [locations]="locations"></app-location>
-  </div>
+  <ng-container *ngIf="location$ | async as location">
+    <div *ngFor="let loc of locations">
+      <app-location [location]="loc" [locations]="locations"></app-location>
+    </div>
+  </ng-container>
 
 </div>
 

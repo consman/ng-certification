@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {Location} from '../location';
 import {WeatherService} from '../weather.service';
-import {Subscription} from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
+import {tap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-search',
@@ -12,7 +13,7 @@ export class SearchComponent implements OnInit {
 
   newZip: string;
   locations: Location[];
-  locSubscription: Subscription;
+  location$: Observable<Location>;
 
   constructor(private weatherService: WeatherService) {
     this.locations = [];
@@ -38,21 +39,14 @@ export class SearchComponent implements OnInit {
   addNewLocation(zip: string): void{
     if (this.validateZip(zip)) {
       console.log(' BEFORE calling this.weatherService.getLocationFromService(zip)  : ');
-
-      this.locSubscription = this.weatherService.getLocationFromService(zip).subscribe({
-        next: (data ) => {
-          data.weather[0].main = this.getIconFrom(data.weather[0].main);
-          this.locations.push(data);
+      this.location$ = this.weatherService.getLocationFromService(zip).pipe(tap(l => {
+          console.log(' beginning tap for zip : ');
+          this.locations.push(l);
+          l.weather[0].main = this.getIconFrom(l.weather[0].main);
           localStorage.setItem('storedZipCode' + (zip), zip);
-          console.log('The number of locations in the array is now: ' + this.locations.length);
-        },
-        error: (err) => {
-          console.error('Bummer error when calling the service: ' + err);
-        },
-        complete: () => {
-          console.log(' Subscription completed for: ' + zip);
+          console.log(' done with tap for zip : ' + zip);
         }
-      });
+      ));
       console.log(' AFTER calling this.weatherService.getLocationFromService(zip)  : ');
     } else {
       console.error('ERROR! ' + zip + ' zip is not valid');
@@ -96,9 +90,5 @@ export class SearchComponent implements OnInit {
 
   // tslint:disable-next-line:use-lifecycle-interface
   ngOnDestroy(): void{
-    if (this.locSubscription) {
-      this.locSubscription.unsubscribe();
     }
-  }
-
 }
