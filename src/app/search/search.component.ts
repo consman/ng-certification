@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Location} from '../location';
 import {WeatherService} from '../weather.service';
-import {Observable, Subscription} from 'rxjs';
+import {Observable, of, Subscription} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
 @Component({
@@ -14,16 +14,23 @@ export class SearchComponent implements OnInit {
   newZip: string;
   locations: Location[];
   location$: Observable<Location>;
+  locations$: Observable<Location[]>;
 
   constructor(private weatherService: WeatherService) {
     this.locations = [];
+    this.locations$ = of(this.locations);
     this.loadLocationsFromLocalStorage();
    }
 
   search(): void{
-    this.addNewLocation(this.newZip);
-    this.newZip = '';
-    console.log('search ran..');
+    console.log( 'the index is: ' + this.locations.findIndex( d => d.zip === this.newZip ));
+    if (this.locations.findIndex( d => d.zip === this.newZip ) === -1) {
+      this.addNewLocation(this.newZip);
+      this.newZip = '';
+      console.log('search ran..');
+    }else {
+      alert ('The zip code of ' + this.newZip + ' is already in the list. ');
+    }
   }
 
   loadLocationsFromLocalStorage(): void {
@@ -37,7 +44,7 @@ export class SearchComponent implements OnInit {
   }
 
   addNewLocation(zip: string): void{
-    if (this.validateZip(zip)) {
+    if (this.validateZip(zip) ) {
       console.log(' BEFORE calling this.weatherService.getLocationFromService(zip)  : ');
       this.location$ = this.weatherService.getLocationFromService(zip).pipe(tap(l => {
           console.log(' beginning tap for zip : ' + zip + '  and the temp is: ' + l.main.temp);
