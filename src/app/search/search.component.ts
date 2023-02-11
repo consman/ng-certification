@@ -40,7 +40,7 @@ export class SearchComponent implements OnInit {
     if (this.validateZip(zip)) {
       console.log(' BEFORE calling this.weatherService.getLocationFromService(zip)  : ');
       this.location$ = this.weatherService.getLocationFromService(zip).pipe(tap(l => {
-          console.log(' beginning tap for zip : ');
+          console.log(' beginning tap for zip : ' + zip + '  and the temp is: ' + l.main.temp);
           this.locations.push(l);
           l.weather[0].main = this.getIconFrom(l.weather[0].main);
           localStorage.setItem('storedZipCode' + (zip), zip);
