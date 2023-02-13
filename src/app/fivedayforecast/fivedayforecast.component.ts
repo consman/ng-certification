@@ -66,6 +66,7 @@ export class FivedayforecastComponent implements OnInit {
     return resultForecast;
   }
 
+
   getIconFrom(input: string): string{
     if ( input === 'Clouds'){
       return 'clouds';
