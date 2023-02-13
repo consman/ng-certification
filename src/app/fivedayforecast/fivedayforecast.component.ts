@@ -16,7 +16,7 @@ export class FivedayforecastComponent implements OnInit {
 
   location: Location;
   zipParam: string;
-  obsForecast$: Observable<ForecastImpl>;
+  obsForecast$: Observable<Forecast>;
 
   constructor(route: ActivatedRoute, private router: Router, private weatherService: WeatherService) {
     this.zipParam = route.snapshot.paramMap.get('zipcode');
@@ -24,7 +24,7 @@ export class FivedayforecastComponent implements OnInit {
     this.location.forecasts = new Array<ForecastImpl>();
     console.log(' The zip  param is: ' + this.zipParam);
     this.getDataFromZipParam(this.zipParam);
-    this.obsForecast$ = this.weatherService.getFiveDayForecastsFromService(this.location.coord.lat, this.location.coord.lon);
+    this.obsForecast$ = this.weatherService.getFiveDayForecastFromService(this.location.coord.lat, this.location.coord.lon);
   }
 
   getLocFromObservable(forecast: Forecast): Location {

@@ -1,11 +1,12 @@
-import {Observable} from "rxjs";
-
+import {Observable} from 'rxjs';
+import { Location } from './location';
+import { Forecast } from './forecast';
 export abstract class WeatherService{
 
   constructor() {
     console.log('In abstract weather service');
   }
-  // TODO DO NOT USE any!!!
-  abstract getLocationFromService(zipcode: string): Observable<any>;
-  abstract getFiveDayForecastsFromService(lat: number, lon: number): Observable<any>;
+
+  abstract getLocationFromService(zipcode: string): Observable<Location>;
+  abstract getFiveDayForecastFromService(lat: number, lon: number): Observable<Forecast>;
 }

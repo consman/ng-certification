@@ -15,7 +15,8 @@ export interface Location {
   id: number;
   name: string;
   cod: number;
-  forecasts: Forecast[];
+  forecasts?: Forecast[];
+  rain?: Rain;
 }
 
 export interface Coord {
@@ -42,7 +43,7 @@ export interface Main {
 export interface Wind {
     speed: number;
     deg: number;
-    gust: number;
+    gust?: number;
   }
 
 export interface Clouds {
@@ -50,10 +51,13 @@ export interface Clouds {
   }
 
 export interface Sys {
-    type: number;
-    id: number;
-    country: string;
-    sunrise: number;
-    sunset: number;
+    type?: number;
+    id?: number;
+    country?: string;
+    sunrise?: number;
+    sunset?: number;
   }
 
+export interface Rain {
+  '1h': number;
+}

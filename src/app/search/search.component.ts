@@ -4,7 +4,7 @@ import {WeatherService} from '../weather.service';
 import {Observable, of, Subscription} from 'rxjs';
 import {shareReplay, tap} from 'rxjs/operators';
 import {LocationImpl} from '../locationImpl';
-import {NonprodweatherService} from '../nonprodweather.service';
+import {environment} from '../../environments/environment';
 
 @Component({
   selector: 'app-search',
@@ -19,7 +19,7 @@ export class SearchComponent implements OnInit {
   location$: Observable<Location>;
   locations$: Observable<Location[]>;
 
-  constructor(private weatherService: NonprodweatherService) {
+  constructor(private weatherService: WeatherService) {
     console.log( 'A NEW SEARCH COMPONENT!!');
     this.locations = [];
     this.locations$ = of(this.locations);
@@ -40,14 +40,17 @@ export class SearchComponent implements OnInit {
 
   loadLocationsFromLocalStorage(): void {
     let count = 1;
+    const delay = (environment.production ? 175 : 1);
+    const additionalDelay = (environment.production ? 50 : 1);
+
     for (const localStorageKey in localStorage) {
       if (localStorageKey.startsWith('storedZipCode')){
         console.log(' localStorageKey going for ' + localStorageKey);
         const derivedZip =  localStorage.getItem(localStorageKey);
-        // TODO Fix this. We should not have to do this.
+        // TODO Fix this. We should not have to do this:
         setTimeout(() => {
             this.addNewLocation(derivedZip);
-         }, 1);
+         }, delay + (count * additionalDelay));
         count++;
       }
     }
@@ -109,7 +112,7 @@ export class SearchComponent implements OnInit {
 
   ngOnInit(): void {
   }
-  
+
   ngOnDestroy(): void{
   }
 }

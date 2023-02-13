@@ -5,7 +5,7 @@ export interface Forecast {
   timezone_offset: number;
   current: Current;
   daily: Daily[];
-  weather: Weather;
+  weather?: Weather;
 }
 
 export interface Weather {
@@ -33,9 +33,9 @@ export interface Current {
     visibility: number;
     wind_speed: number;
     wind_deg: number;
-    wind_gust: number;
+    wind_gust?: number;
     weather: Weather[];
-    rain: Rain;
+    rain?: Rain;
   }
 
 export interface Temp {
@@ -76,12 +76,12 @@ export interface Daily {
     wind_speed: number;
     wind_deg: number;
     wind_gust: number;
-    weather: Weather2[];
+    weather?: Weather2[];
     clouds: number;
     pop: number;
-    rain: number;
+    rain?: number;
     uvi: number;
     snow?: number;
-    dayOfWeek: Date;
+    dayOfWeek?: Date;
   }
 

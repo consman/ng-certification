@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import {Location} from './location';
+import { Forecast } from './forecast';
 import {HttpClient} from '@angular/common/http';
 import {Observable, of, from} from 'rxjs';
 import {filter} from 'rxjs/operators';
 import {RAWFORECASTS, RAWLOCATIONS} from './mock-data';
-import {WeatherService} from "./weather.service";
+import {WeatherService} from './weather.service';
 
 
 @Injectable({
@@ -12,15 +13,13 @@ import {WeatherService} from "./weather.service";
 })
 export class NonprodweatherService extends WeatherService {
 
-  location: Location;
-
   constructor() {
     super();
     console.log('Created NON-PROD weather service');
   }
 
   // TODO DO NOT USE any!!!
-  getLocationFromService(zipcode: string): Observable<any>{
+  getLocationFromService(zipcode: string): Observable<Location>{
     if ( null != zipcode) {
       console.log('NON-PROD weather service getting locations for zip: ' + zipcode);
       return from(RAWLOCATIONS).pipe(filter(loc => loc.zip === zipcode));
@@ -30,7 +29,7 @@ export class NonprodweatherService extends WeatherService {
     return null;
   }
 
-  getFiveDayForecastsFromService(lat: number, lon: number): Observable<any>{
+  getFiveDayForecastFromService(lat: number, lon: number): Observable<Forecast>{
     console.log('NON-PROD weather service getFiveDayForecastsFromService for lat: ' + lat);
     return from(RAWFORECASTS).pipe(filter(forc => forc.lat === lat && forc.lon === lon));
   }
