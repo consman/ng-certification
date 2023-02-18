@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Location} from '../location';
 import {WeatherService} from '../weather.service';
-import {Observable, of, Subscription} from 'rxjs';
+import {forkJoin, Observable, of, Subscription} from 'rxjs';
 import {shareReplay, tap} from 'rxjs/operators';
 import {LocationImpl} from '../locationImpl';
 import {environment} from '../../environments/environment';
@@ -15,17 +15,14 @@ export class SearchComponent implements OnInit {
 
   newZip: string;
   location: Location;
-  locations: Location[];
-  location$: Observable<Location>;
+  locations: Location[] = [];
   locations$: Observable<Location[]>;
 
   constructor(private weatherService: WeatherService) {
     console.log( 'A NEW SEARCH COMPONENT!!');
-    this.locations = [];
     this.locations$ = of(this.locations);
-    this.location$ = of(this.location);
     this.loadLocationsFromLocalStorage();
-   }
+  }
 
   search(): void{
     console.log( 'the index is: ' + this.locations.findIndex( d => d.zip === this.newZip ));
@@ -42,38 +39,42 @@ export class SearchComponent implements OnInit {
     let count = 1;
     const delay = (environment.production ? 175 : 1);
     const additionalDelay = (environment.production ? 50 : 1);
+    const observables: Observable<Location>[] = [];
 
     for (const localStorageKey in localStorage) {
       if (localStorageKey.startsWith('storedZipCode')){
         console.log(' localStorageKey going for ' + localStorageKey);
-        const derivedZip =  localStorage.getItem(localStorageKey);
-        // TODO Fix this. We should not have to do this:
-        setTimeout(() => {
-            this.addNewLocation(derivedZip);
-         }, delay + (count * additionalDelay));
-        count++;
+        const derivedZip: string =  localStorage.getItem(localStorageKey);
+        const observable = this.addNewLocation(derivedZip);
+        if (observable) {
+          observables.push(observable);
+        }
       }
     }
+    this.locations$ = forkJoin(observables);
   }
 
-  addNewLocation(zip: string): void{
+  addNewLocation(zip: string): Observable<Location> | null {
     if (this.validateZip(zip) ) {
       console.log(' BEFORE calling this.weatherService.getLocationFromService(zip)');
       this.location = new LocationImpl();
-      this.location$ = this.weatherService.getLocationFromService(zip).pipe(tap(l => {
-      console.log(' beginning tap for zip : ' + zip + '  and the temp is: ' + l.main.temp + ' and the icon is: ' + l.weather[0].main);
-      this.location = l;
-      this.location.weather[0].main = this.getIconFrom(l.weather[0].main);
-      this.location.zip = zip;
-      this.locations.push(this.location);
-      localStorage.setItem('storedZipCode' + (zip), zip);
-      console.log(' done with tap for zip : ' + zip);
-        }
-      )  );
+      const observable = this.weatherService.getLocationFromService(zip).pipe(
+        tap(l => {
+          console.log(' beginning tap for zip : ' + zip + '  and the temp is: ' + l.main.temp + ' and the icon is: ' + l.weather[0].main);
+          this.location = l;
+          this.location.weather[0].main = this.getIconFrom(l.weather[0].main);
+          this.location.zip = zip;
+          this.locations.push(this.location);
+          localStorage.setItem('storedZipCode' + (zip), zip);
+          console.log(' done with tap for zip : ' + zip);
+        })
+      );
       console.log(' AFTER calling this.weatherService.getLocationFromService(zip)  : ');
+      return observable;
     } else {
       console.error('ERROR! ' + zip + ' zip is not valid');
       alert('Unable to find any weather data for ' + zip + '. Please try a different zip code. ');
+      return null;
     }
   }
 
