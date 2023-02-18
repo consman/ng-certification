@@ -17,6 +17,7 @@ export class SearchComponent implements OnInit {
   location: Location;
   locations: Location[] = [];
   locations$: Observable<Location[]>;
+  observables: Observable<Location>[] = [];
 
   constructor(private weatherService: WeatherService) {
     console.log( 'A NEW SEARCH COMPONENT!!');
@@ -26,20 +27,25 @@ export class SearchComponent implements OnInit {
 
   search(): void{
     console.log( 'the index is: ' + this.locations.findIndex( d => d.zip === this.newZip ));
+    // const observables: Observable<Location>[] = [];
     if (this.locations.findIndex( d => d.zip === this.newZip ) === -1) {
-      this.addNewLocation(this.newZip);
+      const observable =this.addNewLocation(this.newZip);
+      if (observable) {
+        this.observables.push(observable);
+      }
       this.newZip = '';
       console.log('search ran..');
     }else {
       alert ('The zip code of ' + this.newZip + ' is already in the list. ');
     }
+    this.locations$ = forkJoin(this.observables);
   }
 
   loadLocationsFromLocalStorage(): void {
     let count = 1;
     const delay = (environment.production ? 175 : 1);
     const additionalDelay = (environment.production ? 50 : 1);
-    const observables: Observable<Location>[] = [];
+    // const observables: Observable<Location>[] = [];
 
     for (const localStorageKey in localStorage) {
       if (localStorageKey.startsWith('storedZipCode')){
@@ -47,11 +53,11 @@ export class SearchComponent implements OnInit {
         const derivedZip: string =  localStorage.getItem(localStorageKey);
         const observable = this.addNewLocation(derivedZip);
         if (observable) {
-          observables.push(observable);
+          this.observables.push(observable);
         }
       }
     }
-    this.locations$ = forkJoin(observables);
+    this.locations$ = forkJoin(this.observables);
   }
 
   addNewLocation(zip: string): Observable<Location> | null {
@@ -69,7 +75,7 @@ export class SearchComponent implements OnInit {
           console.log(' done with tap for zip : ' + zip);
         })
       );
-      console.log(' AFTER calling this.weatherService.getLocationFromService(zip)  : ');
+      console.log(' AFTER calling this.weatherService.getLocationFromService(zip)  : '+ zip);
       return observable;
     } else {
       console.error('ERROR! ' + zip + ' zip is not valid');
