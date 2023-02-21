@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import {environment} from '../environments/environment';
 
 @Component({
   selector: 'my-app',
@@ -6,5 +7,11 @@ import { Component } from '@angular/core';
   styleUrls: [ './app.component.css' ]
 })
 export class AppComponent  {
-  name = 'Angular';
+
+  title = 'ng-certification app is running!';
+
+  constructor() {
+    console.log('environment.production = ' + environment.production);
+  }
+
 }

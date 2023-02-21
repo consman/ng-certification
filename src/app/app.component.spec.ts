@@ -3,7 +3,6 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
-  console.log('--------------------->>> starting ......');
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
@@ -19,19 +18,18 @@ describe('AppComponent', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
     expect(app).toBeTruthy();
-    console.log('app is truthy.');
   });
 
-  it(`should have as name 'Angular'`, () => {
+  it(`should have as title 'ng-certification'`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.name).toEqual('Angular');
+    expect(app.title).toEqual('ng-certification app is running!');
   });
 
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content h2')?.textContent).toContain('Enter a zipcodexxx:');
+    const compiled = fixture.nativeElement;
+    expect(compiled.querySelector('title').textContent).toContain('ng-certification app is running!');
   });
 });
