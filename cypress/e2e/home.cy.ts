@@ -8,7 +8,7 @@ describe("Test the Ng-Certification Weather App", () => {
   });
 
   it("Have title in the first box of Add a location",()=>{
-    cy.get("[data-test='addLocationBoxTitle']").should("include.text","Add a location");
+    cy.get("[data-test='addLocationBoxTitle']").should("include.text","Enter a zipcode:");
   });
 
   it("searches for a location",()=>{
@@ -40,7 +40,7 @@ describe("Test the Ng-Certification Weather App", () => {
     cy.get("[data-test='fiveDayForecastLink']").click();
 
     cy.get("[data-test='backToMainPageButton']").click();
-    cy.get("[data-test='addLocationBoxTitle']").should("include.text","Add a location");
+    cy.get("[data-test='addLocationBoxTitle']").should("include.text","Enter a zipcode");
     cy.get("[data-test='searchResultTitle']").eq(0).should("include.text","Saint Paul");
 
   });

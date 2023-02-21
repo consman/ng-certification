@@ -1,19 +1,19 @@
-
-<div>
-  <div>
-    <fieldset class="wellflex" >
-      <legend><h2>{{location.name}} ({{location.zip}})</h2></legend>
-<!-- //TODO getLocFromObservable seems wrong. You a have reference to location just above. -->
-      <table *ngIf="getLocFromObservable(obsForecast$ | async) != null " >
-        <tr *ngFor="let forecastForDay of getLocFromObservable(obsForecast$ | async).forecasts[0].daily" >
-          <td data-test="tdForecastItem"> {{convertEpocToDayofWeek(forecastForDay.dt) | date: 'EEEE'}}:  {{forecastForDay.weather[0].description}} - High: {{forecastForDay.temp.max}} - Low {{forecastForDay.temp.min}} </td>
-          <td>  <img class="iconimg" src="https://www.angulartraining.com/images/weather/{{getIconFrom(forecastForDay.weather[0].main)}}.png" alt="icon" width="50" height="auto" /> </td>
-          <td>{{forecastForDay.weather[0].main}}</td>
-        </tr>
-      </table>
-
-    </fieldset>
-
+<div class="container-fluid">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">5-day forecast for {{location.name}}</h3>
+    </div>
+    <ng-container *ngIf="getLocFromObservable(obsForecast$ | async) != null ">
+      <ul *ngFor="let forecastForDay of getLocFromObservable(obsForecast$ | async).forecasts[0].daily"  class="list-group">
+        <li data-test="tdForecastItem" class="list-group-item">
+          {{convertEpocToDayofWeek(forecastForDay.dt) | date: 'EEEE'}}:
+          {{forecastForDay.weather[0].description}}
+        - Min: {{forecastForDay.temp.min}}
+        - Max: {{forecastForDay.temp.max}}
+        <img class="icon" src="https://www.angulartraining.com/images/weather/{{getIconFrom(forecastForDay.weather[0].main)}}.png">
+        </li>
+      </ul>
+    </ng-container>
   </div>
-  <button data-test="backToMainPageButton" class="btn btn-success" tabindex="0" id="mainPageBtn" (click)="navigateBackToMain()">Back to main page</button>
+  <button data-test="backToMainPageButton" class="btn btn-success" tabindex="0" id="mainPageBtn" (click)="navigateBackToMain()">&lt; Back to main page</button>
 </div>

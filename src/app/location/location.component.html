@@ -1,19 +1,23 @@
-
-
-    <fieldset class="parentofclose wellflex">
-      <legend><h2 data-test="searchResultTitle">{{location.name}} </h2></legend>
-
-        <div *ngIf="location">
-          <h4>Current conditions: {{location.weather[0].main}}</h4>
-          <h4>Temperature: {{location.main.temp}}</h4>
-          <h4>Max today: {{location.main.temp_max}} - Min today: {{location.main.temp_min}}</h4>
-
-          <div data-test="closeSearchResult" class="close" (click)="handleClose()">x</div>
-          <img class="iconimg" src="https://www.angulartraining.com/images/weather/{{location.weather[0].main}}.png" alt="icon" width="80" height="auto" />
-        </div>
-
-    <a *ngIf="location.name != undefined && location.zip != undefined && location.coord != undefined && location.coord.lon != undefined && location.coord.lat != undefined " data-test="fiveDayForecastLink" routerLink="/forecast/{{location.zip}}+{{spacesToDashes( location.name)}}+{{location.coord.lat}}+{{location.coord.lon}}"> Five Day Forecast for {{location.name}}</a>
-    </fieldset>
-
+<div >
+  <div class="well flex">
+    <div>
+      <h3 data-test="searchResultTitle" >{{location.name}} ({{location.zip}})</h3>
+      <h4>Current conditions:  {{location.weather[0].main}}</h4>
+      <h4>Temperatures today:</h4>
+      <p>
+        Current {{location.main.temp}}
+        - Max {{location.main.temp_max}}
+        - Min {{location.main.temp_min}}
+      </p>
+      <p>
+        <a *ngIf="location.name != undefined && location.zip != undefined && location.coord != undefined && location.coord.lon != undefined && location.coord.lat != undefined " data-test="fiveDayForecastLink" routerLink="/forecast/{{location.zip}}+{{spacesToDashes( location.name)}}+{{location.coord.lat}}+{{location.coord.lon}}">Show Five Day Forecast for {{location.name}}</a>
+      </p>
+    </div>
+    <div>
+      <span data-test="closeSearchResult" class="close" (click)="handleClose()" class="close">×</span>
+      <img class="iconimg" src="https://www.angulartraining.com/images/weather/{{location.weather[0].main}}.png" alt="icon" height="auto" />
+    </div>
+  </div>
+</div>
 
 
