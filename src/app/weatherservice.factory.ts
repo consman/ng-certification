@@ -1,14 +1,12 @@
 import {ProdweatherService} from './Prodweather.service';
 import {NonprodweatherService} from './nonprodweather.service';
+import {HttpClient} from "@angular/common/http";
 
-export function weatherServiceFactory(isProd: boolean): ProdweatherService | NonprodweatherService {
+export function weatherServiceFactory(isProd: boolean, http: HttpClient): ProdweatherService | NonprodweatherService {
 
   if ( isProd ){
-    // const http: HttpClient; <<-- does not work because the HttpClient needs to be initialized.
     console.log('use factory says GOING for PROD Weather service.');
-    // TODO Fix this - it does not work! See Al's solution to the paramMap mocking issue
-    // return new ProdweatherService(http);
-    return new ProdweatherService();
+    return new ProdweatherService(http);
   }
   else{
     console.log('use factory says GOING for NON PROD weather service.');

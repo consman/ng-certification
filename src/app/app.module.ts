@@ -18,7 +18,7 @@ import {environment} from '../environments/environment';
   imports: [BrowserModule, FormsModule, RouterModule, AppRoutingModule, HttpClientModule],
   declarations: [ AppComponent, HelloComponent, SearchComponent, LocationComponent, FivedayforecastComponent ],
   bootstrap:    [ AppComponent ],
-  providers: [ {provide: WeatherService, useFactory: weatherServiceFactory, deps: ['IS_PROD_ENVIRONMENT']},
+  providers: [ {provide: WeatherService, useFactory: weatherServiceFactory, deps: ['IS_PROD_ENVIRONMENT','http']},
     {provide: 'IS_PROD_ENVIRONMENT', useValue: environment.production},
     {provide: 'http', useValue: HttpClient}]
 })

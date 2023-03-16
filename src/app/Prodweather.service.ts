@@ -5,15 +5,12 @@ import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {WeatherService} from './weather.service';
 
-
 @Injectable({
   providedIn: 'root'
 })
 export class ProdweatherService extends WeatherService {
 
-  private http: HttpClient; // <<<--- but now the service fails because http is just undefined
-   // constructor(private http: HttpClient) { <<-- how we are supposed to do it
-  constructor() {
+  constructor(private http: HttpClient) {
     super();
     console.log('Going for PROD weather service');
   }
