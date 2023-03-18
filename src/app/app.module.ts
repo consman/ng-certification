@@ -12,23 +12,13 @@ import {AppRoutingModule} from './app-routing.module';
 import {HttpClient, HttpClientModule} from '@angular/common/http';
 import {WeatherService} from './weather.service';
 import {environment} from '../environments/environment';
-import {ProdweatherService} from "./Prodweather.service";
-import {NonprodweatherService} from "./nonprodweather.service";
+import {weatherServiceFactory} from "./weatherservice.factory";
 
 @NgModule({
   imports: [BrowserModule, FormsModule, RouterModule, AppRoutingModule, HttpClientModule],
   declarations: [ AppComponent, HelloComponent, SearchComponent, LocationComponent, FivedayforecastComponent ],
   bootstrap:    [ AppComponent ],
-  providers: [ {provide: WeatherService, useFactory: (isProd: boolean, http: HttpClient)=>{
-      if ( isProd ){
-        console.log('use factory says GOING for PROD Weather service.');
-        return new ProdweatherService(http);
-      }
-      else{
-        console.log('use factory says GOING for NON PROD weather service.');
-        return new NonprodweatherService();
-      }
-    }, deps: ['IS_PROD_ENVIRONMENT',HttpClient]},
+  providers: [ {provide: WeatherService, useFactory: (isProd: boolean, http: HttpClient)=> weatherServiceFactory(isProd, http), deps: ['IS_PROD_ENVIRONMENT',HttpClient]},
     {provide: 'IS_PROD_ENVIRONMENT', useValue: environment.production},
     {provide: 'http', useValue: HttpClient}]
 })
