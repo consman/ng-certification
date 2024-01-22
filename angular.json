@@ -70,6 +70,7 @@
               "buildTarget": "ng-certification:build:development"
             },
             "options": {
+              "browserTarget": "ng-certification:build",
               "host": "127.0.0.1"
             }
           },
