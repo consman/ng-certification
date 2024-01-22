@@ -1,7 +1,10 @@
+import { Injectable } from '@angular/core';
 import {Observable} from 'rxjs';
 import { Location } from './location';
 import { Forecast } from './forecast';
-export abstract class WeatherService{
+
+@Injectable()
+export abstract class WeatherService {
 
   constructor() {
     console.log('In abstract weather service');

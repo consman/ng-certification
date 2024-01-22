@@ -1,58 +1,62 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import {Location} from '../location';
 import {WeatherService} from '../weather.service';
 import {Observable, of, forkJoin} from 'rxjs';
 import {tap} from 'rxjs/operators';
 import {LocationImpl} from '../locationImpl';
 import {environment} from '../../environments/environment';
+import { LocationComponent } from '../location/location.component';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-search',
+  standalone: true,
+  imports: [LocationComponent,CommonModule,NgIf,FormsModule],
+  providers:[],
   templateUrl: './search.component.html',
-  styleUrls: ['./search.component.css']
+  styleUrl: './search.component.css'
 })
-export class SearchComponent implements OnInit {
-
-  newZip: string;
-  location: Location;
+export class SearchComponent {
+  newZip!: string;
+  location!: Location;
   locations: Location[];
   locations$: Observable<Location[]>;
   observables: Observable<Location>[] = [];
 
   constructor(private weatherService: WeatherService) {
-    console.log( 'A NEW SEARCH COMPONENT!!');
     this.locations = [];
     this.locations$ = of(this.locations);
     this.loadLocationsFromLocalStorage();
    }
 
-  search(): void{
-    console.log( 'the index is: ' + this.locations.findIndex( d => d.zip === this.newZip ));
+   search(): void{
     if (this.locations.findIndex( d => d.zip === this.newZip ) === -1) {
       const observable =this.addNewLocation(this.newZip);
       if (observable) {
         this.observables.push(observable);
       }
       this.newZip = '';
-      console.log('search ran..');
     }else {
       alert ('The zip code of ' + this.newZip + ' is already in the list. ');
     }
     this.locations$ = forkJoin(this.observables);
   }
 
-  loadLocationsFromLocalStorage(): void {
+   loadLocationsFromLocalStorage(): void {
     let count = 1;
     const delay = (environment.production ? 175 : 1);
     const additionalDelay = (environment.production ? 50 : 1);
 
     for (const localStorageKey in localStorage) {
-      if (localStorageKey.startsWith('storedZipCode')){
-        console.log(' localStorageKey going for ' + localStorageKey);
+      if (localStorageKey.startsWith('storedZipCode')){        
         const derivedZip =  localStorage.getItem(localStorageKey);
-        const observable = this.addNewLocation(derivedZip);
-        if (observable) {
-          this.observables.push(observable);
+        if(derivedZip){
+          const observable = this.addNewLocation(derivedZip);        
+          if (observable) {
+            this.observables.push(observable);
+          }
         }
       }
     }
@@ -61,20 +65,16 @@ export class SearchComponent implements OnInit {
 
   addNewLocation(zip: string): Observable<Location> | null {
     if (this.validateZip(zip) ) {
-      console.log(' BEFORE calling this.weatherService.getLocationFromService(zip)');
       this.location = new LocationImpl();
       const observable = this.weatherService.getLocationFromService(zip).pipe(
         tap(l => {
-          console.log(' beginning tap for zip : ' + zip + '  and the temp is: ' + l.main.temp + ' and the icon is: ' + l.weather[0].main);
           this.location = l;
           this.location.weather[0].main = this.getIconFrom(l.weather[0].main);
           this.location.zip = zip;
           this.locations.push(this.location);
           localStorage.setItem('storedZipCode' + (zip), zip);
-          console.log(' done with tap for zip : ' + zip);
         })
       );
-      console.log(' AFTER calling this.weatherService.getLocationFromService(zip)  : ');
       return observable;
     } else {
       console.error('ERROR! ' + zip + ' zip is not valid');
@@ -108,9 +108,5 @@ export class SearchComponent implements OnInit {
     return 'sun';
   }
 
-  ngOnInit(): void {
-  }
 
-  ngOnDestroy(): void{
-  }
 }

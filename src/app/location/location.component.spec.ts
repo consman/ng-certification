@@ -6,6 +6,8 @@ import {weatherServiceFactory} from "../weatherservice.factory";
 import {environment} from "../../environments/environment";
 import {WeatherImpl} from "../forecastImpl";
 import {Main} from "../location";
+import { ActivatedRoute, RouterModule } from '@angular/router';
+import { CommonModule, NgIf } from '@angular/common';
 
 export const FAKE_ROUTE = {
   snapshot: { paramMap: {get: () => '95630+Folsom+38.6709+-121.1529'}}
@@ -17,15 +19,17 @@ describe('LocationComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [LocationComponent, RouterModule, CommonModule, NgIf],
       providers: [
         {provide: WeatherService, useFactory: weatherServiceFactory, deps: ['IS_PROD_ENVIRONMENT']},
-        {provide: 'IS_PROD_ENVIRONMENT', useValue: environment.production}],
-      declarations: [ LocationComponent ],
+        {provide: 'IS_PROD_ENVIRONMENT', useValue: environment.production},
+        {provide: ActivatedRoute, useValue: FAKE_ROUTE}]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
+
     fixture = TestBed.createComponent(LocationComponent);
     component = fixture.componentInstance;
     const tempLoc = new LocationImpl();
@@ -45,11 +49,12 @@ describe('LocationComponent', () => {
     tempLoc.zip = '95630';
     component.locations = tempLocArray;
     fixture.detectChanges();
-  });
+    });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
 
   it('removes the zip from local storage when closing', () => {
     localStorage.setItem('storedZipCode' + '95630', '95630');
@@ -66,15 +71,15 @@ describe('LocationComponent', () => {
     expect(found ).toBeFalse();
   });
 
-
 });
 
+
 export class MainImpl implements Main {
-  feels_like: number;
-  humidity: number;
-  pressure: number;
-  temp: number;
-  temp_max: number;
-  temp_min: number;
+  feels_like!: number;
+  humidity!: number;
+  pressure!: number;
+  temp!: number;
+  temp_max!: number;
+  temp_min!: number;
 
 }

@@ -1,40 +1,46 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Forecast } from '../forecast';
+import { ActivatedRoute, Router } from '@angular/router';
+import { WeatherService } from '../weather.service';
 import {Location} from '../location';
-import {ActivatedRoute, Route, Router} from '@angular/router';
-import {LocationImpl} from '../locationImpl';
-import {Forecast} from '../forecast';
-import {ForecastImpl} from '../forecastImpl';
-import {WeatherService} from '../weather.service';
-import {Observable} from "rxjs";
+import { LocationImpl } from '../locationImpl';
+import { ForecastImpl } from '../forecastImpl';
+import { AsyncPipe, DatePipe, NgIf, NgForOf } from '@angular/common';
 
 @Component({
   selector: 'app-fivedayforecast',
+  standalone: true,
+  imports: [DatePipe, AsyncPipe, NgIf, NgForOf],
   templateUrl: './fivedayforecast.component.html',
-  styleUrls: ['./fivedayforecast.component.css']
+  styleUrl: './fivedayforecast.component.css'
 })
-export class FivedayforecastComponent implements OnInit {
-
+export class FivedayforecastComponent {
   location: Location;
-  zipParam: string;
+  zipParam: string | null;
   obsForecast$: Observable<Forecast>;
 
   constructor(route: ActivatedRoute, private router: Router, private weatherService: WeatherService) {
     this.zipParam = route.snapshot.paramMap.get('zipcode');
     this.location = new LocationImpl();
     this.location.forecasts = new Array<ForecastImpl>();
-    console.log(' The zip  param is: ' + this.zipParam);
     this.getDataFromZipParam(this.zipParam);
     this.obsForecast$ = this.weatherService.getFiveDayForecastFromService(this.location.coord.lat, this.location.coord.lon);
   }
 
-  getLocFromObservable(forecast: Forecast): Location {
-    if (forecast) {
-      this.location.forecasts[0] = forecast;
+  getLocFromObservable(forecast: Forecast | null): Location {
+    
+    if(!this.location.forecasts){
+      this.location.forecasts = new Array();
+    }      
+    if (!forecast || null == forecast) {
+      forecast = new ForecastImpl();
     }
+    this.location.forecasts[0] = forecast;
     return this.location;
   }
 
-  getDataFromZipParam(zp: string): void{
+  getDataFromZipParam(zp: string | null): void{
 
     if ( null != zp && zp !== '' && zp.length > 0) {
       const parts = zp.split('+');
@@ -55,17 +61,6 @@ export class FivedayforecastComponent implements OnInit {
   navigateBackToMain(): void {
     this.router.navigate(['/']);
   }
-
-  ngOnInit(): void {
-  }
-
-  getFiveDay(location: Location): Forecast {
-    // tslint:disable-next-line:prefer-const
-    let resultForecast: ForecastImpl;
-    console.log('003 Done with method  and days of week are ' );
-    return resultForecast;
-  }
-
 
   getIconFrom(input: string): string{
     if ( input === 'Clouds'){
@@ -93,5 +88,6 @@ export class FivedayforecastComponent implements OnInit {
     result = result = locationNameWithDashes.replace('-', ' ');
     return result;
   }
+
 
 }

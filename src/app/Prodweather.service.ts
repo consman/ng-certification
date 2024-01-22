@@ -17,6 +17,7 @@ export class ProdweatherService extends WeatherService {
 
   getLocationFromService(zipcode: string): Observable<Location> {
     console.log('Going for PROD weather service getLocationFromService and the zipcode is: ' + zipcode);
+    console.log('http:' + this.http);
     return this.http.get<Location>('http://api.openweathermap.org/data/2.5/weather?zip=' + zipcode + ',us&units=imperial&appid=42b0cd87da0e1ba5a9580ed019511475');
   }
 
