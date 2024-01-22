@@ -5,11 +5,7 @@
   "projects": {
     "ng-certification": {
       "projectType": "application",
-      "schematics": {
-        "@schematics/angular:application": {
-          "strict": true
-        }
-      },
+      "schematics": {},
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
@@ -102,6 +98,18 @@
               "src/styles.css"
             ],
             "scripts": []
+          }
+        },
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "e2e/protractor.conf.js",
+            "devServerTarget": "ng-certification:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "ng-certification:serve:production"
+            }
           }
         }
       }
