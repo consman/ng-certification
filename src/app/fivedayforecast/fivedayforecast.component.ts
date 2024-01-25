@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Forecast } from '../forecast';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -16,11 +16,12 @@ import { AsyncPipe, DatePipe, NgIf, NgForOf } from '@angular/common';
   styleUrl: './fivedayforecast.component.css'
 })
 export class FivedayforecastComponent {
+  weatherService = inject(WeatherService);
   location: Location;
   zipParam: string | null;
   obsForecast$: Observable<Forecast>;
 
-  constructor(route: ActivatedRoute, private router: Router, private weatherService: WeatherService) {
+  constructor(route: ActivatedRoute, private router: Router){ //}, private weatherService: WeatherService) {
     this.zipParam = route.snapshot.paramMap.get('zipcode');
     this.location = new LocationImpl();
     this.location.forecasts = new Array<ForecastImpl>();

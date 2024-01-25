@@ -1,8 +1,9 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import {Location} from '../location';
 import { CommonModule } from '@angular/common';
 import { NgIf } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { WeatherService } from '../weather.service';
 
 @Component({
   selector: 'app-location',
@@ -12,6 +13,7 @@ import { RouterModule } from '@angular/router';
   styleUrl: './location.component.css'
 })
 export class LocationComponent {
+  weatherService = inject(WeatherService);
   @Input()
   location!: Location;
 

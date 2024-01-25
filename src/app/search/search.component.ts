@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {Location} from '../location';
 import {WeatherService} from '../weather.service';
 import {Observable, of, forkJoin} from 'rxjs';
@@ -19,13 +19,14 @@ import { NgIf } from '@angular/common';
   styleUrl: './search.component.css'
 })
 export class SearchComponent {
+  weatherService = inject(WeatherService);
   newZip!: string;
   location!: Location;
   locations: Location[];
   locations$: Observable<Location[]>;
   observables: Observable<Location>[] = [];
 
-  constructor(private weatherService: WeatherService) {
+  constructor(){//private weatherService: WeatherService) {
     this.locations = [];
     this.locations$ = of(this.locations);
     this.loadLocationsFromLocalStorage();
