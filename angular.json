@@ -77,7 +77,7 @@
             },
             "options": {
               "browserTarget": "ng-certification:build",
-              "host": "127.0.0.1"
+              "host": "localhost"
             }
           },
           "defaultConfiguration": "development"

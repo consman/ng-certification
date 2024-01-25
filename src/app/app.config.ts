@@ -10,7 +10,8 @@ import { environment } from '../environments/environment';
 export const appConfig: ApplicationConfig = {
   
   providers: [provideRouter(routes), provideHttpClient(),
-    {provide: WeatherService, useFactory: (isProd: boolean, http: HttpClient)=> weatherServiceFactory(isProd, http), deps: ['IS_PROD_ENVIRONMENT',HttpClient]},
+    {provide: WeatherService, useFactory: (isProd: boolean, http: HttpClient)=> weatherServiceFactory(isProd, http), deps: ['IS_PROD_ENVIRONMENT',HttpClient]}, 
+    {provide: 'IS_PROD_ENVIRONMENT', useValue: environment.production},
     {provide: 'http', useValue: HttpClient},
   ]
 };
