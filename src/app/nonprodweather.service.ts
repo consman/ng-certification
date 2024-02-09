@@ -14,11 +14,11 @@ export class NonprodweatherService extends WeatherService {
 
   constructor() {
     super();
-    console.log('Created NON-PROD weather service');
+    //console.log('Created NON-PROD weather service');
   }
 
   getLocationFromService(zipcode: string): Observable<Location>{
-      console.log('NON-PROD weather service getting locations for zip: ' + zipcode);
+      //console.log('NON-PROD weather service getting locations for zip: ' + zipcode);
       return from(RAWLOCATIONS).pipe(filter(loc => loc.zip === zipcode));
   }
 
