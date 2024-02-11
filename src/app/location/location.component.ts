@@ -30,9 +30,6 @@ export class LocationComponent {
   @Input()
   observables!: Observable<Location>[]; 
 
-  @Input()
-  removedZip!: string;
-
   constructor(){
     
   }
@@ -43,11 +40,9 @@ export class LocationComponent {
         const index = this.locations.findIndex( d => d.zip === this.location.zip );
         this.locations.splice(index, 1);
 
-        this.removedZip = this.location.zip;
-
-        console.log('Initial -- going for removal of local storage key for zip = '+ this.location.zip);
+        //console.log('Initial -- going for removal of local storage key for zip = '+ this.location.zip);
         if (null != this.getZipLocalStorageKey(this.location.zip)){
-          console.log(' it is not null -so that is good');
+          //console.log(' it is not null -so that is good');
           localStorage.removeItem(this.getZipLocalStorageKey(this.location.zip));
         }
         else{
@@ -69,25 +64,25 @@ export class LocationComponent {
                 if (l.zip == this.location.zip){            
                   found = true;
                   targetObservable = o;
-                  console.log(' removing '+ this.location.zip +' from the observables.. ');
+                  //console.log(' removing '+ this.location.zip +' from the observables.. ');
                 }
               },
               error: () => {
                 console.error(' Bummer error! ');
               },
               complete: () => {
-                console.log( 'handleClose : Complete and found is ' + found);
+                //console.log( 'handleClose : Complete and found is ' + found);
                 if(found){
-                  console.log(' Subscription completion -- going for removal of local storage key for zip = '+ this.location.zip);
+                  //console.log(' Subscription completion -- going for removal of local storage key for zip = '+ this.location.zip);
                   if (null != this.getZipLocalStorageKey(this.location.zip)){
-                    console.log(' it is not null -so that is good');
+                    //console.log(' it is not null -so that is good');
                     localStorage.removeItem(this.getZipLocalStorageKey(this.location.zip));
                   }
                   else{
                     console.log(' bummer! the intended local storage key is null! ');
                   }
                   const zindex = this.observables.findIndex( d => d == targetObservable)
-                  console.log(' found = true and zindex = '+zindex);
+                  //console.log(' found = true and zindex = '+zindex);
                   this.observables.splice(zindex,1);
                 }
               }

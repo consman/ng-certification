@@ -38,29 +38,54 @@ export class SearchComponent {
    search(): void{
     //console.log(' new zip is: '+ this.newZip);
     //console.log(' number of locations is : ' +  this.locations.length);
+    let empty = true;
+    let alreadyInList = false;
+    let observableNull = false;
     if(!this.checkAlreadyInObservables(this.newZip)){
-    //if (this.locations.findIndex( d => d.zip === this.newZip ) === -1) {
+      //if (this.locations.findIndex( d => d.zip === this.newZip ) === -1) {
       const observable =this.addNewLocation(this.newZip);
       if (observable) {
-        console.log(' Search -> Back from addNewLocation and adding to the observables...');
-        //if(!this.checkAlreadyInObservables(this.newZip)){
-          this.observables.push(observable);
-          this.locations$ = forkJoin(this.observables);
+        //console.log(' Search -> Back from addNewLocation and adding to the observables...');
+        //if(!this.checkAlreadyInObservables(this.newZip)){         
+          let subsc = observable.subscribe({
+            next: (l ) => {
+              if (l.weather[0].main){
+                empty = false;
+              }
+            },
+            error: () => {console.log(' bummer! the intended local storage key is null! ');
+          },
+            complete: () => {
+              if (!empty){
+                this.observables.push(observable);
+                this.locations$ = forkJoin(this.observables);
+              }
+            }
+          });
+          subsc.unsubscribe();
         //}
+      }
+      else{
+        observableNull = true;
       }
       this.newZip = '';
     }else {
-      alert ('The zip code of ' + this.newZip + ' is already in the list. ');
+      alert ('The zip code of ' + this.newZip + ' is already in the list. '); 
+      alreadyInList = true;     
     }
+    if (empty && !alreadyInList && !observableNull){
+      alert ('No data for zip ' + this.newZip + '. Try again.');
+    }
+
   }
 
   checkAlreadyInObservables(zip: string): boolean {
     let result = false;
-    console.log('length of array in checkAlreadyInObservables is '+ this.observables.length);
+    //console.log('length of array in checkAlreadyInObservables is '+ this.observables.length);
 
     if (this.observables){
       this.observables.forEach((o) =>{
-        console.log(' In the forEach loop and o = '+ o);
+        //console.log(' In the forEach loop and o = '+ o);
         let subscr = o.subscribe({
           next: (l ) => {
             if (l.zip == zip){            
@@ -72,9 +97,9 @@ export class SearchComponent {
           },
           complete: () => {
             if(result){
-              console.log('checkAlreadyInObservables says zip of ' + zip + ' is already in the observables.');
+              //console.log('checkAlreadyInObservables says zip of ' + zip + ' is already in the observables.');
             }
-            console.log( 'checkAlreadyInObservables: Complete and result is ' + result);
+            //console.log( 'checkAlreadyInObservables: Complete and result is ' + result);
           }
         });
         subscr.unsubscribe();
@@ -82,7 +107,7 @@ export class SearchComponent {
       });
     }
 
-    console.log('checkAlreadyInObservables result is '+result);
+    //console.log('checkAlreadyInObservables result is '+result);
     return result;
   }
 
@@ -93,10 +118,10 @@ export class SearchComponent {
       if (localStorageKey.startsWith('storedZipCode')){        
         const derivedZip =  localStorage.getItem(localStorageKey);
         if(derivedZip && derivedZip !=this.removedZip){
-          console.log('loadLocationsFromLocalStorage going to call addNewLocation for zip '+ derivedZip);
+          //console.log('loadLocationsFromLocalStorage going to call addNewLocation for zip '+ derivedZip);
           const observable = this.addNewLocation(derivedZip);        
           if (observable) {
-            console.log(' loadLocationsFromLocalStorage -> Back from addNewLocation and adding to the observables...');
+            //console.log(' loadLocationsFromLocalStorage -> Back from addNewLocation and adding to the observables...');
             this.observables.push(observable);
           }
         }
@@ -114,11 +139,11 @@ export class SearchComponent {
           this.location.weather[0].main = this.getIconFrom(l.weather[0].main);
           this.location.zip = zip;
           //this.locations.push(this.location);
-          console.log(' addNewLocation -- going for adding to local storage: '+zip);
+          //console.log(' addNewLocation -- going for adding to local storage: '+zip);
           localStorage.setItem('storedZipCode' + (zip), zip);
         })
       );
-      console.log('addNewLocation returning observable for zip '+ zip);
+      //console.log('addNewLocation returning observable for zip '+ zip);
       return observable;
     } else {
       console.error('ERROR! ' + zip + ' zip is not valid');

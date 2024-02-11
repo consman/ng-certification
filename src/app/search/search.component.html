@@ -14,7 +14,7 @@
   
     <div *ngIf="locations$ | async as locations">
       <div *ngFor="let loc of locations">
-        <app-location [location]="loc" [locations]="locations" [locationz]="locationz" [locations$]="locations$" [observables]="observables" [removedZip]="removedZip"></app-location>
+        <app-location [location]="loc" [locations]="locations" [locationz]="locationz" [locations$]="locations$" [observables]="observables"></app-location>
       </div>
     </div>
   </div>

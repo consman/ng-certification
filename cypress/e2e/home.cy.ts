@@ -45,6 +45,71 @@ describe("Test the Ng-Certification Weather App", () => {
 
   });
 
+  it("should consume a zipcode that was previously closed", ()=>{
+
+    cy.get("[data-test='locationField']").type("95630");
+    cy.get("[data-test='searchButton']").click();
+    cy.get("[data-test='searchResultTitle']").should("include.text","Folsom");
+    
+    cy.get("[data-test='locationField']").type("30097");
+    cy.get("[data-test='searchButton']").click();
+    cy.get("[data-test='searchResultTitle']").should("include.text","Duluth");
+
+    cy.get("[data-test='locationField']").type("95742");
+    cy.get("[data-test='searchButton']").click();
+    cy.get("[data-test='searchResultTitle']").should("include.text","Rancho Cordova");
+
+    cy.get("[data-test='closeSearchResult']").eq(1).click();
+    cy.get("[data-test='searchResultTitle']").eq(2).should("not.exist");
+    cy.get("[data-test='searchResultTitle']").eq(1).should("include.text","Rancho Cordova");
+
+    cy.get("[data-test='locationField']").type("30097");
+    cy.get("[data-test='searchButton']").click();
+    cy.get("[data-test='searchResultTitle']").eq(2).should("include.text","Duluth");
+
+  });
+
+  it("should provide a separate alert if the zip code is valid ( only 5 numerics ), but the service simply returns no data", ()=>{
+
+    const stub = cy.stub()  
+    cy.on ('window:alert', stub)
+
+    cy.get("[data-test='locationField']").type("88888");
+    cy.get("[data-test='searchButton']").click().then(() => {
+      expect(stub.getCall(0)).to.be.calledWith('No data for zip . Try again.')      
+    });
+    
+  });
+
+  it("should provide a separate alert if the zip code is INVALID ( other than just 5 numerics )", ()=>{
+
+    const stub = cy.stub()  
+    cy.on ('window:alert', stub)
+
+    cy.get("[data-test='locationField']").type("8888O");
+    cy.get("[data-test='searchButton']").click().then(() => {
+      expect(stub.getCall(0)).to.be.calledWith('Unable to find any weather data for 8888O. Please try a different zip code. ')      
+    });
+  });
+
+  it("should provide a separate alert if the zip code's location is already in the search results.", ()=>{
+
+    const stub = cy.stub()  
+    cy.on ('window:alert', stub)
+
+    cy.get("[data-test='locationField']").type("95742");
+    cy.get("[data-test='searchButton']").click();
+    cy.get("[data-test='searchResultTitle']").should("include.text","Rancho Cordova");
+
+    cy.get("[data-test='locationField']").type("95630");
+    cy.get("[data-test='searchButton']").click();
+    cy.get("[data-test='searchResultTitle']").should("include.text","Folsom");
+
+    cy.get("[data-test='locationField']").type("95742");
+    cy.get("[data-test='searchButton']").click().then(() => {
+        expect(stub.getCall(0)).to.be.calledWith('The zip code of 95742 is already in the list. ')      
+      });
+  });
 
 
 })
