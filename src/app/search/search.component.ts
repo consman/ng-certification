@@ -4,7 +4,6 @@ import {WeatherService} from '../weather.service';
 import {Observable, of, forkJoin} from 'rxjs';
 import {tap} from 'rxjs/operators';
 import {LocationImpl} from '../locationImpl';
-import {environment} from '../../environments/environment';
 import { LocationComponent } from '../location/location.component';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -70,7 +69,6 @@ export class SearchComponent {
     if (empty && !alreadyInList && !observableNull){
       alert ('No data for zip ' + this.newZip + '. Try again.');
     }
-
   }
 
   checkAlreadyInObservables(zip: string): boolean {

@@ -47,7 +47,6 @@ export class LocationComponent {
           this.locationz.splice(indexz, 1);
           this.locations$ = of(this.locationz);
         }
-        let targetLoc!: Location;
         let found = false;
         let targetObservable!: Observable<Location>;
         if (this.observables){
