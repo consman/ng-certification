@@ -25,7 +25,6 @@ describe('SearchComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [SearchComponent],
-      //declarations: [ SearchComponent ],
       providers: [  {provide: HttpClient, useValue: {FAKE_HTTP_CLIENT_FORECASTS, FAKE_HTTP_CLIENT_LOCATIONS} },
         {provide: WeatherService, useFactory: weatherServiceFactory, deps: ['IS_PROD_ENVIRONMENT']},
         {provide: 'IS_PROD_ENVIRONMENT', useValue: environment.production},

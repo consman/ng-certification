@@ -30,23 +30,16 @@ export class LocationComponent {
   @Input()
   observables!: Observable<Location>[]; 
 
-  constructor(){
-    
+  constructor(){    
   }
 
   handleClose(): void {
-    // TODO fix valid, but non-existent zip clearing out all zips on page.
     
         const index = this.locations.findIndex( d => d.zip === this.location.zip );
         this.locations.splice(index, 1);
 
-        //console.log('Initial -- going for removal of local storage key for zip = '+ this.location.zip);
         if (null != this.getZipLocalStorageKey(this.location.zip)){
-          //console.log(' it is not null -so that is good');
           localStorage.removeItem(this.getZipLocalStorageKey(this.location.zip));
-        }
-        else{
-          console.log(' bummer! the intended local storage key is null! ');
         }
 
         if(this.locationz){
@@ -64,25 +57,17 @@ export class LocationComponent {
                 if (l.zip == this.location.zip){            
                   found = true;
                   targetObservable = o;
-                  //console.log(' removing '+ this.location.zip +' from the observables.. ');
                 }
               },
               error: () => {
                 console.error(' Bummer error! ');
               },
               complete: () => {
-                //console.log( 'handleClose : Complete and found is ' + found);
                 if(found){
-                  //console.log(' Subscription completion -- going for removal of local storage key for zip = '+ this.location.zip);
                   if (null != this.getZipLocalStorageKey(this.location.zip)){
-                    //console.log(' it is not null -so that is good');
                     localStorage.removeItem(this.getZipLocalStorageKey(this.location.zip));
                   }
-                  else{
-                    console.log(' bummer! the intended local storage key is null! ');
-                  }
                   const zindex = this.observables.findIndex( d => d == targetObservable)
-                  //console.log(' found = true and zindex = '+zindex);
                   this.observables.splice(zindex,1);
                 }
               }
@@ -113,5 +98,4 @@ export class LocationComponent {
     result = locationNameWithSpaces.replace(' ', '-');
     return result;
   }
-
 }

@@ -6,9 +6,7 @@ import { Forecast } from './forecast';
 @Injectable()
 export abstract class WeatherService {
 
-  constructor() {
-    //console.log('In abstract weather service');
-  }
+  constructor() {}
   abstract getLocationFromService(zipcode: string): Observable<Location>;
   abstract getFiveDayForecastFromService(lat: number, lon: number): Observable<Forecast>;
 }
