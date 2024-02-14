@@ -4,12 +4,14 @@ import {NonprodweatherService} from './nonprodweather.service';
 import {HttpClient} from "@angular/common/http";
 
 export function weatherServiceFactory(isProd: boolean, http: HttpClient): ProdweatherService | NonprodweatherService {
+  console.log(' In weather service factory.. ');
 
   if ( isProd ){
     console.log('use factory says GOING for PROD Weather service.');
     return new ProdweatherService(http);
   }
   else{
+    console.log('use factory says GOING for NON PROD weather service.');
     return new NonprodweatherService();
   }
 }

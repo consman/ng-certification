@@ -21,7 +21,7 @@ export class FivedayforecastComponent {
   zipParam: string | null;
   obsForecast$: Observable<Forecast>;
 
-  constructor(route: ActivatedRoute, private router: Router){ 
+  constructor(route: ActivatedRoute, private router: Router){ //}, private weatherService: WeatherService) {
     this.zipParam = route.snapshot.paramMap.get('zipcode');
     this.location = new LocationImpl();
     this.location.forecasts = new Array<ForecastImpl>();
@@ -46,6 +46,7 @@ export class FivedayforecastComponent {
     if ( null != zp && zp !== '' && zp.length > 0) {
       const parts = zp.split('+');
       if ( null != parts && parts.length === 4){
+        // this.location = new LocationImpl();
         this.location.zip = parts[0];
         this.location.name = this.dashesToSpaces((parts[1]));
         this.location.coord.lat = parseFloat(parts[2]);

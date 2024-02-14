@@ -1,7 +1,4 @@
-
-<ng-container>
-  <div class="container-fluid">
-
+<div class="container-fluid">
 
     <div class="well">
       <h2 data-test="addLocationBoxTitle">Enter a zipcode:</h2>
@@ -12,11 +9,9 @@
       </button>
     </div>
   
-    <div *ngIf="locations$ | async as locations">
+    <ng-container *ngIf="locations$ | async as locations">
       <div *ngFor="let loc of locations">
-        <app-location [location]="loc" [locations]="locations" [locationz]="locationz" [locations$]="locations$" [observables]="observables"></app-location>
+        <app-location [location]="loc" [locations]="locations"></app-location>
       </div>
-    </div>
+    </ng-container>
   </div>
-</ng-container>
-

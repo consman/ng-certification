@@ -4,6 +4,7 @@ import {WeatherService} from '../weather.service';
 import {Observable, of, forkJoin} from 'rxjs';
 import {tap} from 'rxjs/operators';
 import {LocationImpl} from '../locationImpl';
+import {environment} from '../../environments/environment';
 import { LocationComponent } from '../location/location.component';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -22,83 +23,37 @@ export class SearchComponent {
   newZip!: string;
   location!: Location;
   locations: Location[];
-  locationz: Location[];
   locations$: Observable<Location[]>;
   observables: Observable<Location>[] = [];
-  removedZip!: string;
 
-  constructor(){
+  constructor(){//private weatherService: WeatherService) {
     this.locations = [];
-    this.locationz = this.locations;
     this.locations$ = of(this.locations);
     this.loadLocationsFromLocalStorage();
    }
 
    search(): void{
-    let empty = true;
-    let alreadyInList = false;
-    let observableNull = false;
-    if(!this.checkAlreadyInObservables(this.newZip)){
+    if (this.locations.findIndex( d => d.zip === this.newZip ) === -1) {
       const observable =this.addNewLocation(this.newZip);
       if (observable) {
-          let subsc = observable.subscribe({
-            next: (l ) => {
-              if (l.weather[0].main){
-                empty = false;
-              }
-            },
-            error: () => {console.log(' bummer! the intended local storage key is null! ');
-          },
-            complete: () => {
-              if (!empty){
-                this.observables.push(observable);
-                this.locations$ = forkJoin(this.observables);
-              }
-            }
-          });
-          subsc.unsubscribe();
-      }
-      else{
-        observableNull = true;
+        this.observables.push(observable);
       }
       this.newZip = '';
     }else {
-      alert ('The zip code of ' + this.newZip + ' is already in the list. '); 
-      alreadyInList = true;     
+      alert ('The zip code of ' + this.newZip + ' is already in the list. ');
     }
-    if (empty && !alreadyInList && !observableNull){
-      alert ('No data for zip ' + this.newZip + '. Try again.');
-    }
-  }
-
-  checkAlreadyInObservables(zip: string): boolean {
-    let result = false;
-    if (this.observables){
-      this.observables.forEach((o) =>{
-        let subscr = o.subscribe({
-          next: (l ) => {
-            if (l.zip == zip){            
-              result = true;
-            }
-          },
-          error: () => {
-            console.error(' Bummer error! ');
-          },
-          complete: () => {}
-        });
-        subscr.unsubscribe();  
-      });
-    }
-    return result;
+    this.locations$ = forkJoin(this.observables);
   }
 
    loadLocationsFromLocalStorage(): void {
     let count = 1;
+    const delay = (environment.production ? 175 : 1);
+    const additionalDelay = (environment.production ? 50 : 1);
 
     for (const localStorageKey in localStorage) {
       if (localStorageKey.startsWith('storedZipCode')){        
         const derivedZip =  localStorage.getItem(localStorageKey);
-        if(derivedZip && derivedZip !=this.removedZip){
+        if(derivedZip){
           const observable = this.addNewLocation(derivedZip);        
           if (observable) {
             this.observables.push(observable);
@@ -110,13 +65,14 @@ export class SearchComponent {
   }
 
   addNewLocation(zip: string): Observable<Location> | null {
-    if (this.validateZip(zip) && zip != this.removedZip ) {
+    if (this.validateZip(zip) ) {
       this.location = new LocationImpl();
       const observable = this.weatherService.getLocationFromService(zip).pipe(
         tap(l => {
           this.location = l;
           this.location.weather[0].main = this.getIconFrom(l.weather[0].main);
           this.location.zip = zip;
+          this.locations.push(this.location);
           localStorage.setItem('storedZipCode' + (zip), zip);
         })
       );
@@ -152,4 +108,6 @@ export class SearchComponent {
     }
     return 'sun';
   }
+
+
 }

@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { NgIf } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { WeatherService } from '../weather.service';
-import { Observable, from, of, tap } from 'rxjs';
 
 @Component({
   selector: 'app-location',
@@ -21,58 +20,18 @@ export class LocationComponent {
   @Input()
   locations!: Location[];
 
-  @Input()
-  locationz!: Location[];
-
-  @Input()
-  locations$!: Observable<Location[]>;
-
-  @Input()
-  observables!: Observable<Location>[]; 
-
-  constructor(){    
+  constructor(){
+    
   }
 
   handleClose(): void {
+    // TODO we need to have the list of locations from the search results so that we can remove
+    // the closed location from it here as well as remove it from local storage.
     
         const index = this.locations.findIndex( d => d.zip === this.location.zip );
         this.locations.splice(index, 1);
-
         if (null != this.getZipLocalStorageKey(this.location.zip)){
           localStorage.removeItem(this.getZipLocalStorageKey(this.location.zip));
-        }
-
-        if(this.locationz){
-          const indexz = this.locationz.findIndex( d => d.zip === this.location.zip );
-          this.locationz.splice(indexz, 1);
-          this.locations$ = of(this.locationz);
-        }
-        let found = false;
-        let targetObservable!: Observable<Location>;
-        if (this.observables){
-          this.observables.forEach((o) =>{
-            let subscr = o.subscribe({
-              next: (l ) => {
-                if (l.zip == this.location.zip){            
-                  found = true;
-                  targetObservable = o;
-                }
-              },
-              error: () => {
-                console.error(' Bummer error! ');
-              },
-              complete: () => {
-                if(found){
-                  if (null != this.getZipLocalStorageKey(this.location.zip)){
-                    localStorage.removeItem(this.getZipLocalStorageKey(this.location.zip));
-                  }
-                  const zindex = this.observables.findIndex( d => d == targetObservable)
-                  this.observables.splice(zindex,1);
-                }
-              }
-            });
-            subscr.unsubscribe();        
-          });
         }
       }
     
@@ -97,4 +56,5 @@ export class LocationComponent {
     result = locationNameWithSpaces.replace(' ', '-');
     return result;
   }
+
 }

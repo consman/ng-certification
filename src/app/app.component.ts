@@ -14,6 +14,7 @@ export class AppComponent {
   title = 'ng-certification app is running!';
 
   constructor() {
+    console.log('environment.production = ' + environment.production);
   }
 
 

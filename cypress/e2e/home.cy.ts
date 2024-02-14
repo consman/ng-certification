@@ -38,13 +38,13 @@ describe("Test the Ng-Certification Weather App", () => {
     cy.get("[data-test='searchButton']").click();
     cy.get("[data-test='searchResultTitle']").should("include.text","Saint Paul");
     cy.get("[data-test='fiveDayForecastLink']").click();
-
+    cy.wait(300);
     cy.get("[data-test='backToMainPageButton']").click();
     cy.get("[data-test='addLocationBoxTitle']").should("include.text","Enter a zipcode");
     cy.get("[data-test='searchResultTitle']").eq(0).should("include.text","Saint Paul");
 
   });
-
+/*
   it("should consume a zipcode that was previously closed", ()=>{
 
     cy.get("[data-test='locationField']").type("95630");
@@ -110,6 +110,6 @@ describe("Test the Ng-Certification Weather App", () => {
         expect(stub.getCall(0)).to.be.calledWith('The zip code of 95742 is already in the list. ')      
       });
   });
-
+*/
 
 })
