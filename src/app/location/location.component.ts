@@ -46,8 +46,8 @@ export class LocationComponent {
     let idx = 0;
     let subs!: Subscription;
 
-    let x = this.observables.length - 1
-    console.log('starting with '+x+ ' for zip='+ zip +' and observables of length: ' +this.observables.length);
+    let x = this.observables != undefined && this.observables.length ? this.observables.length : 0;
+    //console.log('starting with '+x+ ' for zip='+ zip +' and observables of length: ' + (this.observables !== undefined && this.observables.length ) ? this.observables.length : 0);
 
     let subArr = [];
     while (!done && this.observables){
