@@ -44,7 +44,7 @@ describe("Test the Ng-Certification Weather App", () => {
     cy.get("[data-test='searchResultTitle']").eq(0).should("include.text","Saint Paul");
 
   });
-/*
+
   it("should consume a zipcode that was previously closed", ()=>{
 
     cy.get("[data-test='locationField']").type("95630");
@@ -68,7 +68,7 @@ describe("Test the Ng-Certification Weather App", () => {
     cy.get("[data-test='searchResultTitle']").eq(2).should("include.text","Duluth");
 
   });
-
+/*
   it("should provide a separate alert if the zip code is valid ( only 5 numerics ), but the service simply returns no data", ()=>{
 
     const stub = cy.stub()  
