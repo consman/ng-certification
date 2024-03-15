@@ -68,18 +68,6 @@ describe("Test the Ng-Certification Weather App", () => {
     cy.get("[data-test='searchResultTitle']").eq(2).should("include.text","Duluth");
 
   });
-/*
-  it("should provide a separate alert if the zip code is valid ( only 5 numerics ), but the service simply returns no data", ()=>{
-
-    const stub = cy.stub()  
-    cy.on ('window:alert', stub)
-
-    cy.get("[data-test='locationField']").type("88888");
-    cy.get("[data-test='searchButton']").click().then(() => {
-      expect(stub.getCall(0)).to.be.calledWith('No data for zip . Try again.')      
-    });
-    
-  });
 
   it("should provide a separate alert if the zip code is INVALID ( other than just 5 numerics )", ()=>{
 
@@ -92,6 +80,20 @@ describe("Test the Ng-Certification Weather App", () => {
     });
   });
 
+
+  it("should provide a separate alert if the zip code is valid ( only 5 numerics ), but the service simply returns no data", ()=>{
+
+    const stub = cy.stub()  
+    cy.on ('window:alert', stub)
+
+    cy.get("[data-test='locationField']").type("88888");
+    cy.get("[data-test='searchButton']").click().wait(2000)
+    .then(() => {    
+      expect(stub.getCall(0)).to.be.calledWith('The zip code, 88888, is formatted OK, but no data is returned.');            
+    });
+    
+  });
+  
   it("should provide a separate alert if the zip code's location is already in the search results.", ()=>{
 
     const stub = cy.stub()  
@@ -110,6 +112,5 @@ describe("Test the Ng-Certification Weather App", () => {
         expect(stub.getCall(0)).to.be.calledWith('The zip code of 95742 is already in the list. ')      
       });
   });
-*/
 
 })
