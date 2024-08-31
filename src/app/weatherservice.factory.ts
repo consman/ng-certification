@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {ProdweatherService} from './prodweather.service';
+import {ProdweatherService} from './Prodweather.service';
 import {NonprodweatherService} from './nonprodweather.service';
 import {HttpClient} from "@angular/common/http";
 
