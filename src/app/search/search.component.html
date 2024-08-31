@@ -1,20 +1,21 @@
 <ng-container>
-  <div class="container-fluid">
-
-      <div class="well">
-        <h2 data-test="addLocationBoxTitle">Enter a zipcode:</h2>
-        <input data-test="locationField" class="form-control" placeholder="Zipcode" type="text" id="addLocation" [(ngModel)]="newZip">
-        <br>
-        <button data-test="searchButton" (click)="search()" class="btn btn-primary" id="addLocationBtn">
-          Add location
-        </button>
-      </div>
-    
-      <div *ngIf="locations$ | async as locations">
-        <div *ngFor="let loc of locations">
-          <app-location [location]="loc" [locations]="locations" [locations$]="locations$" [observables]="observables" [myVal]="myVal"></app-location>
+    <div class="container-fluid">
+  
+        <div class="well">
+          <h2 data-test="addLocationBoxTitle">Enter a zipcode:</h2>
+          <input data-test="locationField" class="form-control" placeholder="Zipcode" type="text" id="addLocation" [(ngModel)]="newZip">
+          <br>
+          <button data-test="searchButton" (click)="search()" class="btn btn-primary" id="addLocationBtn">
+            Add location
+          </button>
         </div>
-      </div>
-  </div>
-
-</ng-container>
+      
+        <div *ngIf="locations$ | async as locations">
+          <div *ngFor="let loc of locations">
+            <app-location [location]="loc" [locations]="locations" [locations$]="locations$" [observables]="observables" [myVal]="myVal"></app-location>
+          </div>
+        </div>
+    </div>
+  
+  </ng-container>
+  

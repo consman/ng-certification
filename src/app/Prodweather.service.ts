@@ -1,18 +1,18 @@
-import {Component, Injectable} from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import {Location} from './location';
-import { Forecast } from './forecast';
-import {HttpClient} from '@angular/common/http';
+import { Injectable } from '@angular/core';
+
 import {Observable} from 'rxjs';
-import {WeatherService} from './weather.service';
+import { Forecast } from './forecast';
+import { WeatherService } from './weather.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProdweatherService extends WeatherService {
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient) { 
     super();
-    console.log('Going for PROD weather service');
   }
 
   getLocationFromService(zipcode: string): Observable<Location> {
@@ -25,4 +25,3 @@ export class ProdweatherService extends WeatherService {
   }
 
 }
-

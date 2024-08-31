@@ -1,21 +1,17 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import {environment} from '../environments/environment';
 
 @Component({
-  selector: 'my-app',
+  selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet],
+  imports: [RouterOutlet],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrl: './app.component.css'
 })
 export class AppComponent {
   title = 'ng-certification app is running!';
-
   constructor() {
     console.log('environment.production = ' + environment.production);
   }
-
-
 }

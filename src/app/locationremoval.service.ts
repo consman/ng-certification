@@ -8,7 +8,6 @@ import { Observable } from 'rxjs';
 export class LocationremovalService {
 
   constructor() { }
-
   private removedLocations!: Location[];
 
   private obsMap: Map<string,number> = new Map<string,number>; 
@@ -26,6 +25,7 @@ export class LocationremovalService {
   addToObsMap(zip:string ,ind:number): void {
     this.obsMap.set( zip, ind);
     console.log( 'LocationremovalService - zip:' + zip + '  ' + ind + ' added to map and now the map is: '+this.printMap());
+    localStorage.removeItem('storedZipCode' + zip);
   }
 
   getNewObservablesArray(): Observable<Location>[] {
@@ -99,3 +99,4 @@ export class LocationremovalService {
   }
   
 }
+

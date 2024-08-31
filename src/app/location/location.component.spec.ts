@@ -26,6 +26,10 @@ describe('LocationComponent', () => {
         {provide: ActivatedRoute, useValue: FAKE_ROUTE}]
     })
     .compileComponents();
+
+    //fixture = TestBed.createComponent(LocationComponent);
+    //component = fixture.componentInstance;
+    //fixture.detectChanges();
   });
 
   beforeEach(() => {
@@ -54,8 +58,6 @@ describe('LocationComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
-
   it('removes the zip from local storage when closing', () => {
     localStorage.setItem('storedZipCode' + '95630', '95630');
     component.handleClose();
@@ -83,3 +85,4 @@ export class MainImpl implements Main {
   temp_min!: number;
 
 }
+

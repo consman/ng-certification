@@ -5,7 +5,7 @@ import { NgIf } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { WeatherService } from '../weather.service';
 import { LocationremovalService } from '../locationremoval.service';
-import { Observable, Subscribable, Subscription, forkJoin, of } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-location',
@@ -30,7 +30,6 @@ export class LocationComponent {
 
   @Input()
   myVal!: number;
-
 
 
   constructor(private locationremovalService: LocationremovalService){
@@ -143,11 +142,11 @@ export class LocationComponent {
     // the closed location from it here as well as remove it from local storage.
         
         this.myVal = 9; 
-        console.log('LocationComponent - Locations BEFORE removal: '+ this.printLocs())
+        console.log('LocationComponent - Locations BEFORE removal: '+ this.printLocs());
         const index = this.locations.findIndex( d => d.zip === this.location.zip );
         this.locations.splice(index, 1);
         if (null != this.getZipLocalStorageKey(this.location.zip)){
-          localStorage.removeItem(this.getZipLocalStorageKey(this.location.zip));
+          localStorage.removeItem('storedZipCode'+this.location.zip);
         }
         this.locationremovalService.addToRemovedLocations(this.location,this.observables);
         //this.getIndexOfObservableInObservablesArray(this.location.zip);
@@ -190,3 +189,4 @@ export class LocationComponent {
 
 
 }
+

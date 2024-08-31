@@ -1,10 +1,10 @@
-import { Component, inject } from '@angular/core';
+import { afterNextRender, Component, inject } from '@angular/core';
 import {Location} from '../location';
 import {WeatherService} from '../weather.service';
-import {Observable, of, forkJoin, Subscription, combineLatest} from 'rxjs';
+import {Observable, of, forkJoin } from 'rxjs';
 import {tap} from 'rxjs/operators';
 import {LocationImpl} from '../locationImpl';
-import {environment} from '../../environments/environment';
+
 import { LocationComponent } from '../location/location.component';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -17,7 +17,6 @@ import { HttpErrorResponse } from '@angular/common/http';
   selector: 'app-search',
   standalone: true,
   imports: [LocationComponent,CommonModule,NgIf,FormsModule],
-  providers:[],
   templateUrl: './search.component.html',
   styleUrl: './search.component.css'
 })
@@ -34,27 +33,29 @@ export class SearchComponent {
   constructor(private locationremovalService: LocationremovalService){
     this.locations = [];
     this.locations$ = of(this.locations);
-    this.loadLocationsFromLocalStorage();
+    afterNextRender( ()=> {
+      this.loadLocationsFromLocalStorage();
+    });
    }
 
    search(): void{    
     this.resolveRemovals();    
+    if ( !this.locationremovalService.checkRemovedLocation(this.newZip)){
+      if (this.locations.findIndex( d => d.zip === this.newZip ) === -1) {      
+        const observable =this.addNewLocation(this.newZip);
 
-    if (this.locations.findIndex( d => d.zip === this.newZip ) === -1) {      
-      const observable =this.addNewLocation(this.newZip);
-
-      if (observable) {
-        this.observables.push(observable);
+        if (observable) {
+          this.observables.push(observable);
+        }
+        this.newZip = '';
+      
+      }else {
+        alert ('The zip code of ' + this.newZip + ' is already in the list. ');
       }
-      this.newZip = '';
-     
-    }else {
-      alert ('The zip code of ' + this.newZip + ' is already in the list. ');
+      
+      this.locations$ = of(this.locations);
+      this.locations$ = forkJoin(this.observables);    
     }
-    
-    this.locations$ = of(this.locations);
-    this.locations$ = forkJoin(this.observables);    
-
   }
 
   resolveRemovals() :void {
@@ -90,10 +91,14 @@ export class SearchComponent {
         
         if(derivedZip && this.locations.findIndex( d => d.zip === derivedZip ) === -1){
           this.resolveRemovals();
+          
+          if ( !this.locationremovalService.checkRemovedLocation(derivedZip)){
+
           const observable = this.addNewLocation(derivedZip);        
           if (observable) {
             this.observables.push(observable);
           }
+        }
         }
       }
     }
@@ -112,6 +117,7 @@ export class SearchComponent {
           this.location.zip = zip;
           this.addToLocationsArray(this.location);          
           localStorage.setItem('storedZipCode' + (zip), zip);
+          console.log('just added '+ zip + ' to the local storage...');
           this.locationsMapIndex++;
         }),
         catchError((err: HttpErrorResponse) => {
@@ -169,3 +175,4 @@ export class SearchComponent {
    }  
 
 }
+

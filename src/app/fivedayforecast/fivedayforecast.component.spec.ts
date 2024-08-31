@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+
 import { FivedayforecastComponent } from './fivedayforecast.component';
+
 import {ActivatedRoute} from '@angular/router';
 import {WeatherService} from '../weather.service';
 import {weatherServiceFactory} from '../weatherservice.factory';
@@ -8,7 +10,6 @@ import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { RAWFORECASTS, RAWLOCATIONS } from '../mock-data';
 import { of } from 'rxjs';
 import { ForecastImpl } from '../forecastImpl';
-
 
 export const FAKE_HTTP_CLIENT_LOCATIONS = {
   get: (url: string |null) => of(RAWLOCATIONS)
@@ -35,7 +36,7 @@ describe('FivedayforecastComponent', () => {
         {provide: ActivatedRoute, useValue: FAKE_ROUTE}]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(FivedayforecastComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -52,5 +53,4 @@ describe('FivedayforecastComponent', () => {
   it('can convert spaces to dashes', () => {
       expect(component.dashesToSpaces('Saint-Croy')).toEqual('Saint Croy');
   });
-
 });

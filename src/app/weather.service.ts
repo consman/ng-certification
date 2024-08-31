@@ -3,12 +3,14 @@ import {Observable} from 'rxjs';
 import { Location } from './location';
 import { Forecast } from './forecast';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export abstract class WeatherService {
 
-  constructor() {
-    
-  }
+  constructor() { }
+
   abstract getLocationFromService(zipcode: string): Observable<Location>;
   abstract getFiveDayForecastFromService(lat: number, lon: number): Observable<Forecast>;
+
 }
