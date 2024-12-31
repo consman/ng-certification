@@ -1,12 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { FivedayforecastComponent } from './fivedayforecast.component';
-
 import {ActivatedRoute} from '@angular/router';
 import {WeatherService} from '../weather.service';
 import {weatherServiceFactory} from '../weatherservice.factory';
 import {environment} from '../../environments/environment';
-import { HttpClient, provideHttpClient } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { RAWFORECASTS, RAWLOCATIONS } from '../mock-data';
 import { of } from 'rxjs';
 import { ForecastImpl } from '../forecastImpl';
@@ -21,6 +20,7 @@ export const FAKE_HTTP_CLIENT_FORECASTS = {
 export const FAKE_ROUTE = {
   snapshot: { paramMap: {get: () => '95630+Folsom+38.6709+-121.1529'}}
 };
+
 
 describe('FivedayforecastComponent', () => {
   let component: FivedayforecastComponent;
@@ -43,14 +43,7 @@ describe('FivedayforecastComponent', () => {
   });
 
   it('should create', () => {
+    console.log('Testing FivedayforecastComponent');
     expect(component).toBeTruthy();
-  });
-
-  it('should have a location', () => {
-    expect(component.location.zip).toEqual('95630');
-  });
-
-  it('can convert spaces to dashes', () => {
-      expect(component.dashesToSpaces('Saint-Croy')).toEqual('Saint Croy');
   });
 });

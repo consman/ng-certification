@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+
 import { Observable } from 'rxjs';
 import { Forecast } from '../forecast';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -6,22 +7,22 @@ import { WeatherService } from '../weather.service';
 import {Location} from '../location';
 import { LocationImpl } from '../locationImpl';
 import { ForecastImpl } from '../forecastImpl';
-import { AsyncPipe, DatePipe, NgIf, NgForOf } from '@angular/common';
+import { AsyncPipe, DatePipe} from '@angular/common';
 
 @Component({
   selector: 'app-fivedayforecast',
-  standalone: true,
-  imports: [DatePipe, AsyncPipe, NgIf, NgForOf],
+  imports: [AsyncPipe,DatePipe],
   templateUrl: './fivedayforecast.component.html',
-  styleUrl: './fivedayforecast.component.css'
+  styleUrl: '../app.component.css'
 })
 export class FivedayforecastComponent {
+
   weatherService = inject(WeatherService);
   location: Location;
   zipParam: string | null;
   obsForecast$: Observable<Forecast>;
 
-  constructor(route: ActivatedRoute, private router: Router){ //}, private weatherService: WeatherService) {
+  constructor(route: ActivatedRoute, private router: Router){ 
     this.zipParam = route.snapshot.paramMap.get('zipcode');
     this.location = new LocationImpl();
     this.location.forecasts = new Array<ForecastImpl>();
@@ -91,5 +92,5 @@ export class FivedayforecastComponent {
   }
 
 
-}
 
+}

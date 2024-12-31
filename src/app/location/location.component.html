@@ -1,24 +1,44 @@
 <div >
     <div class="well flex">
       <div>
-        <h3 data-test="searchResultTitle" >{{location.name}} ({{location.zip}})</h3>
-        <h4>Current conditions:  {{location.weather[0].main}}</h4>
+        <h3 data-test="searchResultTitle" >{{location().name}} ({{location().zip}})</h3>
+        <!--   -->
+        @if(location() && location().weather && location().weather.length > 0){
+            <h4>Current conditions:  {{location().weather[0].main}}</h4>
+        }
         <h4>Temperatures today:</h4>
         <p>
-          Current {{location.main.temp}}
-          - Max {{location.main.temp_max}}
-          - Min {{location.main.temp_min}}
+            @if(location() && location().main && location().main.temp){ 
+                Current {{location().main.temp}}
+            }
+            @if(location() && location().main && location().main.temp_max){ 
+                - Max {{location().main.temp_max}}
+            }
+            @if(location() && location().main && location().main.temp_min){ 
+                - Min {{location().main.temp_min}}
+            }
         </p>
         <p>
-          <a *ngIf="location.name != undefined && location.zip != undefined && location.coord != undefined && location.coord.lon != undefined && location.coord.lat != undefined " data-test="fiveDayForecastLink" routerLink="/forecast/{{location.zip}}+{{spacesToDashes( location.name)}}+{{location.coord.lat}}+{{location.coord.lon}}">Show Five Day Forecast for {{location.name}}</a>
+          @if (location() != undefined && location().name != undefined && location().zip != undefined && location().coord != undefined && location().coord.lon != undefined && location().coord.lat != undefined){
+            <a data-test="fiveDayForecastLink" routerLink="/forecast/{{location().zip}}+{{spacesToDashes( location().name)}}+{{location().coord.lat}}+{{location().coord.lon}}" >
+                Show Five Day Forecast for {{location().name}}
+            </a>
+          } 
         </p>
       </div>
       <div>
         <span data-test="closeSearchResult" class="close" (click)="handleClose()" class="close">×</span>
-        <img class="iconimg" src="https://www.angulartraining.com/images/weather/{{location.weather[0].main}}.png" alt="icon" height="auto" />
+        @if(location() && location().weather && location().weather.length > 0 && location().weather[0].main){ 
+            <img class="iconimg" src="https://www.angulartraining.com/images/weather/{{location().weather[0].main}}.png" alt="icon" height="auto" />
+        }
       </div>
     </div>
   </div>
-  
+  <!--
+  <p>
+    <button (click)="logNumberInObservableArray()">Log Number in observable array</button>
+   
+  </p>
+  -->
   
   

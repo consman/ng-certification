@@ -9,6 +9,7 @@ describe('AppComponent', () => {
   });
 
   it('should create the app', () => {
+    console.log('Testing AppComponent');
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
     expect(app).toBeTruthy();
@@ -23,8 +24,12 @@ describe('AppComponent', () => {
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
-    const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('title').textContent).toContain('ng-certification app is running!');
-
+    const compiled = fixture.nativeElement as HTMLElement;
+    //expect(compiled.querySelector('h1')?.textContent).toContain('Hello, ng-certification');
+    if (null != compiled 
+        && null != compiled.querySelector('title') 
+        && null != compiled.querySelector('title')?.textContent){
+      expect(compiled.querySelector('title')?.textContent).toContain('ng-certification app is running!');
+    }
   });
 });

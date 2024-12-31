@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+
 import {environment} from '../environments/environment';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [RouterOutlet],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
@@ -12,6 +12,6 @@ import {environment} from '../environments/environment';
 export class AppComponent {
   title = 'ng-certification app is running!';
   constructor() {
-    console.log('environment.production = ' + environment.production);
+    //console.log('environment.production = ' + environment.production);
   }
 }

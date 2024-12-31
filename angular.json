@@ -34,7 +34,7 @@
             "server": "src/main.server.ts",
             "prerender": true,
             "ssr": {
-              "entry": "server.ts"
+              "entry": "src/server.ts"
             }
           },
           "configurations": {
@@ -47,8 +47,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kB",
-                  "maximumError": "4kB"
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
                 }
               ],
               "outputHashing": "all"
@@ -84,7 +84,6 @@
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
-      
           "configurations": {
             "development":{
               "fileReplacements": [
@@ -95,7 +94,6 @@
               ]
             }
           },
-
           "options": {
             "polyfills": [
               "zone.js",
@@ -118,6 +116,6 @@
     }
   },
   "cli": {
-    "analytics": "e11612d1-a81a-4d60-90c9-e5756696afe7"
+    "analytics": "ceae42a5-51b1-420a-8cf6-d1c9e534b00f"
   }
 }

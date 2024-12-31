@@ -12,5 +12,4 @@ export abstract class WeatherService {
 
   abstract getLocationFromService(zipcode: string): Observable<Location>;
   abstract getFiveDayForecastFromService(lat: number, lon: number): Observable<Forecast>;
-
 }

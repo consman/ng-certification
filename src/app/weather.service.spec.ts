@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
 import { WeatherService } from './weather.service';
-
 import { environment } from '../environments/environment';
 import { weatherServiceFactory } from './weatherservice.factory';
 import {HttpClient} from '@angular/common/http';
 import {RAWFORECASTS, RAWLOCATIONS} from './mock-data'; 
 import { from, of } from 'rxjs';
+
 
 export const FAKE_HTTP_CLIENT_LOCATIONS = {
   get: (url: string |null) => of(RAWLOCATIONS)

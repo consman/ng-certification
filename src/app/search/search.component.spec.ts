@@ -6,7 +6,6 @@ import { environment } from '../../environments/environment';
 import { weatherServiceFactory } from '../weatherservice.factory';
 import {HttpClient} from '@angular/common/http';
 
-
 import {RAWFORECASTS, RAWLOCATIONS} from '../mock-data';
 import { from, of } from 'rxjs';
 
@@ -39,6 +38,7 @@ describe('SearchComponent', () => {
   });
 
   it('should create', () => {
+    console.log('Testing SearchComponent..')
     expect(component).toBeTruthy();
   });
 
