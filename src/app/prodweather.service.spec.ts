@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { ProdweatherService } from './prodweather.service';
+import { ProdweatherService } from './Prodweather.service';
 
 import {HttpClient} from '@angular/common/http';
 import {RAWFORECASTS, RAWLOCATIONS} from './mock-data'; 
