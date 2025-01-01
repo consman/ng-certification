@@ -125,6 +125,14 @@ export class SearchComponent {
     this.locations$ = forkJoin(this.observables);
   }
 
+  addToLocationsArray(location: Location): void{
+    // check for dups first -- although this may havbe already been done..
+    if (this.locations.findIndex( d => d.zip === location.zip ) === -1) {
+      this.locations.push(location);
+    }
+  }
+  
+/*
   logNumberOfLocs() : void{
     console.log('The number of locations is: '+ this.locations.length);
   }
@@ -135,12 +143,6 @@ export class SearchComponent {
     }
     console.log('The recent zip is '+ result );
   }
-  addToLocationsArray(location: Location): void{
-    // check for dups first -- although this may havbe already been done..
-    if (this.locations.findIndex( d => d.zip === location.zip ) === -1) {
-      this.locations.push(location);
-    }
-  }
-
-
+  */
+ 
 }
