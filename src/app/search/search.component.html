@@ -1,0 +1,34 @@
+<ng-container>
+    <div class="container-fluid">
+  
+        <div class="well"> 
+          <h2 data-test="addLocationBoxTitle">Enter a zipcode:</h2>
+          <input data-test="locationField" class="form-control" placeholder="Zipcode" type="text" id="addLocation" [(ngModel)]="newZip">
+          <br>
+          <button data-test="searchButton" (click)="search()" class="btn btn-primary" id="addLocationBtn">
+            Add location
+          </button>
+        </div>
+      
+        @let locs = locations$ | async;
+        @if(locs && locs.length > 0 ){
+            @for(loc of locs; track loc){
+                <app-location
+                [(locations)]="locations"
+                [location] = "loc"
+                [(olocations)] = "locations$"
+                [(observables)] = "observables"
+                >
+                </app-location>
+            }
+        }
+    </div>
+  
+  </ng-container>
+
+  <!--
+  <p>
+  <button (click)="logNumberOfLocs()">Show number of locs</button>
+  <button (click)="logRecentZip()">Recent zip</button>
+  </p>
+-->
