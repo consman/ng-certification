@@ -4,13 +4,13 @@ import { Injectable } from '@angular/core';
 
 import {Observable} from 'rxjs';
 import { Forecast } from './forecast';
-import { WeatherService } from './weather.service';
+import { Weather } from './weather';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-export class ProdweatherService extends WeatherService{
-
+export class Prodweather extends Weather {
+  
   constructor(private http: HttpClient) { 
     super();
   }

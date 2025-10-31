@@ -32,30 +32,7 @@
             }
         }
       }
-<!--
-      @if (getLocFromObservable(obsForecast$ | async ).forecasts ){  
-        @for(forec of getLocFromObservable(obsForecast$ | async ).forecasts; track forec){
-            @if(forec.daily){
-              <ul class="list-group">
-              @for(da of forec.daily; track da){    
-                <li data-test="tdForecastItem" class="list-group-item">            
-
-                  {{convertEpocToDayofWeek(da.dt) | date: 'EEEE'}}:
-                  @if(da.weather){
-                    {{da.weather[0].description}}
-                  }
-                - Min: {{da.temp.min}}
-                - Max: {{da.temp.max}}
-                @if ( da.weather){
-                  <img class="icon" src="https://www.angulartraining.com/images/weather/{{getIconFrom(da.weather[0].main)}}.png">                
-                }
-                </li>
-              }
-            </ul>
-            }  
-          }
-      }
--->
+ 
       </div>
     <button data-test="backToMainPageButton" class="btn btn-success" tabindex="0" id="mainPageBtn" (click)="navigateBackToMain()">&lt; Back to main page</button>
   </div>

@@ -1,15 +1,16 @@
 import { Injectable } from '@angular/core';
-import {ProdweatherService} from './Prodweather.service';
-import {NonprodweatherService} from './nonprodweather.service';
+import {Prodweather} from './prodweather';
+import {Nonprodweather} from './nonprodweather';
 import {HttpClient} from "@angular/common/http";
 
-export function weatherServiceFactory(isProd: boolean, http: HttpClient): ProdweatherService | NonprodweatherService {
+export function weatherServiceFactory(isProd: boolean, http: HttpClient): Prodweather | Nonprodweather {
   
 
   if ( isProd ){
-    return new ProdweatherService(http);
+    return new Prodweather(http);
   }
   else{
-    return new NonprodweatherService();
+    console
+    return new Nonprodweather();
   }
 }

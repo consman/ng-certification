@@ -1,9 +1,9 @@
 import { Routes } from '@angular/router';
-import { SearchComponent } from "./search/search.component";
-import { FivedayforecastComponent } from './fivedayforecast/fivedayforecast.component';
+import { Search } from "./search/search";
+import { Fivedayforecast } from './fivedayforecast/fivedayforecast';
+
 
 export const routes: Routes = [
-    {path: '',    component: SearchComponent},
-    {path: 'search',  component: SearchComponent},
-    {path: 'forecast/:zipcode', component: FivedayforecastComponent}
-];
+    {path: '',    component: Search},
+    {path: 'search',  component: Search},
+    {path: 'forecast/:zipcode', component: Fivedayforecast}];

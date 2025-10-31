@@ -1,9 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component,inject} from '@angular/core';
 
 import { Observable } from 'rxjs';
 import { Forecast } from '../forecast';
 import { ActivatedRoute, Router } from '@angular/router';
-import { WeatherService } from '../weather.service';
+import { Weather } from '../weather';
 import {Location} from '../location';
 import { LocationImpl } from '../locationImpl';
 import { ForecastImpl } from '../forecastImpl';
@@ -12,12 +12,12 @@ import { AsyncPipe, DatePipe} from '@angular/common';
 @Component({
   selector: 'app-fivedayforecast',
   imports: [AsyncPipe,DatePipe],
-  templateUrl: './fivedayforecast.component.html',
-  styleUrl: '../app.component.css'
+  templateUrl: './fivedayforecast.html',
+  styleUrl: '../app.css'
 })
-export class FivedayforecastComponent {
 
-  weatherService = inject(WeatherService);
+export class Fivedayforecast {
+  weatherService = inject(Weather);
   location: Location;
   zipParam: string | null;
   obsForecast$: Observable<Forecast>;
@@ -90,7 +90,6 @@ export class FivedayforecastComponent {
     result = result = locationNameWithDashes.replace('-', ' ');
     return result;
   }
-
 
 
 }

@@ -4,15 +4,14 @@ import { Forecast } from './forecast';
 import {Observable, of, from, throwError} from 'rxjs';
 import {filter, tap} from 'rxjs/operators';
 import {RAWFORECASTS, RAWLOCATIONS} from './mock-data';
-import {WeatherService} from './weather.service';
+import {Weather} from './weather';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-export class NonprodweatherService extends WeatherService{
-
-  constructor() { 
+export class Nonprodweather extends Weather{
+    constructor() { 
     super();
   }
 
@@ -36,6 +35,5 @@ export class NonprodweatherService extends WeatherService{
     console.log('NON-PROD weather service getFiveDayForecastsFromService for lat: ' + lat);
      return from(RAWFORECASTS).pipe(filter(forc => forc.lat === lat && forc.lon === lon));   
   }
-
 
 }

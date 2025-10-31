@@ -1,8 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LocationComponent } from './location.component';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { Locationn } from './location';
+
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { WeatherService } from '../weather.service';
+import { Weather } from '../weather';
 import { weatherServiceFactory } from '../weatherservice.factory';
 import { environment } from '../../environments/environment';
 import { WeatherImpl } from '../forecastImpl';
@@ -12,24 +14,23 @@ export const FAKE_ROUTE = {
   snapshot: { paramMap: {get: () => '95630+Folsom+38.6709+-121.1529'}}
 };
 
-describe('LocationComponent', () => {
-  let component: LocationComponent;
-  let fixture: ComponentFixture<LocationComponent>;
+describe('Locationn', () => {
+  let component: Locationn;
+  let fixture: ComponentFixture<Locationn>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LocationComponent,RouterModule],
-      providers: [
-        {provide: WeatherService, useFactory: weatherServiceFactory, deps: ['IS_PROD_ENVIRONMENT']},
+      imports: [Locationn],
+      providers:[provideZonelessChangeDetection(),
+        {provide: Weather, useFactory: weatherServiceFactory, deps: ['IS_PROD_ENVIRONMENT']},
         {provide: 'IS_PROD_ENVIRONMENT', useValue: environment.production},
         {provide: ActivatedRoute, useValue: FAKE_ROUTE}
       ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(LocationComponent);
+    fixture = TestBed.createComponent(Locationn);
     component = fixture.componentInstance;
-    
     component.location().name = 'Folsom';
     component.location().weather = new Array<WeatherImpl>();
     component.location().weather.push(new WeatherImpl());
@@ -42,15 +43,13 @@ describe('LocationComponent', () => {
     component.location().coord.lat = 38.6709;
     component.location().zip = '95630';    
 
-    //component.location().
     fixture.detectChanges();
   });
 
   it('should create', () => {
-    console.log('Testing LocationComponent');
+     console.log('Testing component - Location');
     expect(component).toBeTruthy();
   });
-
 
   it('removes the zip from local storage when closing', () => {
     localStorage.setItem('storedZipCode' + '95630', '95630');
@@ -67,6 +66,8 @@ describe('LocationComponent', () => {
     }
     expect(found ).toBeFalse();
   }); 
+
+
 });
 
 
@@ -79,4 +80,3 @@ export class MainImpl implements Main {
   temp_min!: number;
 
 }
-

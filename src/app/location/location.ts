@@ -1,19 +1,19 @@
 import { Component, inject, input, model } from '@angular/core';
 import {Location} from '../location';
 import { LocationImpl } from '../locationImpl';
-import { WeatherService } from '../weather.service';
+import { Weather } from '../weather';
 import { RouterModule } from '@angular/router';
-import { Observable, forkJoin, of, pipe, tap } from 'rxjs';
-//import { AsyncPipe } from '@angular/common';
+import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-location',
   imports: [RouterModule],
-  templateUrl: './location.component.html',
-  styleUrl: '../app.component.css'
+  templateUrl: './location.html',
+  styleUrl: '../app.css',
 })
-export class LocationComponent {
-  weatherService = inject(WeatherService);
+export class Locationn {
+
+  weatherService = inject(Weather);
   location  = input<Location>(new LocationImpl());
   locations = model(<Location []>(new Array<Location>));
   olocations = model(<Observable<Location[]>>  (new Observable<Location[]>));
@@ -21,16 +21,15 @@ export class LocationComponent {
 
   constructor(){
   }
-
   handleClose(): void {
     const index = this.locations().findIndex( d => d.zip === this.location().zip );
-    console.log(' index = ' + index);
+    
     setTimeout(()=>{
         this.locations().splice(index, 1);
         if (null != this.getZipLocalStorageKey(this.location().zip)){
           localStorage.removeItem('storedZipCode'+this.location().zip);
-          console.log(' Handleclose() removed storedZipCode'+ this.location().zip);
-          console.log('A this.locations().length now = ' + this.locations().length);
+          //console.log(' Handleclose() removed storedZipCode'+ this.location().zip);
+          //console.log('A this.locations().length now = ' + this.locations().length);
           this.olocations.set( of(this.locations()));
 
           let newArr = new Array <Observable<Location>>;
@@ -40,7 +39,6 @@ export class LocationComponent {
           this.observables.set(newArr);          
         } 
     },100);
-  console.log('B this.locations().length now = ' + this.locations().length);
   }
 
   getZipLocalStorageKey(zipcode: string): string {

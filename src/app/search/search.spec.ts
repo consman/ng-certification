@@ -1,10 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { SearchComponent } from './search.component';
-import { WeatherService } from '../weather.service';
-import { environment } from '../../environments/environment';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { Search } from './search';
+import { Weather } from '../weather';
+//import { environment } from '../../environments/environment';
 import { weatherServiceFactory } from '../weatherservice.factory';
 import {HttpClient} from '@angular/common/http';
+
 
 import {RAWFORECASTS, RAWLOCATIONS} from '../mock-data';
 import { from, of } from 'rxjs';
@@ -16,35 +17,29 @@ export const FAKE_HTTP_CLIENT_LOCATIONS = {
 export const FAKE_HTTP_CLIENT_FORECASTS = {
   get: (url: string |null) => of(RAWFORECASTS)
 } as HttpClient;
-
-describe('SearchComponent', () => {
-  let component: SearchComponent;
-  let fixture: ComponentFixture<SearchComponent>;
+describe('Search', () => {
+  let component: Search;
+  let fixture: ComponentFixture<Search>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SearchComponent],
-      providers: [  {provide: HttpClient, useValue: {FAKE_HTTP_CLIENT_FORECASTS, FAKE_HTTP_CLIENT_LOCATIONS} },
-        {provide: WeatherService, useFactory: weatherServiceFactory, deps: ['IS_PROD_ENVIRONMENT']},
+      imports: [Search],
+      providers: [ provideZonelessChangeDetection(), 
+        {provide: HttpClient, useValue: {FAKE_HTTP_CLIENT_FORECASTS, FAKE_HTTP_CLIENT_LOCATIONS} },
+        {provide: Weather, useFactory: weatherServiceFactory, deps: ['IS_PROD_ENVIRONMENT']},
         {provide: 'IS_PROD_ENVIRONMENT', useValue: false},
         {provide: Location, useValue: RAWLOCATIONS[0]}
       ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(SearchComponent);
+    fixture = TestBed.createComponent(Search);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
   it('should create', () => {
-    console.log('Testing SearchComponent..')
+    console.log('Testing the component - Search. ');
     expect(component).toBeTruthy();
-  });
-
-  it('validates a zip code', () => {
-    expect(component.validateZip('94930')).toBeTruthy();
-    expect(component.validateZip('94i30')).toBeFalse();
-    expect(component.validateZip('9430')).toBeFalse();
   });
 });

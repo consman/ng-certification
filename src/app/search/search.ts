@@ -1,26 +1,27 @@
 import { afterNextRender, Component, inject } from '@angular/core';
-import { LocationComponent } from '../location/location.component';
+import { Locationn } from '../location/location';
 import { FormsModule } from '@angular/forms';
-import { WeatherService } from '../weather.service';
+import { Weather } from '../weather';
 import { catchError, delay, forkJoin, Observable, of, tap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import {Location} from '../location';
 import { HttpErrorResponse } from '@angular/common/http';
 
+
 @Component({
   selector: 'app-search',
-  imports: [LocationComponent,FormsModule, AsyncPipe],
-  templateUrl: './search.component.html',
-  styleUrl: './search.component.css'
+  imports: [Locationn,FormsModule, AsyncPipe],
+  templateUrl: './search.html',
+  styleUrl: './search.css',
 })
-export class SearchComponent {
+export class Search {
 
-  weatherService = inject(WeatherService);
-  newZip!: string;
-  locations$: Observable<Location[]>;
-  locations: Location[];
-  location!: Location;
-  observables: Observable<Location>[] = [];
+    weatherService = inject(Weather);
+    newZip!: string;
+    locations$: Observable<Location[]>;
+    locations: Location[];
+    location!: Location;
+    observables: Observable<Location>[] = [];
 
   constructor(){
     this.locations = [];
@@ -131,18 +132,5 @@ export class SearchComponent {
       this.locations.push(location);
     }
   }
-  
-/*
-  logNumberOfLocs() : void{
-    console.log('The number of locations is: '+ this.locations.length);
-  }
-  logRecentZip():void{
-    let result = '';
-    if (this.location && this.location.zip){
-      result = this.location.zip
-    }
-    console.log('The recent zip is '+ result );
-  }
-  */
- 
+
 }
