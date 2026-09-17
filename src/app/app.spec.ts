@@ -1,4 +1,3 @@
-import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { App } from './app';
 
@@ -6,8 +5,8 @@ describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [provideZonelessChangeDetection()]
-    }).compileComponents();
+    })
+      .compileComponents();
   });
 
   it('should create the app', () => {
@@ -16,7 +15,6 @@ describe('App', () => {
     const app = fixture.componentInstance;
     expect(app).toBeTruthy();
   });
-
 
   it(`should have the 'ng-certification' title`, () => {
     const fixture = TestBed.createComponent(App);
@@ -35,6 +33,5 @@ describe('App', () => {
       expect(compiled.querySelector('title')?.textContent).toContain('ng-certification app is running!');
     }
   });
-
-
+  
 });

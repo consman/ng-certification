@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideZonelessChangeDetection } from '@angular/core';
 import { Fivedayforecast } from './fivedayforecast';
 import {ActivatedRoute} from '@angular/router';
 import {Weather} from '../weather';
@@ -22,6 +21,7 @@ export const FAKE_ROUTE = {
   snapshot: { paramMap: {get: () => '95630+Folsom+38.6709+-121.1529'}}
 };
 
+
 describe('Fivedayforecast', () => {
   let component: Fivedayforecast;
   let fixture: ComponentFixture<Fivedayforecast>;
@@ -29,17 +29,16 @@ describe('Fivedayforecast', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Fivedayforecast],
-      providers:[provideZonelessChangeDetection(),{provide: HttpClient, useValue: {FAKE_HTTP_CLIENT_FORECASTS, FAKE_HTTP_CLIENT_LOCATIONS}},
+      providers:[{provide: HttpClient, useValue: {FAKE_HTTP_CLIENT_FORECASTS, FAKE_HTTP_CLIENT_LOCATIONS}},
         {provide: Weather, useFactory: weatherServiceFactory, deps: ['IS_PROD_ENVIRONMENT']},
         {provide: 'IS_PROD_ENVIRONMENT', useValue: false},
         {provide: ForecastImpl, useValue: RAWFORECASTS[0]},
         {provide: ActivatedRoute, useValue: FAKE_ROUTE}]
-    })
-    .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(Fivedayforecast);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should create', () => {

@@ -1,6 +1,6 @@
-import {Clouds, Coord, Location, Main, Sys, Weather, Wind} from './location';
+import {Clouds, Coord, LocationT, Main, Sys, Weather, Wind} from './location';
 import {ForecastImpl} from './forecastImpl';
-export class LocationImpl implements Location {
+export class LocationImpl implements LocationT {
   constructor() {
     this.coord = new CoordImpl();
     this.forecasts = new Array<ForecastImpl>();

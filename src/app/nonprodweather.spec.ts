@@ -1,15 +1,11 @@
 import { TestBed } from '@angular/core/testing';
-
-import { provideZonelessChangeDetection } from '@angular/core';
 import { Nonprodweather } from './nonprodweather';
 
 describe('Nonprodweather', () => {
   let service: Nonprodweather;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection()]
-    });
+    TestBed.configureTestingModule({});
     service = TestBed.inject(Nonprodweather);
   });
 

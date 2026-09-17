@@ -1,21 +1,18 @@
-import { Injectable } from '@angular/core';
-import {Location} from './location';
-import { Forecast } from './forecast';
-import {Observable, of, from, throwError} from 'rxjs';
-import {filter, tap} from 'rxjs/operators';
-import {RAWFORECASTS, RAWLOCATIONS} from './mock-data';
-import {Weather} from './weather';
+import { Service } from '@angular/core';
+import { Weather } from './weather';
+import { filter, from, Observable, of } from 'rxjs';
+import { RAWFORECASTS, RAWLOCATIONS } from './mock-data';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Forecast } from './forecast';
+import {LocationT} from './location';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class Nonprodweather extends Weather{
+@Service()
+export class Nonprodweather extends Weather {
     constructor() { 
     super();
   }
 
-  override getLocationFromService(zipcode: string): Observable<Location> {
+  override getLocationFromService(zipcode: string): Observable<LocationT> {
     console.log('NON-PROD weather service getting location for zip: ' + zipcode);
  
        if ( RAWLOCATIONS.filter(loc => loc.zip == zipcode).length == 0){
@@ -31,9 +28,9 @@ export class Nonprodweather extends Weather{
        
        return result;
   }
+
   override getFiveDayForecastFromService(lat: number, lon: number): Observable<Forecast> {
     console.log('NON-PROD weather service getFiveDayForecastsFromService for lat: ' + lat);
      return from(RAWFORECASTS).pipe(filter(forc => forc.lat === lat && forc.lon === lon));   
-  }
-
+    }
 }

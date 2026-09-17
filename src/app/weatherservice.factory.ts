@@ -7,7 +7,7 @@ export function weatherServiceFactory(isProd: boolean, http: HttpClient): Prodwe
   
 
   if ( isProd ){
-    return new Prodweather(http);
+    return new Prodweather();
   }
   else{
     console

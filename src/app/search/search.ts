@@ -1,27 +1,27 @@
 import { afterNextRender, Component, inject } from '@angular/core';
-import { Locationn } from '../location/location';
+
+import { Location } from '../location/location';
 import { FormsModule } from '@angular/forms';
 import { Weather } from '../weather';
 import { catchError, delay, forkJoin, Observable, of, tap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
-import {Location} from '../location';
+import {LocationT} from '../location';
 import { HttpErrorResponse } from '@angular/common/http';
 
-
 @Component({
+  imports: [Location,FormsModule, AsyncPipe],
   selector: 'app-search',
-  imports: [Locationn,FormsModule, AsyncPipe],
-  templateUrl: './search.html',
   styleUrl: './search.css',
+  templateUrl: './search.html',
 })
 export class Search {
 
     weatherService = inject(Weather);
     newZip!: string;
-    locations$: Observable<Location[]>;
-    locations: Location[];
-    location!: Location;
-    observables: Observable<Location>[] = [];
+    locations$: Observable<LocationT[]>;
+    locations: LocationT[];
+    location!: LocationT;
+    observables: Observable<LocationT>[] = [];
 
   constructor(){
     this.locations = [];
@@ -52,7 +52,7 @@ export class Search {
 
   }
 
-  addNewLocation(zip: string): Observable<Location> | null {
+  addNewLocation(zip: string): Observable<LocationT> | null {
     if (this.validateZip(zip) ) {
       
       const observable = this.weatherService.getLocationFromService(zip).pipe(delay(0),
@@ -126,7 +126,7 @@ export class Search {
     this.locations$ = forkJoin(this.observables);
   }
 
-  addToLocationsArray(location: Location): void{
+  addToLocationsArray(location: LocationT): void{
     // check for dups first -- although this may havbe already been done..
     if (this.locations.findIndex( d => d.zip === location.zip ) === -1) {
       this.locations.push(location);

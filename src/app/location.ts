@@ -1,6 +1,6 @@
 import {Forecast} from './forecast';
 
-export interface Location {
+export interface LocationT {
   zip: string;
   coord: Coord;
   weather: Weather[];

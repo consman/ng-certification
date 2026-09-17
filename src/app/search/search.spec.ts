@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideZonelessChangeDetection } from '@angular/core';
 import { Search } from './search';
 import { Weather } from '../weather';
 //import { environment } from '../../environments/environment';
@@ -17,6 +16,7 @@ export const FAKE_HTTP_CLIENT_LOCATIONS = {
 export const FAKE_HTTP_CLIENT_FORECASTS = {
   get: (url: string |null) => of(RAWFORECASTS)
 } as HttpClient;
+
 describe('Search', () => {
   let component: Search;
   let fixture: ComponentFixture<Search>;
@@ -24,18 +24,17 @@ describe('Search', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Search],
-      providers: [ provideZonelessChangeDetection(), 
+      providers: [  
         {provide: HttpClient, useValue: {FAKE_HTTP_CLIENT_FORECASTS, FAKE_HTTP_CLIENT_LOCATIONS} },
         {provide: Weather, useFactory: weatherServiceFactory, deps: ['IS_PROD_ENVIRONMENT']},
         {provide: 'IS_PROD_ENVIRONMENT', useValue: false},
         {provide: Location, useValue: RAWLOCATIONS[0]}
       ]
-    })
-    .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(Search);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should create', () => {

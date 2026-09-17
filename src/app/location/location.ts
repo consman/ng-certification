@@ -1,25 +1,25 @@
 import { Component, inject, input, model } from '@angular/core';
-import {Location} from '../location';
+import {LocationT} from '../location';
 import { LocationImpl } from '../locationImpl';
 import { Weather } from '../weather';
 import { RouterModule } from '@angular/router';
 import { Observable, of } from 'rxjs';
 
 @Component({
-  selector: 'app-location',
   imports: [RouterModule],
-  templateUrl: './location.html',
+  selector: 'app-location',
   styleUrl: '../app.css',
+  templateUrl: './location.html',
 })
-export class Locationn {
+export class Location {
 
   weatherService = inject(Weather);
-  location  = input<Location>(new LocationImpl());
-  locations = model(<Location []>(new Array<Location>));
-  olocations = model(<Observable<Location[]>>  (new Observable<Location[]>));
-  observables = model(<Observable<Location>[]> (new Array <Observable<Location>>)  );
+  location  = input<LocationT>(new LocationImpl());
+  locations = model(<LocationT []>(new Array<LocationT>));
+  olocations = model(<Observable<LocationT[]>>  (new Observable<LocationT[]>));
+  observables = model(<Observable<LocationT>[]> (new Array <Observable<LocationT>>)  );
 
-  constructor(){
+    constructor(){
   }
   handleClose(): void {
     const index = this.locations().findIndex( d => d.zip === this.location().zip );
@@ -32,7 +32,7 @@ export class Locationn {
           //console.log('A this.locations().length now = ' + this.locations().length);
           this.olocations.set( of(this.locations()));
 
-          let newArr = new Array <Observable<Location>>;
+          let newArr = new Array <Observable<LocationT>>;
           this.locations().forEach(loc => {
             newArr.push(of(loc));
           });

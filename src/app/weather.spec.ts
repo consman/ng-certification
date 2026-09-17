@@ -1,6 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-
-import { provideZonelessChangeDetection } from '@angular/core';
 import { Weather } from './weather';
 
 import { environment } from '../environments/environment';
@@ -23,7 +21,7 @@ describe('Weather', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection(),{provide: HttpClient, useValue: {FAKE_HTTP_CLIENT_FORECASTS, FAKE_HTTP_CLIENT_LOCATIONS} },
+      providers: [{provide: HttpClient, useValue: {FAKE_HTTP_CLIENT_FORECASTS, FAKE_HTTP_CLIENT_LOCATIONS} },
         {provide: Weather, useFactory: weatherServiceFactory, deps: ['IS_PROD_ENVIRONMENT']},
         {provide: 'IS_PROD_ENVIRONMENT', useValue: environment.production},
         {provide: Location, useValue: RAWLOCATIONS[0]}]

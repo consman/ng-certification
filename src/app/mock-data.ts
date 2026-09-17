@@ -1,4 +1,4 @@
-import { Location } from './location';
+import { LocationT } from './location';
 import { Forecast } from './forecast';
 export const RAWFORECASTS: Forecast[] = [
   {
@@ -3125,7 +3125,7 @@ export const RAWFORECASTS: Forecast[] = [
   }
 ];
 
-export const RAWLOCATIONS: Location[] = [
+export const RAWLOCATIONS: LocationT[] = [
   {
     zip: '95630',
     coord: {

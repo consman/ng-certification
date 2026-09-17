@@ -1,15 +1,13 @@
-import { Injectable } from '@angular/core';
-import {Observable} from 'rxjs';
-import { Location } from './location';
+import { Service } from '@angular/core';
+import { Observable } from 'rxjs';
 import { Forecast } from './forecast';
+import {LocationT} from './location';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export abstract class Weather {
 
     constructor() { }
 
-  abstract getLocationFromService(zipcode: string): Observable<Location>;
+  abstract getLocationFromService(zipcode: string): Observable<LocationT>;
   abstract getFiveDayForecastFromService(lat: number, lon: number): Observable<Forecast>;
 }

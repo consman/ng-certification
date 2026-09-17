@@ -4,23 +4,24 @@ import { Observable } from 'rxjs';
 import { Forecast } from '../forecast';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Weather } from '../weather';
-import {Location} from '../location';
+import {LocationT} from '../location';
 import { LocationImpl } from '../locationImpl';
 import { ForecastImpl } from '../forecastImpl';
 import { AsyncPipe, DatePipe} from '@angular/common';
 
 @Component({
-  selector: 'app-fivedayforecast',
   imports: [AsyncPipe,DatePipe],
+  selector: 'app-fivedayforecast',
+  styleUrl: '../app.css',
   templateUrl: './fivedayforecast.html',
-  styleUrl: '../app.css'
 })
-
 export class Fivedayforecast {
+
   weatherService = inject(Weather);
-  location: Location;
+  location: LocationT;
   zipParam: string | null;
   obsForecast$: Observable<Forecast>;
+
 
   constructor(route: ActivatedRoute, private router: Router){ 
     this.zipParam = route.snapshot.paramMap.get('zipcode');
@@ -30,7 +31,7 @@ export class Fivedayforecast {
     this.obsForecast$ = this.weatherService.getFiveDayForecastFromService(this.location.coord.lat, this.location.coord.lon);
   }
 
-  getLocFromObservable(forecast: Forecast | null): Location {
+  getLocFromObservable(forecast: Forecast | null): LocationT {
     
     if(!this.location.forecasts){
       this.location.forecasts = new Array();
@@ -90,6 +91,5 @@ export class Fivedayforecast {
     result = result = locationNameWithDashes.replace('-', ' ');
     return result;
   }
-
 
 }

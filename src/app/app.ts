@@ -1,16 +1,16 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import {environment} from '../environments/environment';
+import { environment } from '../environments/environment';
 
 @Component({
-  selector: 'app-root',
   imports: [RouterOutlet],
+  selector: 'app-root',
+  styleUrl: './app.css',
   templateUrl: './app.html',
-  styleUrl: './app.css'
 })
 export class App {
    readonly title = signal('ng-certification app is running!');
-   constructor() {
+  constructor() {
     console.log('environment.production = ' + environment.production);
   }
 }
