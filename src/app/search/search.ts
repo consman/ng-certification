@@ -1,4 +1,4 @@
-import { afterNextRender, Component, inject, signal, WritableSignal } from '@angular/core';
+import { afterNextRender, Component, effect, inject, signal, WritableSignal } from '@angular/core';
 
 import { Location } from '../location/location';
 import { FormsModule } from '@angular/forms';
@@ -26,6 +26,8 @@ export class Search {
     locationSig:  WritableSignal<LocationT    | undefined> = signal(undefined);
     locationsSig: WritableSignal<LocationT [] | undefined> = signal(undefined);
 
+    locResponseSig:WritableSignal<LocationT | undefined> =signal(undefined); 
+
   constructor(){
     this.locations = [];
     
@@ -34,6 +36,19 @@ export class Search {
     });
     this.locations$ = of(this.locations);
     //console.log(' - - - - -  constructor');
+
+  
+    effect(() => {
+      const loc = this.locResponseSig();
+      if (loc){
+        loc.weather[0].main = this.getIconFrom(loc.weather[0].main);
+        this.location = loc;
+        this.location.zip = loc.zip;
+        this.addToLocationsArray(loc); 
+        localStorage.setItem('storedZipCode' + (loc.zip), loc.zip);
+
+      }
+    });
   }
   
   search(): void{ 
@@ -57,7 +72,28 @@ export class Search {
 
   addNewLocation(zip: string): Observable<LocationT> | null {
     if (this.validateZip(zip) ) {
-      
+
+      let zipSig: WritableSignal<String | undefined> = signal(zip);
+
+      //const locationSig 
+      this.locResponseSig = this.weatherService.getLocationFromService(zipSig);
+      const loc = locationSig();
+      if (!loc){
+          alert('The zip code, ' + zip + ', is formatted OK, but no data is returned.');          
+          this.locations$ = of(this.locations);              
+          throw 'Nothing found for zip '+ zip+' . Details: TODO: ' ;//+ err.status;
+      }
+      else{
+        loc.weather[0].main = this.getIconFrom(loc.weather[0].main);
+        this.location = loc;
+        this.location.zip = loc.zip;
+        this.addToLocationsArray(loc); 
+        localStorage.setItem('storedZipCode' + (zip), zip);
+
+      }
+      return of(loc);
+
+      /*
       const observable = this.weatherService.getLocationFromService(zip).pipe(delay(0),
         tap(l => {
           
@@ -76,6 +112,7 @@ export class Search {
         }) 
       );
       return observable;
+      */
     }
     else {
       console.error('ERROR! ' + zip + ' zip is not valid');
@@ -129,9 +166,10 @@ export class Search {
     this.locations$ = forkJoin(this.observables);
   }
 
-  addToLocationsArray(location: LocationT): void{
+  addToLocationsArray(location: LocationT | undefined) : void{
     // check for dups first -- although this may havbe already been done..
-    if (this.locations.findIndex( d => d.zip === location.zip ) === -1) {
+    
+    if (location && this.locations.findIndex( d => d.zip === location.zip ) === -1) {
       this.locations.push(location);
     }
   }

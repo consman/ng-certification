@@ -1,4 +1,4 @@
-import { Service } from '@angular/core';
+import { Service, signal, WritableSignal } from '@angular/core';
 import { Weather } from './weather';
 import { filter, from, Observable, of } from 'rxjs';
 import { RAWFORECASTS, RAWLOCATIONS } from './mock-data';
@@ -12,10 +12,12 @@ export class Nonprodweather extends Weather {
     super();
   }
 
-  override getLocationFromService(zipcode: string): Observable<LocationT> {
+  //  abstract getLocationFromService(zipcode:WritableSignal<String | undefined>): WritableSignal<LocationT | undefined>; 
+
+  override getLocationFromService(zipcode: WritableSignal<String | undefined>): WritableSignal<LocationT | undefined> {
     console.log('NON-PROD weather service getting location for zip: ' + zipcode);
  
-       if ( RAWLOCATIONS.filter(loc => loc.zip == zipcode).length == 0){
+       if ( RAWLOCATIONS.filter(loc => loc.zip == zipcode()).length == 0){
          console.log('NON-PROD weather service -- location not found for '+ zipcode);
          const error = new HttpErrorResponse({ status: 404 });
          return of(error) as any;
@@ -23,8 +25,11 @@ export class Nonprodweather extends Weather {
        else{
         console.log('NON-PROD weather service -- found at least one for '+ zipcode);
        }
-       let result = from(RAWLOCATIONS).pipe(filter(loc => loc.zip === zipcode));//.pipe(tap(l=> {alert('In TAP');}));
+       //let rawResult = from(RAWLOCATIONS).pipe(filter(loc => loc.zip === zipcode()));//.pipe(tap(l=> {alert('In TAP');}));
        //alert('In NonprodweatherService! result = ' + result);
+       let rawResult:LocationT | undefined = RAWLOCATIONS.find(loc => loc.zip === zipcode())
+
+       let result: WritableSignal<LocationT | undefined> = signal(rawResult);
        
        return result;
   }
