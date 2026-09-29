@@ -84,4 +84,5 @@ export interface Daily {
     snow?: number;
     dayOfWeek?: Date;
   }
+  //TODO find out why we need both Weather and Weather2. This seems obtuse and unnecessary.
 

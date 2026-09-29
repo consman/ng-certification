@@ -1,0 +1,1 @@
+(globalThis as any).W_APP_ID = 'foo';

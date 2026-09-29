@@ -13,7 +13,7 @@ import { Observable, of } from 'rxjs';
 })
 export class Location {
 
-  weatherService = inject(Weather);
+  weatherService = inject(Weather);//TODO it does not look lie we need this
   location  = input<LocationT>(new LocationImpl());
   locations = model(<LocationT []>(new Array<LocationT>));
   olocations = model(<Observable<LocationT[]>>  (new Observable<LocationT[]>));

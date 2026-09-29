@@ -1,4 +1,4 @@
-import { afterNextRender, Component, inject } from '@angular/core';
+import { afterNextRender, Component, inject, signal, WritableSignal } from '@angular/core';
 
 import { Location } from '../location/location';
 import { FormsModule } from '@angular/forms';
@@ -22,6 +22,9 @@ export class Search {
     locations: LocationT[];
     location!: LocationT;
     observables: Observable<LocationT>[] = [];
+
+    locationSig:  WritableSignal<LocationT    | undefined> = signal(undefined);
+    locationsSig: WritableSignal<LocationT [] | undefined> = signal(undefined);
 
   constructor(){
     this.locations = [];
