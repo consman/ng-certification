@@ -31,17 +31,20 @@ describe('Location', () => {
     fixture = TestBed.createComponent(Location);
     component = fixture.componentInstance;
 
-    component.location().name = 'Folsom';
-    component.location().weather = new Array<WeatherImpl>();
-    component.location().weather.push(new WeatherImpl());
-    component.location().weather[0].main = 'Clouds';
-    component.location().main = new MainImpl();
-    component.location().main.temp = 49.06;
-    component.location().main.temp_min = 41.99;
-    component.location().main.temp_max = 60.49;
-    component.location().coord.lon = -121.1529;
-    component.location().coord.lat = 38.6709;
-    component.location().zip = '95630';    
+    let loc = component.location();
+    if(loc) {
+      loc.name = 'Folsom';
+      loc.weather = new Array<WeatherImpl>();
+      loc.weather.push(new WeatherImpl());
+      loc.weather[0].main = 'Clouds';
+      loc.main = new MainImpl();
+      loc.main.temp = 49.06;
+      loc.main.temp_min = 41.99;
+      loc.main.temp_max = 60.49;
+      loc.coord.lon = -121.1529;
+      loc.coord.lat = 38.6709;
+      loc.zip = '95630';  
+    }  
     await fixture.whenStable();
   });
 

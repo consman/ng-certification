@@ -1,9 +1,8 @@
-import { Component, inject, input, model } from '@angular/core';
+import { Component, inject, input, model, signal, WritableSignal } from '@angular/core';
 import {LocationT} from '../location';
 import { LocationImpl } from '../locationImpl';
 import { Weather } from '../weather';
 import { RouterModule } from '@angular/router';
-import { Observable, of } from 'rxjs';
 
 @Component({
   imports: [RouterModule],
@@ -14,31 +13,56 @@ import { Observable, of } from 'rxjs';
 export class Location {
 
   weatherService = inject(Weather);//TODO it does not look lie we need this
-  location  = input<LocationT>(new LocationImpl());
-  locations = model(<LocationT []>(new Array<LocationT>));
-  olocations = model(<Observable<LocationT[]>>  (new Observable<LocationT[]>));
-  observables = model(<Observable<LocationT>[]> (new Array <Observable<LocationT>>)  );
+  location  = input<LocationT | undefined>(new LocationImpl());
 
+  //locationsModel = model(<WritableSignal               <LocationT | undefined> []>                 (new Array<WritableSignal<LocationT>>));
+    locationsModel = model(<WritableSignal<WritableSignal<LocationT | undefined> []>> (signal(new Array<WritableSignal<LocationT>>)));
+  
     constructor(){
   }
-  handleClose(): void {
-    const index = this.locations().findIndex( d => d.zip === this.location().zip );
-    
-    setTimeout(()=>{
-        this.locations().splice(index, 1);
-        if (null != this.getZipLocalStorageKey(this.location().zip)){
-          localStorage.removeItem('storedZipCode'+this.location().zip);
-          //console.log(' Handleclose() removed storedZipCode'+ this.location().zip);
-          //console.log('A this.locations().length now = ' + this.locations().length);
-          this.olocations.set( of(this.locations()));
 
-          let newArr = new Array <Observable<LocationT>>;
-          this.locations().forEach(loc => {
-            newArr.push(of(loc));
-          });
-          this.observables.set(newArr);          
-        } 
-    },100);
+
+  handleClose(): void {
+    //const locations = this.locationsModel();
+    const loc = this.location();
+    
+    if(this.locationsModel && loc && loc.zip != undefined){
+
+      const index = this.findIndexByZip(this.locationsModel()(), loc.zip);
+      console.log('handleClose says to index to be spliced = ' + index);
+      
+      setTimeout(()=>{
+        
+          this.locationsModel()().splice(index, 1);
+          if (null != this.getZipLocalStorageKey(loc.zip)){
+            localStorage.removeItem('storedZipCode'+loc.zip);
+            console.log(' Handleclose() removed storedZipCode'+ loc.zip);
+            console.log('A this.locations().length now = ' + this.locationsModel.length);
+            //this.olocations.set( of(this.locations()));
+
+            let newArr: WritableSignal<LocationT | undefined>[] =[]; 
+            this.locationsModel()().forEach(loc => {
+              newArr.push(loc);
+            });
+            
+             this.locationsModel().set( newArr );
+            //this.observables.set(newArr);          
+          } 
+      },100);
+    }
+  }
+
+  findIndexByZip(locs: WritableSignal<LocationT | undefined>[],zip:String): number{
+    let result = -1;
+    let ind = 0;
+    locs.forEach(loc => { 
+      if( zip == loc()?.zip){
+        result = ind;
+      }
+      ind++;
+
+    });
+    return result;
   }
 
   getZipLocalStorageKey(zipcode: string): string {
@@ -62,6 +86,8 @@ export class Location {
     return result;
   }
   
+  //Currently commented out in template:
+  /*
   logNumberInObservableArray():void{
     let result =0;
     this.olocations().subscribe({
@@ -77,5 +103,5 @@ export class Location {
     });
     
   }
-
+*/
 }

@@ -10,18 +10,29 @@
           </button>
         </div>
       
-        @let locs = locations$ | async;
+        @let locs = locationSigs(); 
         @if(locs && locs.length > 0 ){
             @for(loc of locs; track loc){
-                <app-location
-                [(locations)]="locations"
-                [location] = "loc"
-                [(olocations)] = "locations$"
-                [(observables)] = "observables"
-                >
-                </app-location>
+                @let lloc = loc();
+                
+                  <app-location
+                  [locationsModel]="locationSigs"
+                  [location] = "lloc"
+                  >
+                  </app-location>
+              
             }
         }
     </div>
+
+    <div><p>locResponseSig()?.sys.id =  {{locResponseSig()?.sys.id}}</p></div>
+    <div><p>locResponseSig()?.coord.lat =  {{locResponseSig()?.coord.lat}}</p></div>
+    <div><p>locationSigs.length =  {{locationSigs().length}}</p></div>
+    @if( locationSigs() && locationSigs().length > 0 && locationSigs()[0]()){
+      @let locc = locationSigs()[0]();
+      <div><p>locc?.zip =  {{locc?.zip}}</p></div>
+    }
+    <div><p> junk =  {{junk}}</p></div>
+    
   
   </ng-container>

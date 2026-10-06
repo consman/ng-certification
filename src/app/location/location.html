@@ -1,41 +1,48 @@
 <div>
     <div class="well flex">
       <div>
+
+      @let loc = location();
+      @if(loc){
         <table><tr class="mylocations"><td>
-        <h3 data-test="searchResultTitle" >{{location().name}} ({{location().zip}})</h3>
+
+        <h3 data-test="searchResultTitle" >
+            {{loc.name}} ({{loc.zip}})
+           
+        </h3>
         
-        @if(location() && location().weather && location().weather.length > 0){
-            <h4>Current conditions:  {{location().weather[0].main}}</h4>
+        @if(loc.weather && loc.weather.length > 0){
+            <h4>Current conditions:  {{loc.weather[0].main}}</h4>
         }
         <h4>Temperatures today:</h4>
         <span>
-            @if(location() && location().main && location().main.temp){ 
-                Current {{location().main.temp}}
+            @if(loc.main && loc.main.temp){ 
+                Current {{loc.main.temp}}
             }
-            @if(location() && location().main && location().main.temp_max){ 
-                - Max {{location().main.temp_max}}
+            @if(loc.main && loc.main.temp_max){ 
+                - Max {{loc.main.temp_max}}
             }
-            @if(location() && location().main && location().main.temp_min){ 
-                - Min {{location().main.temp_min}}
+            @if(loc.main && loc.main.temp_min){ 
+                - Min {{loc.main.temp_min}}
             }
           </span>
       
     </td><td>
-          @if (location() != undefined && location().name != undefined && location().zip != undefined && location().coord != undefined && location().coord.lon != undefined && location().coord.lat != undefined){
-            <a data-test="fiveDayForecastLink" routerLink="/forecast/{{location().zip}}+{{spacesToDashes( location().name)}}+{{location().coord.lat}}+{{location().coord.lon}}" >
-                Show Five Day Forecast for {{location().name}}
+          @if (loc != undefined && loc.name != undefined && loc.zip != undefined && loc.coord != undefined && loc.coord.lon != undefined && loc.coord.lat != undefined){
+            <a data-test="fiveDayForecastLink" routerLink="/forecast/{{loc.zip}}+{{spacesToDashes( loc.name)}}+{{loc.coord.lat}}+{{loc.coord.lon}}" >
+                Show Five Day Forecast for {{loc.name}}
             </a>
           } 
         
       </td>
       <td>
-        @if(location() && location().weather && location().weather.length > 0 && location().weather[0].main){ 
-            <img class="iconimg" src="https://www.angulartraining.com/images/weather/{{location().weather[0].main}}.png" alt="icon" height="auto" />
+        @if(loc.weather && loc.weather.length > 0 && loc.weather[0].main){ 
+            <img class="iconimg" src="https://www.angulartraining.com/images/weather/{{loc.weather[0].main }}.png" alt="icon" height="auto" />
         }        
         <span data-test="closeSearchResult" class="close" (click)="handleClose()" class="close">X</span>        
       </td></tr>
     </table>
-
+  }
   </div>
   </div>
   <!--

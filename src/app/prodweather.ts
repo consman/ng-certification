@@ -1,5 +1,5 @@
-import { Service , WritableSignal, inject, signal} from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Service , WritableSignal, effect, inject, signal} from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import {LocationT} from './location';
 
 import {Observable} from 'rxjs';
@@ -16,9 +16,40 @@ export class Prodweather extends Weather {
     super();
   }
 */
+
+constructor(){
+  super();
+
+  effect(() => { //this.locationResource.value;
+    const loc = this.locationResource.value();
+    //console.log('effect in prod weather running and loc()?.sys.id =  ' + loc()?.sys.id );
+    if(loc) console.log('The JSON result in prod weather service is: '+ JSON.stringify(loc));
+  });
+
+  effect(() => { //this.locationResource.value;
+    const error = this.locationResource.error();
+    const started= this.startedSig();
+    if(started){
+      console.log('Going for eff 002 in Prodweather and error?.message = ' + error?.message + 'error?.name = '+ error?.name);
+      if (error instanceof HttpErrorResponse && error.status === 404) {
+        alert('The zip code, ' + this.targZipForLocationSig() + ', is formatted OK, but no data is returned.'); 
+      }
+      if(error){
+        console.log ('eff 002 in Prodweather and  error is here but not an instanceof HttpErrorResponse .  error = ' + JSON.stringify( error));
+      }
+      else{
+        console.log ('eff 002 in Prodweather and  error is undefined ');
+      }
+
+    }
+  });  
+}
+
   http = inject (HttpClient);
   wAppId = W_APP_ID;
   headers = new HttpHeaders();
+  startedSig: WritableSignal<boolean> = signal( false);
+
 
 
   dummyForLocationSig:WritableSignal<String | undefined>= signal(new Date().getTime()+'');
@@ -28,6 +59,7 @@ export class Prodweather extends Weather {
     const targZipForLocation = this.targZipForLocationSig();
     const dummy = this.dummyForLocationSig();
     if(!targZipForLocation) {return undefined;} else {
+      console.log('Inside the locationResource and trying for this.targZipForLocationSig() = ' + this.targZipForLocationSig());
       this.headers = new HttpHeaders();
       this.headers.append("Content-Type", "application/json");
     }
@@ -41,9 +73,17 @@ export class Prodweather extends Weather {
   });  
 
   override getLocationFromService(zipSig:WritableSignal<String | undefined>):WritableSignal<LocationT | undefined>{
+    this.startedSig.set(true);
     this.dummyForLocationSig = signal(new Date().getTime()+''); //().set(new Date().getTime()+'');
     this.targZipForLocationSig.set(zipSig());
     let result = this.locationResource.value;
+/*    
+    const zipp = zipSig();
+    if(zipp){
+      result.update(loc => { if(loc) loc.zip = zipp+''});
+    }
+*/      
+    console.log(' prod getLocationFromService called and result()?.sys.id = ' + result()?.sys.id + ' and zipSig() = '+zipSig());
     return result;
   }
 
