@@ -18,28 +18,27 @@ export class Nonprodweather extends Weather {
     //console.log('NON-PROD weather service getting location for zip: ' + zipcode());
  
        if ( RAWLOCATIONS.filter(loc => loc.zip == zipcode()).length == 0){
-         console.log('NON-PROD weather service -- location not found for '+ zipcode());
+         //console.log('NON-PROD weather service -- location not found for '+ zipcode());
          //const error = new HttpErrorResponse({ status: 404 });
          
-         //alert('The zip code, ' + zipcode() + ', is formatted OK, but no data is returned.'); 
+         alert('The zip code, ' + zipcode() + ', is formatted OK, but no data is returned.'); 
+         
          return signal(undefined);//of(error) as any;
        }
        else{
-        console.log('NON-PROD weather service -- found at least one for '+ zipcode());
+        //console.log('NON-PROD weather service -- found at least one for '+ zipcode());
        }
-       //let rawResult = from(RAWLOCATIONS).pipe(filter(loc => loc.zip === zipcode()));//.pipe(tap(l=> {alert('In TAP');}));
-       //alert('In NonprodweatherService! result = ' + result);
        let rawResult:LocationT | undefined = RAWLOCATIONS.find(loc => loc.zip === zipcode());
        //console.log(' NonprodweatherService rawResult?.zip = ' + rawResult?.zip);
 
        let result: WritableSignal<LocationT | undefined> = signal(rawResult);
-       console.log(' NonprodweatherService result()?.zip = ' + result()?.zip);
+       //console.log(' NonprodweatherService result()?.zip = ' + result()?.zip);
        
        return result;
   }
 
   override getFiveDayForecastFromService(lat: number, lon: number): Observable<Forecast> {
-    console.log('NON-PROD weather service getFiveDayForecastsFromService for lat: ' + lat);
+    //console.log('NON-PROD weather service getFiveDayForecastsFromService for lat: ' + lat);
      return from(RAWFORECASTS).pipe(filter(forc => forc.lat === lat && forc.lon === lon));   
     }
 }

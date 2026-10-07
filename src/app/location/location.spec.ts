@@ -49,7 +49,7 @@ describe('Location', () => {
   });
 
   it('should create', () => {
-     console.log('Testing component - Location');
+     //console.log('Testing component - Location');
     expect(component).toBeTruthy();
   });
 
@@ -61,7 +61,7 @@ describe('Location', () => {
     for (const localStorageKey in localStorage) {
       if (localStorageKey.startsWith('storedZipCode')){
         if (localStorage.getItem(localStorageKey) === 'storedZipCode95630'){
-          console.log('Testing LocationComponent');
+          //console.log('Testing LocationComponent');
           found = true;
         }
       }

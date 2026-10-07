@@ -38,7 +38,7 @@ describe('Search', () => {
   });
 
   it('should create', () => {
-    console.log('Testing the component - Search. ');
+    //console.log('Testing the component - Search. ');
     expect(component).toBeTruthy();
   });
 });

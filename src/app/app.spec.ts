@@ -10,7 +10,7 @@ describe('App', () => {
   });
 
   it('should create the app', () => {
-    console.log('Testing component - App');
+    //console.log('Testing component - App');
     const fixture = TestBed.createComponent(App);
     const app = fixture.componentInstance;
     expect(app).toBeTruthy();

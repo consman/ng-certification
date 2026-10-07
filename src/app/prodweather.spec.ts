@@ -26,7 +26,7 @@ describe('Prodweather', () => {
   });
 
   it('should be created', () => {
-    console.log('Testing the service, prodweather. ');
+    //console.log('Testing the service, prodweather. ');
     expect(service).toBeTruthy();
   });
 });

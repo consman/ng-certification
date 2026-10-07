@@ -29,15 +29,15 @@ export class Location {
     if(this.locationsModel && loc && loc.zip != undefined){
 
       const index = this.findIndexByZip(this.locationsModel()(), loc.zip);
-      console.log('handleClose says to index to be spliced = ' + index);
+      //console.log('handleClose says to index to be spliced = ' + index);
       
       setTimeout(()=>{
         
           this.locationsModel()().splice(index, 1);
           if (null != this.getZipLocalStorageKey(loc.zip)){
             localStorage.removeItem('storedZipCode'+loc.zip);
-            console.log(' Handleclose() removed storedZipCode'+ loc.zip);
-            console.log('A this.locations().length now = ' + this.locationsModel.length);
+            //console.log(' Handleclose() removed storedZipCode'+ loc.zip);
+            //console.log('A this.locations().length now = ' + this.locationsModel.length);
             //this.olocations.set( of(this.locations()));
 
             let newArr: WritableSignal<LocationT | undefined>[] =[]; 
@@ -93,7 +93,7 @@ export class Location {
     this.olocations().subscribe({
       next: (data ) => {
         data.forEach(loc => {
-          console.log('One loc is : ' + loc.zip);
+          //console.log('One loc is : ' + loc.zip);
           result = result + 1;
         });
         

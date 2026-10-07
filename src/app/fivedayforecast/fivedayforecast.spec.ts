@@ -42,7 +42,7 @@ describe('Fivedayforecast', () => {
   });
 
   it('should create', () => {
-    console.log('Testing Component - Fivedayforecast');
+    //console.log('Testing Component - Fivedayforecast');
     expect(component).toBeTruthy();
   });
 });

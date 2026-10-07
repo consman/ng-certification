@@ -11,6 +11,6 @@ import { environment } from '../environments/environment';
 export class App {
    readonly title = signal('ng-certification app is running!');
   constructor() {
-    console.log('environment.production = ' + environment.production);
+    //console.log('environment.production = ' + environment.production);
   }
 }

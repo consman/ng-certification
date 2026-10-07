@@ -30,7 +30,7 @@ describe('Weather', () => {
   });
 
   it('should be created', () => {
-    console.log('Testing the abstract service, weather. ');
+    //console.log('Testing the abstract service, weather. ');
     expect(service).toBeTruthy();
   });
 });

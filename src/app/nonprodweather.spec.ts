@@ -10,7 +10,7 @@ describe('Nonprodweather', () => {
   });
 
   it('should be created', () => {
-    console.log('Testing the service, nonprodweather. ');
+    //console.log('Testing the service, nonprodweather. ');
     expect(service).toBeTruthy();
   });
 });
