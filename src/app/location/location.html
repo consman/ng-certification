@@ -2,42 +2,43 @@
     <div class="well flex">
       <div>
 
-      @let loc = location();
-      @if(loc){
+      @let bco = bobsCompositeOcr();
+      @if(bco){
         <table><tr class="mylocations"><td>
 
         <h3 data-test="searchResultTitle" >
-            {{loc.name}} ({{loc.zip}})
+            {{bco.jeocode.name}} ({{bco.jeocode.zip}})
            
         </h3>
         
-        @if(loc.weather && loc.weather.length > 0){
-            <h4>Current conditions:  {{loc.weather[0].main}}</h4>
+        @if(bco.oneCallResponse.data[0].weather && bco.oneCallResponse.data[0].weather.length > 0){
+            <h4>Current conditions:  {{bco.oneCallResponse.data[0].weather[0].main}}</h4>
         }
         <h4>Temperatures today:</h4>
         <span>
-            @if(loc.main && loc.main.temp){ 
-                Current {{loc.main.temp}}
+            @if(bco.oneCallResponse.data[0] && bco.oneCallResponse.data[0].temp.day){ 
+                Current {{bco.oneCallResponse.data[0].temp.day}}
             }
-            @if(loc.main && loc.main.temp_max){ 
-                - Max {{loc.main.temp_max}}
+            @if(bco.oneCallResponse.data[0].temp && bco.oneCallResponse.data[0].temp.max){ 
+                - Max {{bco.oneCallResponse.data[0].temp.max}}
             }
-            @if(loc.main && loc.main.temp_min){ 
-                - Min {{loc.main.temp_min}}
+            @if(bco.oneCallResponse.data[0].temp && bco.oneCallResponse.data[0].temp.min){ 
+                - Min {{bco.oneCallResponse.data[0].temp.min}}
             }
           </span>
       
     </td><td>
-          @if (loc != undefined && loc.name != undefined && loc.zip != undefined && loc.coord != undefined && loc.coord.lon != undefined && loc.coord.lat != undefined){
-            <a data-test="fiveDayForecastLink" routerLink="/forecast/{{loc.zip}}+{{spacesToDashes( loc.name)}}+{{loc.coord.lat}}+{{loc.coord.lon}}" >
-                Show Five Day Forecast for {{loc.name}}
+          
+          @if (bco.jeocode != undefined && bco.jeocode.name != undefined && bco.jeocode.zip != undefined && bco.jeocode.lon != undefined && bco.jeocode.lat != undefined){
+            <a data-test="fiveDayForecastLink" routerLink="/forecast/{{bco.jeocode.zip}}+{{spacesToDashes( bco.jeocode.name)}}+{{bco.jeocode.lat}}+{{bco.jeocode.lon}}" >
+                Show Five Day Forecast for {{bco.jeocode.name}}
             </a>
           } 
         
       </td>
       <td>
-        @if(loc.weather && loc.weather.length > 0 && loc.weather[0].main){ 
-            <img class="iconimg" src="https://www.angulartraining.com/images/weather/{{loc.weather[0].main }}.png" alt="icon" height="auto" />
+        @if(bco.oneCallResponse.data[0].weather && bco.oneCallResponse.data[0].weather.length > 0 && bco.oneCallResponse.data[0].weather[0].main){ 
+            <img class="iconimg" src="https://www.angulartraining.com/images/weather/{{bco.oneCallResponse.data[0].weather[0].main }}.png" alt="icon" height="auto" />
         }        
         <span data-test="closeSearchResult" class="close" (click)="handleClose()" class="close">X</span>        
       </td></tr>

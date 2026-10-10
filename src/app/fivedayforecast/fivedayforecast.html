@@ -1,36 +1,36 @@
 <div class="container-fluid">
     <div class="panel panel-default">
       <div class="panel-heading">
-        <h3 class="panel-title">5-day forecast for {{location.name}}</h3>
+        <h3 class="panel-title">5-day forecast for {{jeo.name}}</h3>
       </div>
 
-      @let parentforc = (obsForecast$ | async);
-      @if(parentforc) {
-        @if (getLocFromObservable(parentforc)){
-            @let loc = getLocFromObservable(parentforc);
-            @if (loc.forecasts){
-                @for (forec of loc.forecasts; track forec){
-                    @if(forec.daily){
+      
+      @if(oneCallResponse) {
+        
+            @let days = oneCallResponse.data;
+            @if (days.length > 0){
+                @for (day of days; track day){
+                    @if(day){
                         <ul class="list-group">
-                        @for(da of forec.daily; track da){    
+                          
                         <li data-test="tdForecastItem" class="list-group-item">            
         
-                            {{convertEpocToDayofWeek(da.dt) | date: 'EEEE'}}:
-                            @if(da.weather){
-                            {{da.weather[0].description}}
+                            {{convertEpocToDayofWeek(day.dt) | date: 'EEEE'}}:
+                            @if(day.weather){
+                            {{day.weather[0].description}}
                             }
-                        - Min: {{da.temp.min}}
-                        - Max: {{da.temp.max}}
-                        @if ( da.weather){
-                            <img class="icon" src="https://www.angulartraining.com/images/weather/{{getIconFrom(da.weather[0].main)}}.png">                
+                        - Min: {{day.temp.min}}
+                        - Max: {{day.temp.max}}
+                        @if ( day.weather){
+                            <img class="icon" src="https://www.angulartraining.com/images/weather/{{getIconFrom(day.weather[0].main)}}.png">                
                         }
                         </li>
-                        }
+                        
                     </ul>
                     }  
                 }
             }
-        }
+        
       }
  
       </div>

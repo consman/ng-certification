@@ -3,6 +3,8 @@ import {LocationT} from '../location';
 import { LocationImpl } from '../locationImpl';
 import { Weather } from '../weather';
 import { RouterModule } from '@angular/router';
+import { BobsCompositeOcr } from '../funTypes';
+import { initialBobsCompositeOcr } from '../refData';
 
 @Component({
   imports: [RouterModule],
@@ -13,57 +15,49 @@ import { RouterModule } from '@angular/router';
 export class Location {
 
   weatherService = inject(Weather);//TODO it does not look lie we need this
-  location  = input<LocationT | undefined>(new LocationImpl());
+  //location  = input<LocationT | undefined>(new LocationImpl());
+  bobsCompositeOcr = input<BobsCompositeOcr | undefined>(initialBobsCompositeOcr); 
 
-  //locationsModel = model(<WritableSignal               <LocationT | undefined> []>                 (new Array<WritableSignal<LocationT>>));
-    locationsModel = model(<WritableSignal<WritableSignal<LocationT | undefined> []>> (signal(new Array<WritableSignal<LocationT>>)));
-  
+  //locationsModel = model(<WritableSignal<WritableSignal<LocationT | undefined> []>> (signal(new Array<WritableSignal<LocationT>>)));
+  //bobsCompositeOcrsModel = model(<WritableSignal<WritableSignal<BobsCompositeOcr | undefined> []>> (signal(new Array<WritableSignal<BobsCompositeOcr>>)));
     constructor(){
   }
 
 
   handleClose(): void {
     //const locations = this.locationsModel();
-    const loc = this.location();
+    const bcocr = this.bobsCompositeOcr();
+    const bobsCompositeOcrs = this.weatherService.bobsCompositeOcrsSig();
+    let zip ='';
     
-    if(this.locationsModel && loc && loc.zip != undefined){
+    if(bcocr && bcocr.jeocode && bcocr.jeocode.zip){
+      zip = bcocr.jeocode.zip
+    }
 
-      const index = this.findIndexByZip(this.locationsModel()(), loc.zip);
+     /*
+      let index = bobsCompositeOcrs.findIndex(bco => {
+        const bcoc = bco();
+        bcoc && bcoc.jeocode && bcocr && bcocr.jeocode && bcoc.jeocode.lat == bcocr.jeocode.lat && bcoc.jeocode.lon == bcocr.jeocode.lon  
+      });
+      */
       //console.log('handleClose says to index to be spliced = ' + index);
       
       setTimeout(()=>{
         
-          this.locationsModel()().splice(index, 1);
-          if (null != this.getZipLocalStorageKey(loc.zip)){
-            localStorage.removeItem('storedZipCode'+loc.zip);
+          //this.locationsModel()().splice(index, 1);
+          this.weatherService.removeOneCallResponse(signal(bcocr)); //bobsCompositeOcrs[index]);
+
+          if (null != this.getZipLocalStorageKey(zip)){
+            localStorage.removeItem('storedZipCode'+zip);
             //console.log(' Handleclose() removed storedZipCode'+ loc.zip);
             //console.log('A this.locations().length now = ' + this.locationsModel.length);
             //this.olocations.set( of(this.locations()));
 
-            let newArr: WritableSignal<LocationT | undefined>[] =[]; 
-            this.locationsModel()().forEach(loc => {
-              newArr.push(loc);
-            });
-            
-             this.locationsModel().set( newArr );
-            //this.observables.set(newArr);          
+                      
           } 
       },100);
-    }
   }
-
-  findIndexByZip(locs: WritableSignal<LocationT | undefined>[],zip:String): number{
-    let result = -1;
-    let ind = 0;
-    locs.forEach(loc => { 
-      if( zip == loc()?.zip){
-        result = ind;
-      }
-      ind++;
-
-    });
-    return result;
-  }
+  
 
   getZipLocalStorageKey(zipcode: string): string {
     let result = null;

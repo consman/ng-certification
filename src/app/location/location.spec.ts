@@ -2,10 +2,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Location } from './location';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Weather } from '../weather';
-import { weatherServiceFactory } from '../weatherservice.factory';
+import { Daum, WeatherB, Temp, FeelsLike } from '../funTypes';
 import { environment } from '../../environments/environment';
-import { WeatherImpl } from '../forecastImpl';
-import { Main } from '../location';
+import { Nonprodweather } from '../nonprodweather';
 
 
 export const FAKE_ROUTE = {
@@ -16,12 +15,13 @@ export const FAKE_ROUTE = {
 describe('Location', () => {
   let component: Location;
   let fixture: ComponentFixture<Location>;
+  let weather = new Nonprodweather();
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Location],
       providers:[
-        {provide: Weather, useFactory: weatherServiceFactory, deps: ['IS_PROD_ENVIRONMENT']},
+        {provide: Weather, useValue:weather}, 
         {provide: 'IS_PROD_ENVIRONMENT', useValue: environment.production},
         {provide: ActivatedRoute, useValue: FAKE_ROUTE}
       ]
@@ -31,19 +31,62 @@ describe('Location', () => {
     fixture = TestBed.createComponent(Location);
     component = fixture.componentInstance;
 
-    let loc = component.location();
-    if(loc) {
-      loc.name = 'Folsom';
-      loc.weather = new Array<WeatherImpl>();
-      loc.weather.push(new WeatherImpl());
-      loc.weather[0].main = 'Clouds';
-      loc.main = new MainImpl();
-      loc.main.temp = 49.06;
-      loc.main.temp_min = 41.99;
-      loc.main.temp_max = 60.49;
-      loc.coord.lon = -121.1529;
-      loc.coord.lat = 38.6709;
-      loc.zip = '95630';  
+    //let loc = component.location();
+    let bco = component.bobsCompositeOcr();
+    if(bco) {
+      bco.jeocode.name = 'Folsom';
+
+      let myFeelsLike:FeelsLike ={
+        day: 0,
+        night: 0,
+        eve: 0,
+        morn: 0
+      };
+
+      let myTemp:Temp ={
+        day: 0,
+        min: 0,
+        max: 0,
+        night: 0,
+        eve: 0,
+        morn: 0
+      };
+
+      let myweath:WeatherB[] = [{
+        id: 0,
+        main: '',
+        description: '',
+        icon: ''
+      }];
+
+      let myDaum:Daum[] = [{
+        dt: 0,
+        sunrise: 0,
+        sunset: 0,
+        moonrise: 0,
+        moonset: 0,
+        moon_phase: 0,
+        temp: myTemp,
+        feels_like: myFeelsLike,
+        pressure: 0,
+        humidity: 0,
+        dew_point: 0,
+        wind_speed: 0,
+        wind_deg: 0,
+        weather: myweath,
+        clouds: 0,
+        pop: 0
+      }];
+
+      
+      bco.oneCallResponse.data = myDaum;
+      bco.oneCallResponse.data[0].weather[0].main = 'Clouds';
+      bco.oneCallResponse.data[0].temp.day = 49.06;
+      bco.oneCallResponse.data[0].temp.min = 41.99;
+      bco.oneCallResponse.data[0].temp.max = 60.49;
+      bco.jeocode.lon = -121.1529;
+      bco.jeocode.lat = 38.6709;
+      bco.jeocode.zip = '95630';  
     }  
     await fixture.whenStable();
   });
@@ -72,12 +115,3 @@ describe('Location', () => {
 });
 
 
-export class MainImpl implements Main {
-  feels_like!: number;
-  humidity!: number;
-  pressure!: number;
-  temp!: number;
-  temp_max!: number;
-  temp_min!: number;
-
-}

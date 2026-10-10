@@ -4,10 +4,12 @@ import { Weather } from './weather';
 import { environment } from '../environments/environment';
 import { weatherServiceFactory } from './weatherservice.factory';
 import {HttpClient} from '@angular/common/http';
-import {RAWFORECASTS, RAWLOCATIONS} from './mock-data'; 
+//import {RAWFORECASTS, RAWLOCATIONS} from './mock-data'; 
 import { of } from 'rxjs';
+import { KNOWNGEOCODES } from './refData';
+import { signal } from '@angular/core';
 
-
+/*
 export const FAKE_HTTP_CLIENT_LOCATIONS = {
   get: (url: string |null) => of(RAWLOCATIONS)
 } as HttpClient;
@@ -15,18 +17,33 @@ export const FAKE_HTTP_CLIENT_LOCATIONS = {
 export const FAKE_HTTP_CLIENT_FORECASTS = {
   get: (url: string |null) => of(RAWFORECASTS)
 } as HttpClient;
-
+*/
 describe('Weather', () => {
   let service: Weather;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      
+/*
       providers: [{provide: HttpClient, useValue: {FAKE_HTTP_CLIENT_FORECASTS, FAKE_HTTP_CLIENT_LOCATIONS} },
         {provide: Weather, useFactory: weatherServiceFactory, deps: ['IS_PROD_ENVIRONMENT']},
         {provide: 'IS_PROD_ENVIRONMENT', useValue: environment.production},
         {provide: Location, useValue: RAWLOCATIONS[0]}]
+        */
     });
+    
     service = TestBed.inject(Weather);
+  });
+
+  it('should return jeocodes', () => {
+    //console.log('Testing the abstract service, weather. ');
+    let result ='';
+    let jeoSig = service.getGeoCodeInfoFromZip(signal('95630'));
+    const jeo = jeoSig();
+    if (jeo) {
+      result = jeo.name;
+    }//
+    expect (result).toEqual('Folsom');
   });
 
   it('should be created', () => {

@@ -10,21 +10,20 @@
           </button>
         </div>
       
-        @let locs = locationSigs(); 
-        @if(locs && locs.length > 0 ){
-            @for(loc of locs; track loc){
-                @let lloc = loc();
+        @let bcocrs = localBcocrS(); 
+        @if(bcocrs && bcocrs.length > 0 ){
+            @for(bcocr of bcocrs; track bcocr){
+                @let bcocrc = bcocr();
                 
-                  <app-location
-                  [locationsModel]="locationSigs"
-                  [location] = "lloc"
+                  <app-location                  
+                  [bobsCompositeOcr] = "bcocrc"
                   >
                   </app-location>
               
             }
         }
     </div>
-
+<!--
     <div><p>locResponseSig()?.sys.id =  {{locResponseSig()?.sys.id}}</p></div>
     <div><p>locResponseSig()?.coord.lat =  {{locResponseSig()?.coord.lat}}</p></div>
     <div><p>locationSigs.length =  {{locationSigs().length}}</p></div>
@@ -33,6 +32,6 @@
       <div><p>locc?.zip =  {{locc?.zip}}</p></div>
     }
     <div><p> junk =  {{junk}}</p></div>
-    
+  -->
   
   </ng-container>

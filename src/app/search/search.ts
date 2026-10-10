@@ -3,10 +3,11 @@ import { afterNextRender, Component, effect, ElementRef, inject, signal, viewChi
 import { Location } from '../location/location';
 import { FormsModule } from '@angular/forms';
 import { Weather } from '../weather';
-import {LocationT} from '../location';
+//import {LocationT} from '../location';
+import { OneCallResponse,BobsCompositeOcr } from '../funTypes';
 
 @Component({
-  imports: [Location,FormsModule],//, AsyncPipe],
+  imports: [FormsModule,Location],//, AsyncPipe],
   selector: 'app-search',
   styleUrl: './search.css',
   templateUrl: './search.html',
@@ -15,10 +16,7 @@ export class Search {
 
     weatherService = inject(Weather);
     newZip!: string;
-    location!: LocationT;
-    locationSigs: WritableSignal<WritableSignal<LocationT | undefined>[]> = signal(new Array<WritableSignal<LocationT>>); //writeable signal of array of writeable signals
-
-    locResponseSig:WritableSignal<LocationT | undefined> =signal(undefined); 
+    bobsCompositeOcrSig:WritableSignal<BobsCompositeOcr | undefined> = signal(undefined); 
 
     startedSig: WritableSignal<boolean> = signal( false);
 
@@ -26,26 +24,30 @@ export class Search {
     inprogZipSig: WritableSignal<string> = signal('');
     funcSig: WritableSignal<string> = signal('search');
     myInput = viewChild<ElementRef<HTMLInputElement>>('zipCodeEntry');
+    localBcocrS: WritableSignal<WritableSignal<BobsCompositeOcr | undefined>[]>;
 
   constructor(){
     //afterNextRender( ()=> {
       this.loadLocationsFromLocalStorage();
     //});
 
+    this.localBcocrS = this.weatherService.bobsCompositeOcrsSig;
+
+    effect(() => { //003
+      const localBcocr = this.localBcocrS();
+      console.log('003 The number of entries in the localBcocr array is: '+localBcocr.length);
+    });
+
+
     effect(() => { // 002 use only for localStorage
       const func = this.funcSig();
-      const loc = this.locResponseSig();
+      const bcocr = this.bobsCompositeOcrSig();
       const started = this.startedSig();
       const inprogZip = this.inprogZipSig();
-      const locations = this.locationSigs();
-      if (func == 'localStorage' && started && loc && inprogZip != '') { //  && (inprogZip == loc?.zip)) { // inprogZip == loc?.zip) ) { //&& alreadyReceivedResponseForZip != loc?.zip                
+      let validBcocr = (bcocr && bcocr.oneCallResponse && bcocr.oneCallResponse.data && bcocr.oneCallResponse.data.length > 0)
+      if (func == 'localStorage' && started && bcocr && validBcocr && inprogZip != '') { //  && (inprogZip == loc?.zip)) { // inprogZip == loc?.zip) ) { //&& alreadyReceivedResponseForZip != loc?.zip                
         //console.log(' in effect 002 in IF Statement and loc.sys.id= '+ loc.sys.id  + ' and loc.name = ' + loc.name + ' and the number o locations is: '+ locations.length);
-        loc.weather[0].main = this.getIconFrom(loc.weather[0].main);
-        loc.zip = inprogZip;
-        this.location = loc;
-        this.location.zip = loc.zip;
-        let temp:WritableSignal<LocationT | undefined> = signal(this.locResponseSig());
-        this.addToLocationsArray(temp); 
+        bcocr.oneCallResponse.data[0].weather[0].main = this.getIconFrom(bcocr.oneCallResponse.data[0].weather[0].main);
         
         this.newZip = '';
         const inputElement = this.myInput()?.nativeElement;
@@ -65,18 +67,18 @@ export class Search {
         else if(!started) {
           //console.log('eff 002 - Not started yet. started = '+started);
         }
-        else if(!loc){
-          //console.log( 'eff 002 --loc is still missing - effect fired because of one of the other signals it is a zip with no location like 98888 ') ;
+        else if(!bcocr){
+          console.log( 'eff 002 --loc is still missing - effect fired because of one of the other signals it is a zip with no location like 98888 ') ;
           //alert('The zip code, ' + inprogZip + ', is formatted OK, but no data is returned.'); 
         }
         else if(inprogZip == '' ){
             //console.log(' eff 002 inprogZip is still \'\' ');
         }           
-        else if( inprogZip != loc?.zip){
+        else if( inprogZip != this.newZip){
           //console.log(' eff 002 the inprogress zip '+ inprogZip + ' is different from the zip of the incoming loc: '+loc?.zip +' .');
         }   
-        else if(!loc.zip){
-          console.warn( 'eff 002  loc is here but does not have a zip . loc.zip = ' + loc.zip + ' the loc.name = '+ loc.name) ;
+        else if(bcocr && (!bcocr.jeocode|| !bcocr.jeocode.zip)){
+          console.warn( 'eff 002  bcocr is here but does not have a zip or a containing geocode') ;
         }  
         else{
           //console.log('eff 002  not sure whats going on...started = '+started+  ' func= '+func +' inprogZip = ' + inprogZip + ' and loc?.zip = ' + loc?.zip + ' and loc?.name = ' + loc?.name);
@@ -84,24 +86,26 @@ export class Search {
       } 
     });
 
-    effect(() => { // 001 use only for search 
+    effect(() => { // 001 use only for searh function
       const func = this.funcSig();
-      const loc = this.locResponseSig();
+      const bcocr = this.bobsCompositeOcrSig();
       const started = this.startedSig();
       const inprogZip = this.inprogZipSig();
-      //console.log(' trying effect 001 and func = '+func+' and started = ' + started+  ' and inprogZip = '+inprogZip + ' this.newZip = ' + this.newZip ); //+ ' alreadyReceivedResponseForZip = '+ alreadyReceivedResponseForZip
-      if (func == 'search' && started && loc && inprogZip != '' && (inprogZip == this.newZip)) { // inprogZip == loc?.zip) ) { //&& alreadyReceivedResponseForZip != loc?.zip                
-        //console.log(' in effect 001 in IF Statement and loc.sys.id= '+ loc.sys.id  + ' and loc.weather[0].main = ' + loc.weather[0].main + ' and this.newZip = '+this.newZip);
-        loc.weather[0].main = this.getIconFrom(loc.weather[0].main);
-        loc.zip = this.newZip;
-        this.location = loc;
-        this.location.zip = loc.zip;
-        let temp:WritableSignal<LocationT | undefined> = signal(this.locResponseSig());
-        this.addToLocationsArray(temp); 
-        if(this.newZip) {
-          localStorage.setItem('storedZipCode' + (this.newZip), this.newZip)
-        };
-        this.newZip = '';          
+      let validBcocr = (bcocr && bcocr.oneCallResponse && bcocr.oneCallResponse.data && bcocr.oneCallResponse.data.length > 0)
+      if (func == 'search' && started && bcocr && validBcocr && inprogZip != '') { //  && (inprogZip == loc?.zip)) { // inprogZip == loc?.zip) ) { //&& alreadyReceivedResponseForZip != loc?.zip                
+        //console.log(' in effect 001 in IF Statement and loc.sys.id= '+ loc.sys.id  + ' and loc.name = ' + loc.name + ' and the number o locations is: '+ locations.length);
+        bcocr.oneCallResponse.data[0].weather[0].main = this.getIconFrom(bcocr.oneCallResponse.data[0].weather[0].main);
+        
+        this.newZip = '';
+        const inputElement = this.myInput()?.nativeElement;
+        if (inputElement) {
+          inputElement.focus();
+          inputElement.value = ' ';
+          inputElement.dispatchEvent(new Event('input', { bubbles: true }));
+          inputElement.value = '';
+          inputElement.dispatchEvent(new Event('input', { bubbles: true }));
+          inputElement.focus();
+        }          
       }
       else {
         if(func != 'search') {
@@ -110,49 +114,32 @@ export class Search {
         else if(!started) {
           //console.log('eff 001 - Not started yet. started = '+started);
         }
-        else if(!loc){
-          //console.log( 'eff 001 loc is still missing - effect fired because of one of the other signals it is a zip with no location like 98888 ') ;
+        else if(!bcocr){
+          console.log( 'eff 001 --bcocr is still missing - effect fired because of one of the other signals it is a zip with no location like 98888 ') ;
           //alert('The zip code, ' + inprogZip + ', is formatted OK, but no data is returned.'); 
-          //TODO fix this . this still fires too much .
         }
         else if(inprogZip == '' ){
             //console.log(' eff 001 inprogZip is still \'\' ');
         }           
         else if( inprogZip != this.newZip){
-          //console.log(' eff 001  the inprogress zip '+ inprogZip + ' is different from this.newZip: '+this.newZip+' .');
+          //console.log(' eff 001 the inprogress zip '+ inprogZip + ' is different from the zip of the incoming loc: '+loc?.zip +' .');
         }   
-        else if(!loc.zip){
-          console.warn( 'eff 001 loc is here but does not have a zip . loc.zip = ' + loc.zip + ' the loc.name = '+ loc.name) ;
+        else if(bcocr && (!bcocr.jeocode|| !bcocr.jeocode.zip)){
+          console.warn( 'eff 001  bcocr is here but does not have a zip or a containing geocode') ;
         }  
         else{
-          //console.log('eff 001 not sure whats going on...started = '+started+  ' func= '+func +' inprogZip = ' + inprogZip + ' and loc?.zip = ' + loc?.zip + ' and loc?.name = ' + loc?.name);
+          //console.log('eff 001  not sure whats going on...started = '+started+  ' func= '+func +' inprogZip = ' + inprogZip + ' and loc?.zip = ' + loc?.zip + ' and loc?.name = ' + loc?.name);
         }
       } 
     });
     
   }
-
-  findIndexByZip(locs: WritableSignal<LocationT | undefined>[],zip:String): number{
-    //console.log(' findIndexByZip checking to see if '+zip+' is already in the array...');
-    let result = -1;
-    let ind = 0;
-    locs.forEach(loc => { 
-
-      if( zip == loc()?.zip){
-        result = ind;
-      }
-      ind++;
-
-    });
-    //console.log(' -- findIndexByZip index = ' + result);
-    return result;
-  }
   
   search(): void{ 
     this.funcSig.set('search');
-    const locs =this.locationSigs();
+    const bcocrs =this.weatherService.bobsCompositeOcrsSig()//.locationSigs();
     let len = 0 ;
-    if (locs && this.findIndexByZip(locs,this.newZip) === -1) { 
+    if (bcocrs && this.findIndexByZip(bcocrs,this.newZip) === -1) { 
       //
       this.addNewLocation(this.newZip);
       
@@ -171,7 +158,8 @@ export class Search {
       if (this.validateZip(zip) ) {
         this.inprogZipSig.set(zip);
         let zipSig: WritableSignal<String | undefined> = signal(zip);
-        this.locResponseSig = this.weatherService.getLocationFromService(zipSig);
+
+        this.bobsCompositeOcrSig = this.weatherService.getOneCallResponseByZip(zipSig); //.getLocationFromService(zipSig);
       }
       else {
         console.error('ERROR! ' + zip + ' zip is not valid');
@@ -204,6 +192,22 @@ export class Search {
     return 'sun';
   }
 
+    findIndexByZip(bcors: WritableSignal<BobsCompositeOcr | undefined>[],zip:String): number{
+    //console.log(' findIndexByZip checking to see if '+zip+' is already in the array...');
+    let result = -1;
+    let ind = 0;
+    bcors.forEach(bcor => { 
+
+      if( zip == bcor()?.jeocode.zip){
+        result = ind;
+      }
+      ind++;
+
+    });
+    //console.log(' -- findIndexByZip index = ' + result);
+    return result;
+  }
+
   loadLocationsFromLocalStorage(): void {
 
     this.funcSig.set('localStorage');
@@ -215,10 +219,10 @@ export class Search {
         if (localStorageKey.startsWith('storedZipCode')){  
             const derivedZip =  localStorage.getItem(localStorageKey); 
             
-            const locs = this.locationSigs();
+            const bcos = this.weatherService.bobsCompositeOcrsSig();
             delay = delay +250;       
-            let ind = this.findIndexByZip(locs, derivedZip+'');
-            if(locs && derivedZip && ind === -1){
+            let ind = this.findIndexByZip(bcos, derivedZip+'');
+            if(bcos && derivedZip && ind === -1){
               //console.log('loadLocationsFromLocalStorage Going for addNewLocation for '+derivedZip); 
               setTimeout(()=>{
                 this.addNewLocation(derivedZip);  
@@ -232,6 +236,7 @@ export class Search {
     
   }
 
+  /*
   handleUnprocessedLocalStorage():void {
     //console.log('handling unprocessed....');
     //for each of the working storage zips not already in the locations array, add them in, maybe one at a time with another timer.
@@ -261,5 +266,5 @@ export class Search {
     }
     //this.inprogZipSig.set('');
   }
-
+*/
 }
