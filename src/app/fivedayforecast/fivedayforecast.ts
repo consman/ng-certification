@@ -1,4 +1,4 @@
-import { Component,inject, signal} from '@angular/core';
+import { afterNextRender, Component,effect,inject, signal, WritableSignal} from '@angular/core';
 
 //import { Observable } from 'rxjs';
 //import { Forecast } from '../forecast';
@@ -9,7 +9,7 @@ import { Weather } from '../weather';
 import { ForecastImpl } from '../forecastImpl';
 import { DatePipe} from '@angular/common';
 import { OneCallResponse, BobsCompositeOcr, Jeocode } from '../funTypes';
-import { initialBobsCompositeOcr, initialOneCallResponse } from '../refData';
+import { initialBobsCompositeOcr, initialGeoCode, initialOneCallResponse } from '../refData';
 
 @Component({
   imports: [DatePipe],
@@ -20,37 +20,37 @@ import { initialBobsCompositeOcr, initialOneCallResponse } from '../refData';
 export class Fivedayforecast {
 
   weatherService = inject(Weather);
-  //location: LocationT;
   zipParam: string | null;
-  //obsForecast$: Observable<Forecast>;
+
   oneCallResponse: OneCallResponse = initialOneCallResponse;
-  bobsCompositeOcr: BobsCompositeOcr = initialBobsCompositeOcr;
-  jeo :Jeocode = this.bobsCompositeOcr.jeocode;
+  bobsCompositeOcrSig: WritableSignal<BobsCompositeOcr | undefined> = signal(initialBobsCompositeOcr);
+  jeo :Jeocode = initialGeoCode;
   
-
-
   constructor(route: ActivatedRoute, private router: Router){ 
     this.zipParam = route.snapshot.paramMap.get('zipcode');
-    //this.location = new LocationImpl();
-    //this.location.forecasts = new Array<ForecastImpl>();
     this.getDataFromZipParam(this.zipParam);
-    //this.obsForecast$ = this.weatherService.getFiveDayForecastFromService(this.location.coord.lat, this.location.coord.lon);
-    this.init();
+
+    afterNextRender( ()=> {
+      this.runThisStuffAfterComponentLoads();
+    });
+
+    effect (() => {
+      const bcocr = this.bobsCompositeOcrSig()
+      if(bcocr){
+        if(bcocr.jeocode){
+          this.jeo = bcocr.jeocode;
+        }
+        if(bcocr.oneCallResponse){
+          this.oneCallResponse = bcocr.oneCallResponse;
+        }
+      }
+    } );
+    
   }
 
-  private init(){
-    let bcocrSig = this.weatherService.getOneCallResponseByZip(signal(this.jeo.zip));
-    // put everything after this into an effect - although even in prod it should not take a call to an httpReource - italreadystored if we got this far.
-    const bcocr = bcocrSig();
-    if(bcocr){
-      this.oneCallResponse = bcocr.oneCallResponse;
-      this.jeo;
-      // TODO add our jeo to the bcocr -- bcocrSig().update((b) => );
-    }
-    else{
-      //this.oneCallResponse = initialOneCallResponse;
-      console.log(this.jeo.zip + ' Not found..');
-    }
+  private runThisStuffAfterComponentLoads(){
+    this.bobsCompositeOcrSig = this.weatherService.getOneCallResponseByZip(signal(this.jeo.zip));
+    // TODO put everything after this into an effect - although even in prod it should not take a call to an httpReource - italreadystored if we got this far.
   }
 /*
   getLocFromObservable(forecast: Forecast | null): LocationT {
@@ -84,6 +84,7 @@ export class Fivedayforecast {
   }
 
   navigateBackToMain(): void {
+    this.weatherService.bobsCompositeOcrsSig().length = 0;
     this.router.navigate(['/']);
   }
 

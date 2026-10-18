@@ -10,7 +10,7 @@
           </button>
         </div>
       
-        @let bcocrs = localBcocrS(); 
+        @let bcocrs = this.weatherService.bobsCompositeOcrsSig(); 
         @if(bcocrs && bcocrs.length > 0 ){
             @for(bcocr of bcocrs; track bcocr){
                 @let bcocrc = bcocr();
@@ -22,7 +22,16 @@
               
             }
         }
+        @if(bcocrs && bcocrs.length > 0 ){
+          @for(bcocr of bcocrs; track bcocr){
+            @let bcocrc = bcocr();
+            @if(bcocrc && bcocrc.jeocode && bcocrc.jeocode.zip) {
+              <p>bcocrc.jeocode.zip: {{bcocrc.jeocode.zip}}</p>
+            }
+          }
+        }
     </div>
+
 <!--
     <div><p>locResponseSig()?.sys.id =  {{locResponseSig()?.sys.id}}</p></div>
     <div><p>locResponseSig()?.coord.lat =  {{locResponseSig()?.coord.lat}}</p></div>

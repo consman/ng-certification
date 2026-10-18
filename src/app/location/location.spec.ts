@@ -15,13 +15,13 @@ export const FAKE_ROUTE = {
 describe('Location', () => {
   let component: Location;
   let fixture: ComponentFixture<Location>;
-  let weather = new Nonprodweather();
+  let weather:Nonprodweather;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Location],
       providers:[
-        {provide: Weather, useValue:weather}, 
+        Nonprodweather, 
         {provide: 'IS_PROD_ENVIRONMENT', useValue: environment.production},
         {provide: ActivatedRoute, useValue: FAKE_ROUTE}
       ]
@@ -30,6 +30,8 @@ describe('Location', () => {
 
     fixture = TestBed.createComponent(Location);
     component = fixture.componentInstance;
+
+    component.weatherService = TestBed.runInInjectionContext(() => new Nonprodweather());
 
     //let loc = component.location();
     let bco = component.bobsCompositeOcr();

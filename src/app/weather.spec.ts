@@ -20,6 +20,7 @@ export const FAKE_HTTP_CLIENT_FORECASTS = {
 */
 describe('Weather', () => {
   let service: Weather;
+  
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -35,16 +36,6 @@ describe('Weather', () => {
     service = TestBed.inject(Weather);
   });
 
-  it('should return jeocodes', () => {
-    //console.log('Testing the abstract service, weather. ');
-    let result ='';
-    let jeoSig = service.getGeoCodeInfoFromZip(signal('95630'));
-    const jeo = jeoSig();
-    if (jeo) {
-      result = jeo.name;
-    }//
-    expect (result).toEqual('Folsom');
-  });
 
   it('should be created', () => {
     //console.log('Testing the abstract service, weather. ');

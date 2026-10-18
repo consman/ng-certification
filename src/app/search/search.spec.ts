@@ -19,33 +19,30 @@ export const FAKE_HTTP_CLIENT_FORECASTS = {
 } as HttpClient;
 */
 describe('Search', () => {
-  let component: Search;
-  let fixture: ComponentFixture<Search>;
-  let weather = new Nonprodweather();
+  
+    let component: Search;
+    let fixture: ComponentFixture<Search>;
+    let weather: Nonprodweather;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [Search] ,
-      providers: [ {provide:Weather, useValue:weather} /*
-        {provide: HttpClient, useValue: {FAKE_HTTP_CLIENT_FORECASTS, FAKE_HTTP_CLIENT_LOCATIONS} },
-        {provide: Weather, useFactory: weatherServiceFactory, deps: ['IS_PROD_ENVIRONMENT']},
-        {provide: 'IS_PROD_ENVIRONMENT', useValue: false},
-        {provide: Location, useValue: RAWLOCATIONS[0]} */
-      ]
-      
-    }).compileComponents();
+    beforeEach(async () => {
+      await TestBed.configureTestingModule({
+        imports: [Search] ,
+        providers: [Nonprodweather]        
+      }).compileComponents();
 
-    fixture = TestBed.createComponent(Search);
-    component = fixture.componentInstance;
-    await fixture.whenStable();
-  });
+      fixture = TestBed.createComponent(Search);
+      component = fixture.componentInstance;
+      await fixture.whenStable();
+    });
 
-  it('should create', () => {
-    //console.log('Testing the component - Search. ');
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+      component.weatherService = TestBed.runInInjectionContext(() => new Nonprodweather());
+        expect(component).toBeTruthy(); 
+    });
 
-  it('should add a new location', () => {
-    expect(component.addNewLocation('76767'));
-  });
+    it('should add a new location', () => {
+      component.weatherService = TestBed.runInInjectionContext(() => new Nonprodweather());
+      expect(component.addNewLocation('76767'));
+    });
+
 });

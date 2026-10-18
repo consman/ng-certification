@@ -25,12 +25,12 @@ export const FAKE_ROUTE = {
 describe('Fivedayforecast', () => {
   let component: Fivedayforecast;
   let fixture: ComponentFixture<Fivedayforecast>;
-  let weather = new Nonprodweather();
+  let weather: Nonprodweather;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Fivedayforecast] ,
-      providers:[ {provide:Weather, useValue:weather}, /* {provide: HttpClient, useValue: {FAKE_HTTP_CLIENT_FORECASTS, FAKE_HTTP_CLIENT_LOCATIONS}},
+      providers:[ Nonprodweather, /* {provide: HttpClient, useValue: {FAKE_HTTP_CLIENT_FORECASTS, FAKE_HTTP_CLIENT_LOCATIONS}},
         {provide: Weather, useFactory: weatherServiceFactory, deps: ['IS_PROD_ENVIRONMENT']},
         {provide: 'IS_PROD_ENVIRONMENT', useValue: false},
         {provide: ForecastImpl, useValue: RAWFORECASTS[0]}, */
@@ -39,6 +39,7 @@ describe('Fivedayforecast', () => {
 
     fixture = TestBed.createComponent(Fivedayforecast);
     component = fixture.componentInstance;
+    component.weatherService = TestBed.runInInjectionContext(() => new Nonprodweather());
     await fixture.whenStable();
   });
 
