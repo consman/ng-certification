@@ -1,128 +1,14 @@
-import { effect, Service, signal, WritableSignal } from '@angular/core';
+import { effect, Service, signal, WritableSignal , computed, Signal, Injectable} from '@angular/core';
 import { Weather } from './weather';
 import { ONECALLRESPONSES , GEOCODESFORNONPROD} from './mock-data';
 import { BobsCompositeOcr, Jeocode, OneCallResponse } from './funTypes';
 import { initialBobsCompositeOcr, initialGeoCode, KNOWNGEOCODES } from './refData';
 
-@Service()
+@Injectable({ providedIn: 'root' })
 export class Nonprodweather extends Weather {
 
   constructor() { 
-    super();
-    //effect(()=>{});
-    
-    effect(()=>{ //A
-      const zipInProgress = this.zipInProgressSig();
-      const startedJoecode = this.startedJoecodeSigA();
-      const joecode = this.jeocodeSigA();
-      if(zipInProgress && startedJoecode && joecode && zipInProgress == joecode.zip){
-        console.log('eff A Success! JSON.stringify(joecode): '+JSON.stringify(joecode));        
-        //We are good to go so skip C and go to D
-        this.bobsCompositeOcrSig.update(b => this.mergeJeoIntoBcor(b,joecode));  
-          
-        this.startedOcrSigC.set(true);        
-      } else if (startedJoecode && !joecode){
-        // we need to go to use geoCode B and get a Not Known
-        console.log('eff A -- no dice - headed to eff B.. ');
-        this.startedJoecodeSigB.set(true);
-      }
-    });
-
-    effect(()=>{ //B
-      const zipInProgress = this.zipInProgressSig();
-      const startedJoecode = this.startedJoecodeSigB();
-      let willNeedReset = false;
-
-      if(zipInProgress && startedJoecode) {
-        this.jeocodeSigB = this.getGeoCodeInfoFromZipWoKnownGeoCodes(this.zipInProgressSig);
-        willNeedReset = true;
-        //console.log('eff B working... . zipInProgress = ' + zipInProgress + ' startedJoecode = ' + startedJoecode);
-      }
-      else{
-        if( this.atLeastOneRequest && startedJoecode ){ 
-          console.warn('eff B is not going anywhere. zipInProgress = ' + zipInProgress + ' startedJoecode = ' + startedJoecode);  
-        }        
-      }
-      if(willNeedReset){
-        this.startedJoecodeSigA.set(false);
-        this.jeocodeSigA.set(undefined);
-        console.log('B INFO from A now reset: jeocodeSigA()= '+this.jeocodeSigA() + ' this.startedJoecodeSigA() = ' + this.startedJoecodeSigA());
-      }
-    });
-
-    effect(()=>{ //BResult
-      const zipInProgress = this.zipInProgressSig();
-      const startedJoecode = this.startedJoecodeSigB();
-      const jeocode = this.jeocodeSigB();
-      if(zipInProgress && startedJoecode && jeocode && zipInProgress == jeocode.zip){
-      console.log('BResult  in if ...');
-        this.bobsCompositeOcrSig.update(b => this.mergeJeoIntoBcor(b,jeocode  )); 
-        this.startedOcrSigC.set(true);          
-      }
-      if(zipInProgress && startedJoecode && !jeocode){
-        //Did everything we could to find a geocode with no luck. This is now a 98888 case.
-        alert('BResult The zip code, ' + this.zipInProgressSig() + ', is formatted OK, but no data is returned.nonprod');
-      }
-    });
-
-    effect(()=>{ //C we now have a good geocode so get the one call response
-      const startedOcr = this.startedOcrSigC();
-      const bcor = this.bobsCompositeOcrSig();
-      if(startedOcr && bcor){
-        console.log('eff C started  in 1st if' );
-        if(bcor && bcor.jeocode && bcor.jeocode.zip == this.zipInProgressSig()){
-          console.log('eff C started  in 2nd if' );
-          if(ONECALLRESPONSES.filter(ocr => ocr.lat == bcor.jeocode.lat && ocr.lon == bcor.jeocode.lon).length == 0 ){
-            // This should not happen in nonProd. We have a geocode, we should have a oneCallResponse
-            console.warn('eff C - No OneCallResponse for geoCode with zip '+ bcor.jeocode.zip );
-            //alert('The zip code, ' + this.zipInProgressSig() + ', is formatted OK, but no data is returned.nonprod'); //TODO Fix this is does not belong here - you don't have a valid geocode at this point
-          }
-          else {
-            let ocr = ONECALLRESPONSES.find(ocr => ocr.lat == bcor.jeocode.lat && ocr.lon == bcor.jeocode.lon);
-            console.log('eff C looking good with a valid ocr and ocr?.data[0].weather[0].main = ' + ocr?.data[0].weather[0].main);
-            this.bobsCompositeOcrSig.update(b => this.mergeOcrIntoBcor(b,ocr  )); 
-            this.startedBcocrSigD.set(true);           
-          }
-        }
-
-      }
-    });
-
-    effect(() => { //D 
-      const bobsCompositeOcr = this.bobsCompositeOcrSig();
-      //const ocr = this.oneCallResponseSig();
-      const startedBcocr = this.startedBcocrSigD();
-      if(startedBcocr && bobsCompositeOcr  && bobsCompositeOcr.oneCallResponse.lat == bobsCompositeOcr.jeocode.lat && bobsCompositeOcr.oneCallResponse.lat !== 0){
-        console.log('eff D pushing bcocr onto the list with bobsCompositeOcr.oneCallResponse.lat = '+bobsCompositeOcr.oneCallResponse.lat );
-        this.startFixMainSig.set(true); 
-        //console.log('nonprod eff D looks like we are done - JSON.stringify(this.bobsCompositeOcrSig()) = '+ JSON.stringify(this.bobsCompositeOcrSig()));
-        this.bobsCompositeOcrsSig().push(this.bobsCompositeOcrSig);
-        this.doneWithPushSig.set(true);
-          
-      }
-      else{
-        if(startedBcocr){
-          console.log('Something went wrong in eff D: bobsCompositeOcr?.jeocode.lat =  ' + bobsCompositeOcr?.jeocode.lat +'  and bobsCompositeOcr.oneCallResponse.lat = ' + bobsCompositeOcr?.oneCallResponse.lat );
-        }
-      }
-    });
-
-    effect(()=>{ //E clean everything up
-      const okToCleanEverythingUp = this.okToCleanEverythingUpSig();
-      if(okToCleanEverythingUp){
-        this.cleanEverythingUp();
-      }      
-    });
-
-    effect(() => { //eff fix main
-      const fixMain = this.startFixMainSig();
-      const bcocr = this.bobsCompositeOcrSig();
-      if (fixMain && bcocr){
-        console.log(' eff fix main and getting ready to fix it.');
-        this.bobsCompositeOcrSig.update(b => this.fixMainWeatherIconName(b));
-      }
-    } );
-      
+    super();      
   }
 
   zipInProgressSig:WritableSignal<String | undefined>= signal(undefined);
@@ -142,24 +28,7 @@ export class Nonprodweather extends Weather {
   okToCleanEverythingUpSig:WritableSignal<boolean>= signal(false);
   atLeastOneRequest = false;
   startFixMainSig: WritableSignal<boolean> = signal( false);
-
-
-  cleanEverythingUp():void {
-    console.log('cleanEverythingUpSig');
-
-    this.startedJoecodeSigA.set(false);
-    this.startedJoecodeSigB.set(false);
-    this.startedOcrSigC.set(false);
-    this.startedBcocrSigD.set(false);
-
-    this.zipInProgressSig.set(undefined);
-    this.jeocodeSigA.set(undefined);
-    this.jeocodeSigB.set(undefined);
-    this.oneCallResponseSig.set(undefined);
-
-    this.okToCleanEverythingUpSig.set(false);
-  }
-
+  
   /* 
   A) use the zip to try to get the geo 
   B) try from from known geo codes first
@@ -167,33 +36,94 @@ export class Nonprodweather extends Weather {
   D) you have arrived here if and only if you have a valid JeoCode - use the oneCall Serve to get the OnCall Response Sig
   */
 
-  override getOneCallResponseByZip(zipcode: WritableSignal<String | undefined>): WritableSignal<BobsCompositeOcr | undefined> {
+  atLeastOneRequestSig = computed(()=> {this.atLeastOneRequest && this.doneWithPushSig }); 
+
+  targetGeoCodeSig = computed(():Jeocode | undefined => {
+    if(this.jeocodeSigA && this.jeocodeSigA()?.zip == this.zipInProgressSig()){
+       return this.jeocodeSigA();
+    }
+    else if(this.jeocodeSigB && this.jeocodeSigB()?.zip == this.zipInProgressSig()){
+      return this.jeocodeSigB();
+      console.log('using jeocodeSigB.'); //TODO find out why this does not work
+    }
+    else{
+      return undefined;// signal(initialGeoCode);
+    }
+  });
+
+  targetBobsCompositeOcrSig = computed(():BobsCompositeOcr | undefined =>{
+    const bcocr = this.bobsCompositeOcrSig();
+    const geoCode = this.targetGeoCodeSig();
+    if(bcocr && geoCode && bcocr.jeocode.lat == geoCode.lat &&  geoCode.lat > 0){
+      return this.bobsCompositeOcrSig();
+    }
+    else{
+      return undefined;//initialBobsCompositeOcr;
+    }
+  });
+
+  getOneCallResponseByGeoCode(geoCodeSig: WritableSignal<Jeocode | undefined>): void { //WritableSignal<OneCallResponse | undefined> {
+    //let oneCallResponseSig:WritableSignal<OneCallResponse | undefined> = signal(undefined);
+    const geoCode = geoCodeSig();
+    //const oneCallResponse = oneCallResponseSig();
+    if(geoCode ){
+      if( ONECALLRESPONSES.filter(ocr => ocr.lat == geoCode.lat && ocr.lon == geoCode.lon).length == 0 ){
+        // This should not happen in nonProd. We have a geocode, we should have a oneCallResponse
+            console.warn('getOneCallResponseByGeoCode - No OneCallResponse for geoCode with zip '+ geoCode.zip );  //We should treat this as a 98888 with an alert
+      }
+      else{
+        let ocr = ONECALLRESPONSES.find(ocr => ocr.lat == geoCode.lat && ocr.lon == geoCode.lon);
+              console.log('getOneCallResponseByGeoCode looking good with a valid ocr and ocr?.data[0].weather[0].main = ' + ocr?.data[0].weather[0].main);
+              this.bobsCompositeOcrSig.update(b => this.mergeJeoIntoBcor(b,geoCode));
+              this.bobsCompositeOcrSig.update(b => this.mergeOcrIntoBcor(b,ocr  )); 
+              this.bobsCompositeOcrSig.update(b => this.fixMainWeatherIconName(b));
+              this.bobsCompositeOcrsSig.update(b => this.addToArray(b,this.bobsCompositeOcrSig)); 
+              console.log('getOneCallResponseByGeoCode says now this.bobsCompositeOcrsSig().length = ' + this.bobsCompositeOcrsSig().length);
+              this.startedBcocrSigD.set(true);
+      }
+    }
+    //return oneCallResponseSig;
+  }
+
+  override getOneCallResponseByZip(zipcode: WritableSignal<String | undefined>): WritableSignal<WritableSignal<BobsCompositeOcr | undefined>[]> {
     this.atLeastOneRequest = true;
     this.doneWithPushSig.set(false);
     this.bobsCompositeOcrSig.set(initialBobsCompositeOcr);
     console.log('---- nonprod getOneCallResponseByZip zipcode() = '+ zipcode());
     this.zipInProgressSig.set(zipcode());
     this.startedJoecodeSigA.set(true);
-    let result:WritableSignal<BobsCompositeOcr | undefined> = signal(undefined);
+    //let result:WritableSignal<BobsCompositeOcr | undefined> = signal(undefined);
     this.getGeoCodeInfoFromZipWithKnownGeoCodes(zipcode);// this.getGeoCodeInfoFromZip(zipcode);
     
-    return result;
+    return  this.bobsCompositeOcrsSig; // this.targetBobsCompositeOcrSig; //result;
   }
+
 
   override getGeoCodeInfoFromZipWithKnownGeoCodes(zipcode: WritableSignal<String | undefined>):void {//  WritableSignal<Jeocode | undefined> {
     console.log('--- non prod getGeoCodeInfoFromZipWithKnownGeoCodes running for zip = ' + zipcode());
-      //let result: WritableSignal<Jeocode | undefined> = (signal (undefined));
+      
       let jeo:Jeocode | undefined = KNOWNGEOCODES.find(kgc => kgc.zip == zipcode());
       if(jeo){
         console.log('--- non prod getGeoCodeInfoFromZipWithKnownGeoCodes worked and jeo.lat = ' + jeo.lat);
         this.jeocodeSigA.set(jeo);
         //result.set(jeo);
-      }      
-      
-      //return result; //TODO be careful of returning stuff! like here, simply update the class level signal with the result you have derived here. make make the function return void
+      }        
+      else{
+        let jeoSig = this.getGeoCodeInfoFromZipWoKnownGeoCodes(zipcode);
+        const jeoB = jeoSig();
+        if(jeoB && jeoB.zip == zipcode()){
+          this.jeocodeSigA.set(jeoB); // still use the A sig no matter what
+        }
+      }  
+      const joeKode = this.jeocodeSigA();
+      if(joeKode){
+          this.getOneCallResponseByGeoCode(this.jeocodeSigA);
+      }  
+      //TODO 98888 case put aleart here or else a console.warn statment about not being able to find a geoCode at all. 
   }
 
   override getGeoCodeInfoFromZipWoKnownGeoCodes(zipcode: WritableSignal<String | undefined>): WritableSignal<Jeocode | undefined> {
+    // this will be much different in prod version!!
     console.log('Nonprodweather getGeoCodeInfoFromZipWoKnownGeoCodes going for '+ zipcode());
     let result: WritableSignal<Jeocode | undefined> = signal(undefined);
     let tempRes: Jeocode =initialGeoCode; 
@@ -211,7 +141,7 @@ export class Nonprodweather extends Weather {
     //console.log('Nonprodweather ind = ' + ind + ' found = ' + found && 'tempRes.lat = ' + tempRes.lat) ;
     if (found){
       result = signal(tempRes);
-      console.log('Nonprodweather found geocode for zip '+ zipcode());
+      console.log('Nonprodweather With Out KnownGeoCodes found geocode for zip '+ zipcode());
     }
     return result;
   }
@@ -279,5 +209,20 @@ export class Nonprodweather extends Weather {
     return 'sun';
   }
 
-    
+   cleanEverythingUp():void {
+    console.log('cleanEverythingUpSig');
+
+    this.startedJoecodeSigA.set(false);
+    this.startedJoecodeSigB.set(false);
+    this.startedOcrSigC.set(false);
+    this.startedBcocrSigD.set(false);
+
+    this.zipInProgressSig.set(undefined);
+    this.jeocodeSigA.set(undefined);
+    this.jeocodeSigB.set(undefined);
+    this.oneCallResponseSig.set(undefined);
+
+    this.okToCleanEverythingUpSig.set(false);
+  }
+   
 }

@@ -1,4 +1,4 @@
-import { Service , WritableSignal, computed, effect, inject, signal} from '@angular/core';
+import { Injectable, Service , WritableSignal, computed, effect, inject, signal} from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { Weather } from './weather';
@@ -8,7 +8,7 @@ import { initialBobsCompositeOcr, initialGeoCode, KNOWNGEOCODES } from './refDat
 
 declare const W_APP_ID: string;
 
-@Service()
+@Injectable({ providedIn: 'root' })
 export class Prodweather extends Weather {
   
   override getGeoCodeInfoFromZipWithKnownGeoCodes(zipcode: WritableSignal<String | undefined>): void {
@@ -45,53 +45,9 @@ export class Prodweather extends Weather {
 constructor(){
   super();
 
-  effect(() => { //004 
-    const targJeoForOneCall = this.targJeoForOneCallSig();
-    const startedForGeo = this.startedForGeoSig();
-    if(startedForGeo){
-      if(targJeoForOneCall){
-        console.log('004 targJeoForOneCall = ' + JSON.stringify(targJeoForOneCall));
-        this.currJeoCode = targJeoForOneCall;
-        this.startedSig.set(true);   
-        this.dummyForOneCallSig.set(new Date().getTime()+'');
-        //this.oneCallResponse = this.oneCallResource.value;   
-        this.startedForGeoSig.set(false);  
-      }
-      else {
-        console.log('004 targJeoForOneCall = undefined');
-      }
-    }
-  });
-
-
-  effect(() => { //005
-    const oneCallResp = this.oneCallResponse();
-    const started = this.startedForGeoSig();
-    const targJeoForOneCall = this.targJeoForOneCallSig();
-    const zip = this.zipInProgressSig();
-
-    if( started && oneCallResp && targJeoForOneCall){
-      if (oneCallResp.lat == this.targJeoForOneCallSig()?.lat && targJeoForOneCall.zip ==zip){
-        this.bcocr = initialBobsCompositeOcr;
-        this.bcocr.oneCallResponse = oneCallResp;
-        this.bcocr.jeocode = targJeoForOneCall;
-        this.bcocr.dt = new Date().getTime();
-        this.bcocrResultSig.set(this.bcocr);
-        this.bobsCompositeOcrsSig().push(this.bcocrResultSig);
-      }
-    }
-  });
-
-  effect(() => { //999 
-    const targJeoForOneCall = this.targJeoForOneCallSig();
-    const started = this.startedForGeoSig();
-    if (started){
-      console.log('999 targJeoForOneCall changed again -  targJeoForOneCall = ' + JSON.stringify(targJeoForOneCall));
-    }
-  });
 }
 
-  override getOneCallResponseByZip(zipSig: WritableSignal<String | undefined>): WritableSignal<BobsCompositeOcr | undefined> {
+  override getOneCallResponseByZip(zipSig: WritableSignal<String | undefined>): WritableSignal<WritableSignal<BobsCompositeOcr | undefined>[]> {
     let result:WritableSignal<BobsCompositeOcr | undefined> = signal(undefined);
 
     //let bcocr: BobsCompositeOcr | undefined = undefined;
@@ -121,8 +77,8 @@ constructor(){
     else {
       console.log('eff005Done is already false!');
     }
-
-    return result;
+    //TODO make sure the result gets added to this list: 
+    return this.bobsCompositeOcrsSig;
     
    }
 
@@ -191,97 +147,3 @@ constructor(){
   }
 
 }
-
-/*
-
-  effect(() => { 
-     const notFound = this.isNotFound();
-     if(notFound && this.startedForGeoSig()){
-       console.log ('eff 003 in Prodweather - Not Found.');
-       alert('The zip code, ' + this.targZipForGeoCodeSig() + ', is formatted OK, but no data is returned.prod');
-       //
-       this.startedForGeoSig.set(false);
-     }
-  });  
-
-  effect(() =>{ //004 wait for response from goeCode service, then run main part of onecall service
-    const targJeoForOneCall = this.targJeoForOneCallSig();
-    const startedForGeo = this.startedForGeoSig();
-    const zipInProgress = this.zipInProgressSig();
-    if(targJeoForOneCall && zipInProgress && zipInProgress.length == 5 && targJeoForOneCall.zip.length == 5 && zipInProgress == targJeoForOneCall.zip){
-      if(startedForGeo && targJeoForOneCall && targJeoForOneCall.zip.length == 5){
-        console.log ('eff 004 in Prodweather and got Jeocode with a lat of '+targJeoForOneCall.zip+' and starting other call');
-
-        //these next 2 should kick off the next resource
-        this.startedForGeoSig.set(false);
-        this.startedSig.set(true); 
-        this.dummyForOneCallSig = signal(new Date().getTime()+''); 
-
-        this.oneCallResponse = this.oneCallResource.value;
-      }
-    }
-    else {
-      let jtfocz = 'undefined';
-      if (targJeoForOneCall){
-        jtfocz = targJeoForOneCall.zip;
-        if( jtfocz.length == 5){
-          this.queuedZips.push(jtfocz);
-        }
-      }
-      console.log('Bypassing eff 004 - zip not set up zipInProgress: '+ zipInProgress + ' and targJeoForOneCall.zip: '+ jtfocz);
-      
-    }
-  });
-
-  effect(() =>{ //005 Handle response from main resource
-    const targJeoForOneCall = this.targJeoForOneCallSig();
-    const started = this.startedSig();
-    const ocr = this.oneCallResponse();
-    const zipInProgress = this.zipInProgressSig();
-    console.log('ocr = ' + JSON.stringify(ocr));
-    if(targJeoForOneCall && zipInProgress && zipInProgress.length == 5 && targJeoForOneCall.zip.length == 5 && zipInProgress == targJeoForOneCall.zip){
-      if(started && ocr){
-        if(targJeoForOneCall  && ocr){
-          console.log('in eff 005 and ocr.lat ' + ocr.lat);
-          this.bcocr = {
-            jeocode: targJeoForOneCall,
-            oneCallResponse: ocr,
-            dt: new Date().getTime()        
-          }
-        };
-        this.bcocrResultSig.set(this.bcocr);
-
-        let ind = -1;
-        ind = this.bobsCompositeOcrsSig().findIndex(bcoA => { 
-            const bcoAc = bcoA();
-            //const bcoc = this.bcocrResultSig();
-            bcoAc && this.bcocr && bcoAc.jeocode.lat == this.bcocr.jeocode.lat;        
-        });
-
-        if(ind == -1){
-          this.bobsCompositeOcrsSig().push(this.bcocrResultSig);
-          console.log('eff 005 and just pushed this.bcocr?.jeocode.zip) = '+this.bcocr?.jeocode.zip);
-        }
-        
-      }
-    }  
-    else {
-      let jtfocz = 'undefined';
-      if (targJeoForOneCall){
-        jtfocz = targJeoForOneCall.zip;
-        if( jtfocz.length == 5){
-          this.queuedZips.push(jtfocz);
-        }
-      }
-      console.log('Bypassing eff 005 - zip not set up zipInProgress: '+ zipInProgress + ' and targJeoForOneCall.zip: '+ jtfocz);
-      
-    }
-        this.eff005Done.set(true);
-        this.startedSig.set(false);
-        this.zipInProgressSig.set(undefined);
-        this.startedForGeoSig.set(false);
-        this.targJeoForOneCallSig.set(undefined);
-
-
-  });
-*/

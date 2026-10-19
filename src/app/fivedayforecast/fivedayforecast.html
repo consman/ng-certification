@@ -4,10 +4,12 @@
         <h3 class="panel-title">5-day forecast for {{jeo.name}}</h3>
       </div>
 
+
       
-      @if(oneCallResponse) {
-        
-            @let days = oneCallResponse.data;
+      @if(oneCallResponse()) {
+           @let  ocr = oneCallResponse();
+           @if (ocr && ocr.data && ocr.data.length > 0) {
+            @let days = ocr.data;
             @if (days.length > 0){
                 @for (day of days; track day){
                     @if(day){
@@ -30,7 +32,7 @@
                     }  
                 }
             }
-        
+           }
       }
  
       </div>

@@ -1,9 +1,9 @@
-import { afterNextRender, Component, effect, ElementRef, inject, signal, viewChild, WritableSignal } from '@angular/core';
+import { afterNextRender, Component, computed, effect, ElementRef, inject, Signal, signal, viewChild, WritableSignal } from '@angular/core';
 
 import { Location } from '../location/location';
 import { FormsModule } from '@angular/forms';
 import { Weather } from '../weather';
-import { OneCallResponse,BobsCompositeOcr } from '../funTypes';
+import { BobsCompositeOcr } from '../funTypes';
 
 @Component({
   imports: [FormsModule,Location],//, AsyncPipe],
@@ -15,7 +15,7 @@ export class Search {
 
     weatherService = inject(Weather);
     newZip!: string;
-    bobsCompositeOcrSig:WritableSignal<BobsCompositeOcr | undefined> = signal(undefined); 
+    //bobsCompositeOcrSig:Signal<BobsCompositeOcr | undefined> = signal(undefined); 
 
     startedSig: WritableSignal<boolean> = signal( false); // this is at the request level
     atLeastOneReqStarted = false;                         // this is at the componenet level
@@ -26,163 +26,35 @@ export class Search {
     funcSig: WritableSignal<string> = signal('search');
     myInput = viewChild<ElementRef<HTMLInputElement>>('zipCodeEntry');
     startCheckExistinginListSig:WritableSignal<boolean> = signal( false);
-    //localBcocrS: WritableSignal<WritableSignal<BobsCompositeOcr | undefined>[]>;
+    //localBceocrsSig: WritableSignal<WritableSignal<BobsCompositeOcr | undefined>[]> =signal(new Array<WritableSignal<BobsCompositeOcr>>);
+    listSize: WritableSignal<number> = signal(0);
+
     
   constructor(){
     afterNextRender( ()=> {
       this.loadLocationsFromLocalStorage();
     });
-
-    effect(() => { // 007 use only for search function
-      const started = this.startedSig();
-      const bcocr = this.bobsCompositeOcrSig();
-      if(started && bcocr) {
-        console.log('search 007 and this.bobsCompositeOcrSig() = '+JSON.stringify(bcocr));
-      }
-    });
-/*
-    effect(() => { //003
-      const localBcocr = this.weatherService.bobsCompositeOcrsSig();
-      if( localBcocr && localBcocr.length > 0) {
-        console.log('search 003 The number of entries in the localBcocr array is: '+localBcocr.length + 
-          ' and first one is zip = '+localBcocr[0]()?.jeocode.zip + ' and a lat of '+ localBcocr[0]()?.oneCallResponse.lat + ' localBcocr[0]()?.dt = ' + localBcocr[0]()?.dt + '  new Date().getTime() = ' +new Date().getTime());
-
-      }
-    });
-
-
-    effect(() => { // 002 use only for localStorage
-      const func = this.funcSig();
-      const bcocr = this.bobsCompositeOcrSig();
-      const startedLoZipSt = this.startedLoStZipSig();
-      const inprogZip = this.inprogZipSig();
-      let validBcocr = (bcocr && bcocr.oneCallResponse && bcocr.oneCallResponse.data && bcocr.oneCallResponse.data.length > 0)
-      if (func == 'localStorage' && startedLoZipSt && (startedLoZipSt == inprogZip) && bcocr && validBcocr && inprogZip != '') { //  && (inprogZip == loc?.zip)) { // inprogZip == loc?.zip) ) { //&& alreadyReceivedResponseForZip != loc?.zip                
-        //console.log(' in search in effect 002 -local storage in IF Statement and validBcocr = ' + validBcocr);
-        
-        this.newZip = '';
-        const inputElement = this.myInput()?.nativeElement;
-        if (inputElement) {
-          inputElement.focus();
-          inputElement.value = ' ';
-          inputElement.dispatchEvent(new Event('input', { bubbles: true }));
-          inputElement.value = '';
-          inputElement.dispatchEvent(new Event('input', { bubbles: true }));
-          inputElement.focus();
-        }          
-        this.startedLoStZipSig.set(undefined);
-      }
-      else {
-        if(func != 'localStorage') {
-          //console.log('eff 002 - Not in localStorage mode. func = '+ func);
-        }
-        else if(!startedLoZipSt) {
-          //console.log('eff 002 - No startedLoZipSt yet. started = '+startedLoSt);
-        }
-        else if(!bcocr && this.atLeastOneReqStarted){
-          console.log( 'eff 002 - bcocr is still missing - effect fired because of one of the other signals it is a zip with no location like 98888 ') ;          
-        }
-        else if(inprogZip == '' ){
-            //console.log(' eff 002 inprogZip is still \'\' ');
-        }           
-        else if( inprogZip != this.newZip){
-          //console.log(' eff 002 the inprogress zip '+ inprogZip + ' is different from the zip of the incoming loc: '+loc?.zip +' .');
-        }   
-        else if(bcocr && (!bcocr.jeocode|| !bcocr.jeocode.zip) && this.atLeastOneReqStarted ){
-          console.warn( 'search - local storage -  eff 002  bcocr is here but does not have a zip or a containing geocode') ;
-        }  
-        else{
-          //console.log('eff 002  not sure whats going on...started = '+started+  ' func= '+func +' inprogZip = ' + inprogZip + ' and loc?.zip = ' + loc?.zip + ' and loc?.name = ' + loc?.name);
-        }
-      } 
-      this.atLeastOneReqStarted = true;
-    });
-*/
-    /*
-    effect(() => { // 001 use only for search function
-      const doneWithPush = this.weatherService.doneWithPushSig();
-      const func = this.funcSig();
-      const bcocr = this.bobsCompositeOcrSig();
-      const started = this.startedSig();
-      const inprogZip = this.inprogZipSig();
-      if( doneWithPush && bcocr )  {
-        console.log(' in search in effect 001 - bcocr is valid');
-      }
-      if (bcocr && bcocr.oneCallResponse && bcocr.oneCallResponse.data && bcocr.oneCallResponse.data.length > 0  ){
-         console.log(' in search in effect 001 - in IF Statement');
-      
-        if (func == 'search' && started && bcocr && inprogZip != '') { //  && (inprogZip == loc?.zip)) { // inprogZip == loc?.zip) ) { //&& alreadyReceivedResponseForZip != loc?.zip                
-          console.log(' in search in effect 001 - in 2nd  IF Statement ');
-          //bcocr.oneCallResponse.data[0].weather[0].main = this.getIconFrom(bcocr.oneCallResponse.data[0].weather[0].main);
-
-          if(this.newZip && this.newZip == bcocr.jeocode.zip){
-            localStorage.setItem('storedZipCode' + (this.newZip), this.newZip);
-            //this.weatherService.addOneCallResponse(this.bobsCompositeOcrSig);
-            console.log(' in effect 001 in IF Statement and adding '+this.newZip+' to local storage.');
-          };
-          
-          this.newZip = '';
-          const inputElement = this.myInput()?.nativeElement;
-          if (inputElement) {
-            inputElement.focus();
-            inputElement.value = ' ';
-            inputElement.dispatchEvent(new Event('input', { bubbles: true }));
-            inputElement.value = '';
-            inputElement.dispatchEvent(new Event('input', { bubbles: true }));
-            inputElement.focus();
-          }   
-          this.startedSig.set(false); 
-          console.log(' in effect 001 at the end and setting the startFixMainSig to true.'); 
-            
-        }
-      }  
-      else {
-        if(func != 'search') {
-          //console.log('eff 001 - Not in search mode. func = '+ func);
-        }
-        else if(!started) {
-          //console.log('eff 001 - Not started yet. started = '+started);
-        }
-        else if(!bcocr){
-          console.log( 'eff 001 --bcocr is still missing - effect fired because of one of the other signals it is a zip with no location like 98888 ') ;
-          
-        }
-        else if(inprogZip == '' ){
-            //console.log(' eff 001 inprogZip is still \'\' ');
-        }           
-        else if( inprogZip != this.newZip){
-          //console.log(' eff 001 the inprogress zip '+ inprogZip + ' is different from the zip of the incoming loc: '+loc?.zip +' .');
-        }   
-        else if(bcocr && (!bcocr.jeocode|| !bcocr.jeocode.zip)){
-          console.warn( 'eff 001  bcocr is here but does not have a zip or a containing geocode') ;
-        }  
-        else{
-          //console.log('eff 001  not sure whats going on...started = '+started+  ' func= '+func +' inprogZip = ' + inprogZip + ' and loc?.zip = ' + loc?.zip + ' and loc?.name = ' + loc?.name);
-        }
-      } 
-    });
-*/
-    effect(() => { //check if already in list
-      const startCheckExistinginList = this.startCheckExistinginListSig();
-      const bcocrs =this.weatherService.bobsCompositeOcrsSig()//.locationSigs();
-      if(startCheckExistinginList && bcocrs){
-        console.log('search - checking if this.newZip = ' + this.newZip + ' is already in the list...');
-        
-        if (bcocrs && this.findIndexByZip(bcocrs,this.newZip) === -1) {           
-          this.addNewLocation(this.newZip);          
-        } else {
-          alert ('The zip code of ' + this.newZip + ' is already in the list. ');
-        }
-      }
-    });
   }
+/*
+  newListSize = computed(() => {
+    const mainList = this.weatherService.bobsCompositeOcrsSig();
+    if( mainList && mainList.length > 0){
+      return mainList.length;
+    }
+    else{
+      return 0;
+    }
+  });
+*/
 
+  public newListSize = computed(() => {
+    return this.weatherService.bobsCompositeOcrsSig().length > 0 ? this.weatherService.bobsCompositeOcrsSig().length : 0;
+  });
 
   search(): void{ 
     this.funcSig.set('search');
     this.startCheckExistinginListSig.set(true);    
-    //console.log('Done with search(). The number of this.locations is: '+ (locs != undefined ? locs.length : 0));
-
+    this.addNewLocation(this.newZip);
   }
 
   addNewLocation(zip: string): void {
@@ -192,14 +64,12 @@ export class Search {
       if (this.validateZip(zip) ) {
         this.inprogZipSig.set(zip);
         let zipSig: WritableSignal<String | undefined> = signal(zip);
-
-        this.bobsCompositeOcrSig = this.weatherService.getOneCallResponseByZip(zipSig); //.getLocationFromService(zipSig);
+        this.weatherService.getOneCallResponseByZip(zipSig); //.getLocationFromService(zipSig);
         
-
       }
       else {
         console.error('ERROR! ' + zip + ' zip is not valid');
-        alert('Unable to find any weather data for ' + zip + '. Please try a different zip code. ');        
+        alert('zip ' + zip + ' is not valid. It needs to be 5 numbers only.');        
       }
   }
 

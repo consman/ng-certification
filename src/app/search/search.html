@@ -10,12 +10,13 @@
           </button>
         </div>
       
-        @let bcocrs = this.weatherService.bobsCompositeOcrsSig(); 
+        @let bcocrs = this.weatherService.bobsCompositeOcrsSig();
         @if(bcocrs && bcocrs.length > 0 ){
             @for(bcocr of bcocrs; track bcocr){
                 @let bcocrc = bcocr();
                 
-                  <app-location                  
+                  <app-location
+                                 
                   [bobsCompositeOcr] = "bcocrc"
                   >
                   </app-location>
@@ -31,6 +32,7 @@
           }
         }
     </div>
+    <div>newListSize() =  {{newListSize()}}</div>
 
 <!--
     <div><p>locResponseSig()?.sys.id =  {{locResponseSig()?.sys.id}}</p></div>
