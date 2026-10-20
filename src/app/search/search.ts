@@ -32,23 +32,25 @@ export class Search {
     
   constructor(){
     afterNextRender( ()=> {
-      this.loadLocationsFromLocalStorage();
+      if(this.weatherService.backFromMFiveDay()){
+        this.weatherService.backFromMFiveDay.set(false);
+      }
+      else{
+        this.loadLocationsFromLocalStorage();
+      }
     });
   }
-/*
-  newListSize = computed(() => {
-    const mainList = this.weatherService.bobsCompositeOcrsSig();
-    if( mainList && mainList.length > 0){
-      return mainList.length;
-    }
-    else{
-      return 0;
-    }
-  });
-*/
 
   public newListSize = computed(() => {
     return this.weatherService.bobsCompositeOcrsSig().length > 0 ? this.weatherService.bobsCompositeOcrsSig().length : 0;
+  });
+
+  firstZip = computed(() => {
+    return this.weatherService.bobsCompositeOcrsSig().length > 0 ? this.weatherService.bobsCompositeOcrsSig()[0]()?.jeocode.zip : 99999;
+  });
+
+  secondZip = computed(() => {
+    return this.weatherService.bobsCompositeOcrsSig().length > 1 ? this.weatherService.bobsCompositeOcrsSig()[1]()?.jeocode.zip : 99999;
   });
 
   search(): void{ 
@@ -100,7 +102,7 @@ export class Search {
 
     this.funcSig.set('localStorage');
 
-    let delay = 1250;
+    let delay = 250;
     
     for (const localStorageKey in localStorage) {
           
@@ -108,7 +110,7 @@ export class Search {
             const derivedZip =  localStorage.getItem(localStorageKey); 
             
             const bcos = this.weatherService.bobsCompositeOcrsSig();
-            delay = delay +1250;       
+            delay = delay +250;       
             let ind = this.findIndexByZip(bcos, derivedZip+'');
             if(bcos && derivedZip && ind === -1){
               console.log('loadLocationsFromLocalStorage Going for addNewLocation for '+derivedZip); 

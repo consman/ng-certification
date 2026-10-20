@@ -33,30 +33,16 @@ export class Location {
     if(bcocr && bcocr.jeocode && bcocr.jeocode.zip){
       zip = bcocr.jeocode.zip
     }
-
-     
-      let index = this.weatherService.bobsCompositeOcrsSig().findIndex(bco => {
-        const bcoc = bco();
-        bcoc && bcoc.jeocode && bcocr && bcocr.jeocode && bcoc.jeocode.lat == bcocr.jeocode.lat && bcoc.jeocode.lon == bcocr.jeocode.lon  
-      });
       
-      console.log('handleClose says to index to be spliced = ' + index);
+    setTimeout(()=>{
       
-      setTimeout(()=>{
-        
-          this.weatherService.bobsCompositeOcrsSig().splice(index, 1);
-          this.weatherService.removeOneCallResponse(signal(bcocr)); //bobsCompositeOcrs[index]);
-          this.weatherService.echoArraySize();
+      this.weatherService.removeOneCallResponse(signal(bcocr)); 
+      this.weatherService.echoArraySize();
 
-          if (null != this.getZipLocalStorageKey(zip)){
-            localStorage.removeItem('storedZipCode'+zip);
-            //console.log(' Handleclose() removed storedZipCode'+ loc.zip);
-            //console.log('A this.locations().length now = ' + this.locationsModel.length);
-            //this.olocations.set( of(this.locations()));
-
-                      
-          } 
-      },100);
+      if (null != this.getZipLocalStorageKey(zip)){
+        localStorage.removeItem('storedZipCode'+zip);
+      } 
+    },100);
   }
   
 

@@ -98,7 +98,7 @@ constructor(){
     }
     const request: HttpResourceRequest = {
       //url:'https://api.openweathermap.org/data/2.5/weather?zip=' + targZipForGeoCode + ',us&units=imperial&appid='+this.wAppId+ '&dummy='+dummy,
-      url:'https://api.openweathermap.org/data/4.0/onecall/timeline/1day?lat='+targJeoForOneCall.lat+'&lon='+targJeoForOneCall.lon+'&appid='+this.wAppId+ '&dummy='+dummy,
+      url:'https://api.openweathermap.org/data/4.0/onecall/timeline/1day?lat='+targJeoForOneCall.lat+'&lon='+targJeoForOneCall.lon+'&units=imperial&appid='+this.wAppId+ '&dummy='+dummy,
       method: 'GET',
       headers: this.headers
     }

@@ -24,7 +24,7 @@ export class Nonprodweather extends Weather {
 
   startedBcocrSigD:WritableSignal<boolean>= signal(false);
 
-  bobsCompositeOcrSig: WritableSignal<BobsCompositeOcr | undefined> = signal(initialBobsCompositeOcr);
+  //bobsCompositeOcrSig: WritableSignal<BobsCompositeOcr | undefined> = signal(initialBobsCompositeOcr);
   okToCleanEverythingUpSig:WritableSignal<boolean>= signal(false);
   atLeastOneRequest = false;
   startFixMainSig: WritableSignal<boolean> = signal( false);
@@ -50,7 +50,7 @@ export class Nonprodweather extends Weather {
       return undefined;// signal(initialGeoCode);
     }
   });
-
+/*
   targetBobsCompositeOcrSig = computed(():BobsCompositeOcr | undefined =>{
     const bcocr = this.bobsCompositeOcrSig();
     const geoCode = this.targetGeoCodeSig();
@@ -61,7 +61,7 @@ export class Nonprodweather extends Weather {
       return undefined;//initialBobsCompositeOcr;
     }
   });
-
+*/
   getOneCallResponseByGeoCode(geoCodeSig: WritableSignal<Jeocode | undefined>): void { //WritableSignal<OneCallResponse | undefined> {
     //let oneCallResponseSig:WritableSignal<OneCallResponse | undefined> = signal(undefined);
     const geoCode = geoCodeSig();
@@ -74,21 +74,86 @@ export class Nonprodweather extends Weather {
       else{
         let ocr = ONECALLRESPONSES.find(ocr => ocr.lat == geoCode.lat && ocr.lon == geoCode.lon);
               console.log('getOneCallResponseByGeoCode looking good with a valid ocr and ocr?.data[0].weather[0].main = ' + ocr?.data[0].weather[0].main);
-              this.bobsCompositeOcrSig.update(b => this.mergeJeoIntoBcor(b,geoCode));
-              this.bobsCompositeOcrSig.update(b => this.mergeOcrIntoBcor(b,ocr  )); 
-              this.bobsCompositeOcrSig.update(b => this.fixMainWeatherIconName(b));
-              this.bobsCompositeOcrsSig.update(b => this.addToArray(b,this.bobsCompositeOcrSig)); 
-              console.log('getOneCallResponseByGeoCode says now this.bobsCompositeOcrsSig().length = ' + this.bobsCompositeOcrsSig().length);
+              let newBocrSig:WritableSignal<BobsCompositeOcr | undefined>  = signal(initialBobsCompositeOcr);
+              newBocrSig.update(b => this.mergeJeoIntoBcor(b,geoCode));
+              newBocrSig.update(b => this.mergeOcrIntoBcor(b,ocr  )); 
+              newBocrSig.update(b => this.fixMainWeatherIconName(b));
+
+              const newBocr = newBocrSig();
+              if(newBocr){
+                console.log('newBocr = '+newBocr.jeocode.zip+'|'+newBocr.oneCallResponse.lat+'|'+newBocr.dt);
+              }
+              //   console.log(' bobsCompositeOcrsSig before = ' + this.printBcors(this.bobsCompositeOcrsSig));
+              //this.bobsCompositeOcrsSig.update(current => [...current,newBocrSig] ); 
+              //this.bobsCompositeOcrsSig.update(ocrsSig => this.addNewToOcrsSig(ocrsSig,newBocrSig));
+              const ocrsSig = this.bobsCompositeOcrsSig();
+              if(ocrsSig) {
+                let newList = this.addNewToOcrsSig(ocrsSig,newBocrSig);
+                this.bobsCompositeOcrsSig.set(newList);
+              }
+              else{
+                console.warn('strange this.bobsCompositeOcrsSig() is undefined here!');
+              }
+
+              setTimeout(()=>{ 
+                //    console.log(' bobsCompositeOcrsSig after = ' + this.printBcors(this.bobsCompositeOcrsSig));
+              },    2000);
+
+              /*
+              let foo =0;
+              if(this.bobsCompositeOcrsSig().length > 1){
+                const ocrs =this.bobsCompositeOcrsSig();
+                if (ocrs && ocrs.length > 1){
+                  const a = ocrs[0]();
+                  if(a){
+                    a.dt;
+                    foo = a.dt;
+                  }
+                }
+              }
+              console.log('getOneCallResponseByGeoCode says: dt of the first element is ' + foo); 
+              */
               this.startedBcocrSigD.set(true);
+              this.jeocodeSigA.set(undefined);
+              this.jeocodeSigB.set(undefined);
+              //this.bobsCompositeOcrSig.set(undefined);
+              this.oneCallResponseSig.set(undefined);
+              localStorage.setItem('storedZipCode' + (geoCode.zip), geoCode.zip);
       }
     }
     //return oneCallResponseSig;
   }
 
+  addNewToOcrsSig(bcorsSigs:WritableSignal<BobsCompositeOcr | undefined> []  , newBocrSig:WritableSignal<BobsCompositeOcr | undefined>): WritableSignal<BobsCompositeOcr | undefined> [] {
+    let result = new Array<WritableSignal<BobsCompositeOcr| undefined>>;
+    bcorsSigs.forEach(bcorsSig =>{
+      result.push(bcorsSig);
+    });
+    result.push(newBocrSig);
+    console.log('The new Result = '+this.printBcors(signal(result)));
+    return result;
+  }
+
+  printBcors(bcorsSig:WritableSignal <WritableSignal<BobsCompositeOcr | undefined> [] > ):String{
+    
+    let result ='';
+    const bcors = bcorsSig();
+    if(bcors && bcors.length > 0 ){
+      result = result + '['
+      bcors.forEach(bcor => {
+        if (bcor) {
+          result = result + JSON.stringify(bcor) + ',';
+        }
+      }) ;      
+    }
+    if (result !='') result = result + ']'
+    return result;
+  }
+
   override getOneCallResponseByZip(zipcode: WritableSignal<String | undefined>): WritableSignal<WritableSignal<BobsCompositeOcr | undefined>[]> {
     this.atLeastOneRequest = true;
     this.doneWithPushSig.set(false);
-    this.bobsCompositeOcrSig.set(initialBobsCompositeOcr);
+    //this.bobsCompositeOcrSig.set(initialBobsCompositeOcr);
     console.log('---- nonprod getOneCallResponseByZip zipcode() = '+ zipcode());
     this.zipInProgressSig.set(zipcode());
     this.startedJoecodeSigA.set(true);
@@ -126,23 +191,14 @@ export class Nonprodweather extends Weather {
     // this will be much different in prod version!!
     console.log('Nonprodweather getGeoCodeInfoFromZipWoKnownGeoCodes going for '+ zipcode());
     let result: WritableSignal<Jeocode | undefined> = signal(undefined);
-    let tempRes: Jeocode =initialGeoCode; 
-    let found = false;
-    let ind = -1;
-    ind = GEOCODESFORNONPROD.findIndex(jeoc => { 
-      const zc = zipcode();
-      zc && jeoc.zip == zc;
-      //console.log('zc = ' + zc + '   | jeoc.zip = '+jeoc.zip + ' ind = ' + ind);
-      if (jeoc.zip == zc) {
-        found = true; 
-        tempRes = jeoc
+    
+    const zc = zipcode();
+    GEOCODESFORNONPROD.forEach(g => {
+      if(g.zip == zc){
+        result.set(g);
+        console.log('found geo .')
       }
     });
-    //console.log('Nonprodweather ind = ' + ind + ' found = ' + found && 'tempRes.lat = ' + tempRes.lat) ;
-    if (found){
-      result = signal(tempRes);
-      console.log('Nonprodweather With Out KnownGeoCodes found geocode for zip '+ zipcode());
-    }
     return result;
   }
 

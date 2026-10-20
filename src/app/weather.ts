@@ -25,7 +25,8 @@ B) you have arrived here if and only if you have a valid JeoCode - use the oneCa
     abstract getGeoCodeInfoFromZipWithKnownGeoCodes(zipcode:WritableSignal<String | undefined>): void;//WritableSignal<Jeocode | undefined>;
 
     doneWithPushSig: WritableSignal<boolean> = signal( false);
-
+    backFromMFiveDay: WritableSignal<boolean> = signal( false);
+/*
       addToArray(arr:WritableSignal<BobsCompositeOcr | undefined>[] , bcor:WritableSignal<BobsCompositeOcr | undefined>)  :WritableSignal<BobsCompositeOcr | undefined>[] {
         let result = new Array<WritableSignal<BobsCompositeOcr| undefined>>;
         arr.forEach(b=>{ result.push(b)});
@@ -33,7 +34,7 @@ B) you have arrived here if and only if you have a valid JeoCode - use the oneCa
         result.push(bcor);
         return result;
       }
-  
+  */
   removeOneCallResponse(bco:WritableSignal<BobsCompositeOcr | undefined>):void{
     console.log('this.bobsCompositeOcrsSig.length before: '+this.bobsCompositeOcrsSig.length);
     this.bobsCompositeOcrsSig.update(b => 

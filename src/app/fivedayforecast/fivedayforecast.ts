@@ -71,6 +71,7 @@ export class Fivedayforecast {
 
   navigateBackToMain(): void {
     //this.weatherService.bobsCompositeOcrsSig().length = 0;
+    this.weatherService.backFromMFiveDay.set(true);
     this.router.navigate(['/']);
   }
 
