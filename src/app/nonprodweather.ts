@@ -11,8 +11,10 @@ export class Nonprodweather extends Weather {
     let result:(OneCallResponse | undefined) = undefined;
     result = ONECALLRESPONSES.find(ocr => ocr.lat == joeCode.lat && ocr.lon == joeCode.lon);
     if (result){
+      
       this.inProgressOneCallResponseSig.set(result);
       console.log('success! Nonprodweather  getOneCallResponseByJeoCodefound the OCR for zip ' + joeCode.zip);
+      this.genLok(joeCode,result);
     }
   }
 

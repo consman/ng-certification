@@ -14,17 +14,21 @@ export abstract class Weather {
     inProgressGeoCodeSig:WritableSignal<Jeocode | undefined> = signal(undefined);
     inProgressOneCallResponseSig:WritableSignal<OneCallResponse | undefined> =signal(undefined);
     previousLokation:(Lokation | undefined) = initialLokation;
+    startedSig:WritableSignal<boolean> = signal(false);
 
     abstract getOneCallResponseByJeoCode(joeCode:Jeocode):void;  
     abstract getGeoCodeInfoFromZipWoKnownGeoCodes(zipcode:WritableSignal<String | undefined>): WritableSignal<Jeocode | undefined>;
 
+    /*
     lokationSig= computed(():(Lokation| undefined)  =>{
+      const started = this.startedSig();
       const inProgressGeoCode = this.inProgressGeoCodeSig();
       const inProgressOneCallResponse = this.inProgressOneCallResponseSig();
-      return inProgressGeoCode && inProgressGeoCode.zip !== this.previousLokation?.jeocode.zip && 
-          inProgressOneCallResponse && inProgressOneCallResponse.lat != this.previousLokation?.oneCallResponse.lat ? 
-          this.genLok(inProgressGeoCode,inProgressOneCallResponse) : undefined   ;  
+      return started && inProgressGeoCode && inProgressGeoCode.zip.length ==5 && 
+          inProgressOneCallResponse && inProgressOneCallResponse.lat != 0 ? 
+          this.genLok(inProgressGeoCode,inProgressOneCallResponse) : this.handleUndefined(undefined)   ;  
     });
+*/
 
     getLokationByZip(zipCodeSig:WritableSignal<String | undefined>): void {
       const zipCode =zipCodeSig();
@@ -42,9 +46,15 @@ export abstract class Weather {
       else{
         result = this.getGeoCodeInfoFromZipWoKnownGeoCodes(zipCode);
       }
-      this.inProgressGeoCodeSig.set(result());
+      if(result && result()?.zip.length ==5 ){
+        this.inProgressGeoCodeSig.set(result());
+        console.log('success! Weather getJeoCodeByZipCode for the jeocode for '+zipCode());
+        const jeo = result();
+        if(jeo) {
+          this.getOneCallResponseByJeoCode(jeo);
+        }
+      }
     }
-
 
     getGeoCodeInfoFromZipWithKnownGeoCodes(zipCodeSig:WritableSignal<String | undefined>): (Jeocode | undefined){
       let result:(Jeocode | undefined) = undefined;
@@ -64,6 +74,7 @@ export abstract class Weather {
   }
 
     genLok(jeo:Jeocode,ocr:OneCallResponse): (Lokation | undefined){
+      this.fixMainWeatherIconName(ocr);
       let lokation:Lokation = {
           jeocode: jeo,
           oneCallResponse: ocr,
@@ -73,6 +84,11 @@ export abstract class Weather {
       this.lokationsSig.update(locs => [...locs,lokation]);
       console.log('the list after: '+this.listToString(this.lokationsSig));
       return lokation;
+    }
+
+    handleUndefined(u: (Lokation | undefined)): (Lokation | undefined){
+      console.log('handleUndefined is running so the computed signal must be running.');
+      return u;
     }
 
     listToString(arrSig:WritableSignal< (Lokation | undefined)[] >):string{
@@ -105,6 +121,34 @@ export abstract class Weather {
       }
       return result;
     }
+
+  fixMainWeatherIconName(ocr:OneCallResponse):void{
+    ocr.data.forEach(da => {
+      if(da.weather && da.weather.length > 0 ) {
+          da.weather.forEach(w => {
+            //console.log( 'xxxx main before: ' + w.main);
+            w.main = this.getIconFrom(w.main);
+            //console.log( 'xxxx main  after: ' + w.main);
+          });
+        }
+    });
+  }
+
+  getIconFrom(input: string): string{
+    if ( input === 'Clouds'){
+      return 'clouds';
+    }
+    if ( input === 'Sunny'){
+      return 'sun';
+    }
+    if ( input === 'Rain'){
+      return 'rain';
+    }
+    if ( input === 'Snow'){
+      return 'snow';
+    }
+    return 'sun';
+  }
 
 
 }
