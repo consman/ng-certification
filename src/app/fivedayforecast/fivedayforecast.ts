@@ -40,7 +40,7 @@ export class Fivedayforecast {
   private runThisStuffAfterComponentLoads(){
     
     if(this.jeo.zip && this.jeo.zip.length == 5){
-      this.oneCallResponse.set(this.weatherService.getOcrByGeoCode(this.jeo));
+      this.oneCallResponse.set(this.weatherService.getExistingOcrByGeoCode(this.jeo));
     }
     else{
       console.warn('Fix this. unable to get an existing bcocr with zip '+this.jeo.zip+' from the main list which should be there! ');

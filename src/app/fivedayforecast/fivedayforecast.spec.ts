@@ -9,6 +9,7 @@ import { HttpClient } from '@angular/common/http';
 import { of } from 'rxjs';
 import { ForecastImpl } from '../forecastImpl';
 import { Nonprodweather } from '../nonprodweather';
+import { initialGeoCode, initialLokation, initialOneCallResponse } from '../refData';
 /*
 export const FAKE_HTTP_CLIENT_LOCATIONS = {
   get: (url: string |null) => of(RAWLOCATIONS)
@@ -18,8 +19,9 @@ export const FAKE_HTTP_CLIENT_FORECASTS = {
   get: (url: string |null) => of(RAWFORECASTS)
 } as HttpClient;
 */
+//{"zip":"90810","name":"Carson","lat":33.8193,"lon":-118.2325,"country":"US"}
 export const FAKE_ROUTE = {
-  snapshot: { paramMap: {get: () => '95630+Folsom+38.6709+-121.1529'}}
+  snapshot: { paramMap: {get: () => '90810+Carson+33.8193+-118.232'}}
 };
 
 describe('Fivedayforecast', () => {
@@ -30,16 +32,20 @@ describe('Fivedayforecast', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Fivedayforecast] ,
-      providers:[ Nonprodweather, /* {provide: HttpClient, useValue: {FAKE_HTTP_CLIENT_FORECASTS, FAKE_HTTP_CLIENT_LOCATIONS}},
-        {provide: Weather, useFactory: weatherServiceFactory, deps: ['IS_PROD_ENVIRONMENT']},
-        {provide: 'IS_PROD_ENVIRONMENT', useValue: false},
-        {provide: ForecastImpl, useValue: RAWFORECASTS[0]}, */
+      providers:[ Nonprodweather, 
         {provide: ActivatedRoute, useValue: FAKE_ROUTE}] 
     }).compileComponents();
 
     fixture = TestBed.createComponent(Fivedayforecast);
     component = fixture.componentInstance;
     component.weatherService = TestBed.runInInjectionContext(() => new Nonprodweather());
+    
+    let tempJeo = initialGeoCode;
+    tempJeo.zip = '90810';
+    let tempOcr = initialOneCallResponse;
+    let tempLok = {jeocode:tempJeo, oneCallResponse:tempOcr, dt: new Date().getTime()}
+    
+    component.weatherService.lokationsSig.update(loks => [...loks, tempLok]);
     await fixture.whenStable();
   });
 

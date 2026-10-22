@@ -4,7 +4,6 @@ import { Location } from '../location/location';
 import { FormsModule } from '@angular/forms';
 import { Weather } from '../weather';
 import { Lokation } from '../funTypes';
-import { initialLokation } from '../refData';
 
 @Component({
   imports: [FormsModule,Location],//, AsyncPipe],
@@ -34,7 +33,9 @@ export class Search {
   search(): void{ 
     this.funcSig.set('search');
     this.addNewLocation(this.newZip);
+    this.newZip ='';
   }
+
 
   addNewLocation(zip: string): void {
     console.log('addNewLocation going for addNewLocation for zip: ' + zip+ ' ...');

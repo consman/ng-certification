@@ -13,7 +13,7 @@ import { initialLokation } from '../refData';
 })
 export class Location {
 
-  weatherService = inject(Weather);//TODO it does not look lie we need this
+  weatherService = inject(Weather);
 
    lokationSig = input<Lokation | undefined>(initialLokation); 
 
@@ -21,23 +21,13 @@ export class Location {
 
 
   handleClose(): void {
-    //TODO use the service and don't forget to remove from local storage!
-  }
-  
-
-  getZipLocalStorageKey(zipcode: string): string {
-    let result = null;
-    for (const localStorageKey in localStorage) {
-      if (localStorageKey.startsWith('storedZipCode')){
-        if (localStorage.getItem(localStorageKey) === zipcode){
-          result = localStorageKey;
-        }
-      }
+    const lokation = this.lokationSig();
+    if (lokation) {
+      this.weatherService.removeOneCallResponse(lokation);
     }
-    if ( null == result){
-      result = '';
+    else{
+      console.warn('Location Component handleClose - Strange! the lokation is not available when rying to remove it! ')
     }
-    return result;
   }
 
   spacesToDashes(locationNameWithSpaces: string): string {

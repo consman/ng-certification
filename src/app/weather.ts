@@ -1,6 +1,6 @@
 import { computed, effect, Injectable, Service, Signal, signal, WritableSignal } from '@angular/core';
 import { Lokation, Jeocode, OneCallResponse } from './funTypes';
-import { initialLokation, KNOWNGEOCODES } from './refData';
+import { initialGeoCode, initialLokation, KNOWNGEOCODES } from './refData';
 
 //@Service()
 @Injectable({ providedIn: 'root' })
@@ -13,28 +13,30 @@ export abstract class Weather {
     backFromMFiveDay:WritableSignal<boolean> = signal(false);
     inProgressGeoCodeSig:WritableSignal<Jeocode | undefined> = signal(undefined);
     inProgressOneCallResponseSig:WritableSignal<OneCallResponse | undefined> =signal(undefined);
-    previousLokation:(Lokation | undefined) = initialLokation;
-    startedSig:WritableSignal<boolean> = signal(false);
 
     abstract getOneCallResponseByJeoCode(joeCode:Jeocode):void;  
     abstract getGeoCodeInfoFromZipWoKnownGeoCodes(zipcode:WritableSignal<String | undefined>): WritableSignal<Jeocode | undefined>;
 
-    /*
-    lokationSig= computed(():(Lokation| undefined)  =>{
-      const started = this.startedSig();
-      const inProgressGeoCode = this.inProgressGeoCodeSig();
-      const inProgressOneCallResponse = this.inProgressOneCallResponseSig();
-      return started && inProgressGeoCode && inProgressGeoCode.zip.length ==5 && 
-          inProgressOneCallResponse && inProgressOneCallResponse.lat != 0 ? 
-          this.genLok(inProgressGeoCode,inProgressOneCallResponse) : this.handleUndefined(undefined)   ;  
-    });
-*/
-
     getLokationByZip(zipCodeSig:WritableSignal<String | undefined>): void {
       const zipCode =zipCodeSig();
       if(zipCode){
-        this.getJeoCodeByZipCode(zipCodeSig);
+        if(!this.zipAlreadyInList(zipCode)){
+          this.getJeoCodeByZipCode(zipCodeSig);
+        }
+        else{
+          alert('The zip code of '+zipCode+' is already in the list. ');
+        }
       }
+    }
+
+    zipAlreadyInList(zipCode:String):boolean {
+      let result = false;
+      let geo: Jeocode = {zip: zipCode+'',name: '', lat: 0, lon: 0, country: ''};
+      let existing = this.getExistingOcrByGeoCode(geo);
+      if (existing){
+        result = true;
+      }
+      return result;
     }
 
     getJeoCodeByZipCode(zipCode:WritableSignal<String | undefined>): void{
@@ -54,6 +56,10 @@ export abstract class Weather {
           this.getOneCallResponseByJeoCode(jeo);
         }
       }
+      else{
+        console.warn('weather getJeoCodeByZipCode - still cannot get a valid zip code: '+ zipCode());
+        alert('The zip code, '+zipCode()+', is formatted OK, but no data is returned.');
+      }
     }
 
     getGeoCodeInfoFromZipWithKnownGeoCodes(zipCodeSig:WritableSignal<String | undefined>): (Jeocode | undefined){
@@ -66,30 +72,34 @@ export abstract class Weather {
       return result;
     }
 
-  removeOneCallResponse(bco:(Lokation | undefined)):void{
-    
+  removeOneCallResponse(lok:(Lokation | undefined)):void{
+    console.log('the list before removing an entry: '+this.listToString(this.lokationsSig));
     this.lokationsSig.update(b => 
-      b.filter(b => b && b.jeocode.zip !== bco?.jeocode.zip));
-      
+      b.filter(b => b && b.jeocode.zip !== lok?.jeocode.zip));
+    console.log('the list after removing an entry: '+this.listToString(this.lokationsSig));    
+    
+    if (lok && lok.jeocode && lok.jeocode.zip && lok.jeocode.zip.length ==5 && null != this.getZipLocalStorageKey(lok.jeocode.zip)){
+        localStorage.removeItem('storedZipCode'+lok.jeocode.zip);
+    } 
+    else{
+      console.warn('weather removeOneCallResponse invalid zip provided when trying to remove from local storage! lok?.jeocode.zip = '+ lok?.jeocode.zip);
+    }
   }
 
-    genLok(jeo:Jeocode,ocr:OneCallResponse): (Lokation | undefined){
-      this.fixMainWeatherIconName(ocr);
-      let lokation:Lokation = {
-          jeocode: jeo,
-          oneCallResponse: ocr,
-          dt: new Date().getTime()
-      };
-      console.log('the list before: '+this.listToString(this.lokationsSig));
-      this.lokationsSig.update(locs => [...locs,lokation]);
-      console.log('the list after: '+this.listToString(this.lokationsSig));
-      return lokation;
-    }
+  genLok(jeo:Jeocode,ocr:OneCallResponse): (Lokation | undefined){
+    this.fixMainWeatherIconName(ocr);
+    let lokation:Lokation = {
+        jeocode: jeo,
+        oneCallResponse: ocr,
+        dt: new Date().getTime()
+    };
+    console.log('the list before: '+this.listToString(this.lokationsSig));
+    this.lokationsSig.update(locs => [...locs,lokation]);
+    console.log('the list after: '+this.listToString(this.lokationsSig));
 
-    handleUndefined(u: (Lokation | undefined)): (Lokation | undefined){
-      console.log('handleUndefined is running so the computed signal must be running.');
-      return u;
-    }
+    localStorage.setItem('storedZipCode' + (jeo.zip), jeo.zip);
+    return lokation;
+  }
 
     listToString(arrSig:WritableSignal< (Lokation | undefined)[] >):string{
       let result = '';
@@ -103,7 +113,7 @@ export abstract class Weather {
       return result;
     }
 
-    getOcrByGeoCode(jeo:Jeocode):(OneCallResponse | undefined){
+    getExistingOcrByGeoCode(jeo:Jeocode):(OneCallResponse | undefined){
       let result:(OneCallResponse | undefined) = undefined;
       const lokations = this.lokationsSig();
       let found = false;
@@ -148,6 +158,21 @@ export abstract class Weather {
       return 'snow';
     }
     return 'sun';
+  }
+
+    getZipLocalStorageKey(zipcode: string): string {
+    let result = null;
+    for (const localStorageKey in localStorage) {
+      if (localStorageKey.startsWith('storedZipCode')){
+        if (localStorage.getItem(localStorageKey) === zipcode){
+          result = localStorageKey;
+        }
+      }
+    }
+    if ( null == result){
+      result = '';
+    }
+    return result;
   }
 
 

@@ -18,7 +18,6 @@ export class Nonprodweather extends Weather {
     }
   }
 
-
   override getGeoCodeInfoFromZipWoKnownGeoCodes(zipCodeSig: WritableSignal<String | undefined>): WritableSignal<Jeocode | undefined> {
     let result: WritableSignal<Jeocode | undefined> = signal(undefined);
     const zipCode = zipCodeSig();

@@ -19,45 +19,7 @@
                   </app-location>              
             }
         }
-        <!--
-        @if(lokations && lokations.length > 0 ){
-          @for(bcocr of lokations; track bcocr()){
-            @let bcocrc = bcocr();
-            @if(bcocrc && bcocrc.jeocode && bcocrc.jeocode.zip) {
-              <p>bcocrc.jeocode.zip: {{bcocrc.jeocode.zip}}</p>
-            }
-          }
-        } -->
+        
     </div>
 
-    @let listEntries = lokations;
-    @if(listEntries && listEntries.length > 1 ){
-      @let bcocr = listEntries[0];
-      
-      @if(bcocr){
-        <div>{{bcocr.dt}}</div>
-      }
-
-
-      @let bcocrB = lokations[1];
-      
-      @if(bcocrB){
-        <div>{{bcocrB.dt}}</div>
-      }
-    }
-    <div>listEntries.length =  {{listEntries.length}}</div>
-    <div>firstZip() = {{listEntries[0]?.jeocode.zip}}</div>
-    <div>secondZip() = {{listEntries[1]?.jeocode.zip}}</div>
-
-<!--
-    <div><p>locResponseSig()?.sys.id =  {{locResponseSig()?.sys.id}}</p></div>
-    <div><p>locResponseSig()?.coord.lat =  {{locResponseSig()?.coord.lat}}</p></div>
-    <div><p>locationSigs.length =  {{locationSigs().length}}</p></div>
-    @if( locationSigs() && locationSigs().length > 0 && locationSigs()[0]()){
-      @let locc = locationSigs()[0]();
-      <div><p>locc?.zip =  {{locc?.zip}}</p></div>
-    }
-    <div><p> junk =  {{junk}}</p></div>
-  -->
-  
   </ng-container>
