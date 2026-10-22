@@ -25,20 +25,20 @@ describe('Weather', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       
-/*
-      providers: [{provide: HttpClient, useValue: {FAKE_HTTP_CLIENT_FORECASTS, FAKE_HTTP_CLIENT_LOCATIONS} },
-        {provide: Weather, useFactory: weatherServiceFactory, deps: ['IS_PROD_ENVIRONMENT']},
-        {provide: 'IS_PROD_ENVIRONMENT', useValue: environment.production},
-        {provide: Location, useValue: RAWLOCATIONS[0]}]
-        */
     });
     
     service = TestBed.inject(Weather);
   });
 
-
   it('should be created', () => {
     //console.log('Testing the abstract service, weather. ');
     expect(service).toBeTruthy();
   });
+
+    it('should find a known geoCode', () => {
+    //console.log('Testing the abstract service, weather. ');
+    let geoCode = service.getGeoCodeInfoFromZipWithKnownGeoCodes(signal('59829'));
+    expect(geoCode?.name).toEqual('Ravalli County');
+  });
+
 });

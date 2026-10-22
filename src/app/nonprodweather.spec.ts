@@ -12,16 +12,14 @@ describe('Nonprodweather', () => {
 
     it('should return jeocodes', () => {
     //console.log('Testing the abstract service, weather. ');
-      let result ='';
       
-      service.getGeoCodeInfoFromZipWithKnownGeoCodes(signal('95630'));
+      
+      let result = service.getGeoCodeInfoFromZipWithKnownGeoCodes(signal('95630'));
       //service.jeocodeSigA();
-      const jeo = service.jeocodeSigA();// jeoSig(); //I think this passes because it is a HOT signal 
-      if (jeo) {
-        result = jeo.name;
-      }//
+      //const jeo = service.inProgressGeoCodeSig();// jeoSig(); //I think this passes because it is a HOT signal 
       
-    expect (result).toEqual('Folsom');
+      
+    expect (result?.name).toEqual('Folsom');
   });
 
   

@@ -8,8 +8,8 @@ import { Weather } from '../weather';
 //import { LocationImpl } from '../locationImpl';
 import { ForecastImpl } from '../forecastImpl';
 import { DatePipe} from '@angular/common';
-import { OneCallResponse, BobsCompositeOcr, Jeocode } from '../funTypes';
-import { initialBobsCompositeOcr, initialGeoCode, initialOneCallResponse } from '../refData';
+import { OneCallResponse, Lokation, Jeocode } from '../funTypes';
+import { initialLokation, initialGeoCode, initialOneCallResponse } from '../refData';
 
 @Component({
   imports: [DatePipe],
@@ -23,9 +23,9 @@ export class Fivedayforecast {
   zipParam: string | null;
 
   oneCallResponse: WritableSignal<OneCallResponse | undefined> = signal(initialOneCallResponse);
-  bobsCompositeOcrSig: Signal<BobsCompositeOcr | undefined> = signal(initialBobsCompositeOcr);
+  bobsCompositeOcrSig: Signal<Lokation | undefined> = signal(initialLokation);
   jeo :Jeocode = initialGeoCode;
-  localBcorsSig:WritableSignal<WritableSignal<BobsCompositeOcr | undefined>[]> = signal(new Array<WritableSignal<BobsCompositeOcr>>);
+  localBcorsSig:WritableSignal<WritableSignal<Lokation | undefined>[]> = signal(new Array<WritableSignal<Lokation>>);
   
   constructor(route: ActivatedRoute, private router: Router){ 
     this.zipParam = route.snapshot.paramMap.get('zipcode');
@@ -40,11 +40,7 @@ export class Fivedayforecast {
   private runThisStuffAfterComponentLoads(){
     
     if(this.jeo.zip && this.jeo.zip.length == 5){
-
-      //let zipSig: WritableSignal<String | undefined> = signal(this.zipParam+'');
-      this.bobsCompositeOcrSig = this.weatherService.getExistingBcocrFromMainList(this.jeo.zip);
-      console.log('found bcorSig but this.bobsCompositeOcrSig()?.oneCallResponse.lat '+ this.bobsCompositeOcrSig()?.oneCallResponse.lat);
-      this.oneCallResponse.set(this.bobsCompositeOcrSig()?.oneCallResponse);
+      this.oneCallResponse.set(this.weatherService.getOcrByGeoCode(this.jeo));
     }
     else{
       console.warn('Fix this. unable to get an existing bcocr with zip '+this.jeo.zip+' from the main list which should be there! ');

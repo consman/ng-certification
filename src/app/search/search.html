@@ -10,22 +10,18 @@
           </button>
         </div>
       
-        @let bcocrs = this.weatherService.bobsCompositeOcrsSig();
-        @if(bcocrs && bcocrs.length > 0 ){
-            @for(bcocr of bcocrs; track bcocr()?.dt){
-                @let bcocrc = bcocr();
-                
-                  <app-location
-                                 
-                  [bobsCompositeOcr] = "bcocrc"
+        @let lokations = this.weatherService.lokationsSig();
+        @if(lokations && lokations.length > 0 ){
+            @for(lokation of lokations; track lokation?.dt){                                
+                  <app-location                                 
+                  [lokationSig] = "lokation"
                   >
-                  </app-location>
-              
+                  </app-location>              
             }
         }
         <!--
-        @if(bcocrs && bcocrs.length > 0 ){
-          @for(bcocr of bcocrs; track bcocr()){
+        @if(lokations && lokations.length > 0 ){
+          @for(bcocr of lokations; track bcocr()){
             @let bcocrc = bcocr();
             @if(bcocrc && bcocrc.jeocode && bcocrc.jeocode.zip) {
               <p>bcocrc.jeocode.zip: {{bcocrc.jeocode.zip}}</p>
@@ -33,23 +29,25 @@
           }
         } -->
     </div>
-    @if(bcocrs && bcocrs.length > 1 ){
-      @let bcocr = bcocrs[0];
-      @let bcocrc = bcocr();
-      @if(bcocrc){
-        <div>{{bcocrc.dt}}</div>
+
+    @let listEntries = lokations;
+    @if(listEntries && listEntries.length > 1 ){
+      @let bcocr = listEntries[0];
+      
+      @if(bcocr){
+        <div>{{bcocr.dt}}</div>
       }
 
 
-      @let bbcocr = bcocrs[1];
-      @let bbcocrc = bbcocr();
-      @if(bbcocrc){
-        <div>{{bbcocrc.dt}}</div>
+      @let bcocrB = lokations[1];
+      
+      @if(bcocrB){
+        <div>{{bcocrB.dt}}</div>
       }
     }
-    <div>newListSize() =  {{newListSize()}}</div>
-    <div>firstZip() = {{firstZip()}}</div>
-    <div>secondZip() = {{secondZip()}}</div>
+    <div>listEntries.length =  {{listEntries.length}}</div>
+    <div>firstZip() = {{listEntries[0]?.jeocode.zip}}</div>
+    <div>secondZip() = {{listEntries[1]?.jeocode.zip}}</div>
 
 <!--
     <div><p>locResponseSig()?.sys.id =  {{locResponseSig()?.sys.id}}</p></div>

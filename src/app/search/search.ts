@@ -3,7 +3,8 @@ import { afterNextRender, Component, computed, effect, ElementRef, inject, Signa
 import { Location } from '../location/location';
 import { FormsModule } from '@angular/forms';
 import { Weather } from '../weather';
-import { BobsCompositeOcr } from '../funTypes';
+import { Lokation } from '../funTypes';
+import { initialLokation } from '../refData';
 
 @Component({
   imports: [FormsModule,Location],//, AsyncPipe],
@@ -15,21 +16,9 @@ export class Search {
 
     weatherService = inject(Weather);
     newZip!: string;
-    //bobsCompositeOcrSig:Signal<BobsCompositeOcr | undefined> = signal(undefined); 
+    funcSig = signal('');
 
-    startedSig: WritableSignal<boolean> = signal( false); // this is at the request level
-    atLeastOneReqStarted = false;                         // this is at the componenet level
-    startedLoStZipSig: WritableSignal<String | undefined> = signal( undefined);
 
-    junk: string = 'foo';
-    inprogZipSig: WritableSignal<string | undefined> = signal(undefined);
-    funcSig: WritableSignal<string> = signal('search');
-    myInput = viewChild<ElementRef<HTMLInputElement>>('zipCodeEntry');
-    startCheckExistinginListSig:WritableSignal<boolean> = signal( false);
-    //localBceocrsSig: WritableSignal<WritableSignal<BobsCompositeOcr | undefined>[]> =signal(new Array<WritableSignal<BobsCompositeOcr>>);
-    listSize: WritableSignal<number> = signal(0);
-
-    
   constructor(){
     afterNextRender( ()=> {
       if(this.weatherService.backFromMFiveDay()){
@@ -41,32 +30,18 @@ export class Search {
     });
   }
 
-  public newListSize = computed(() => {
-    return this.weatherService.bobsCompositeOcrsSig().length > 0 ? this.weatherService.bobsCompositeOcrsSig().length : 0;
-  });
-
-  firstZip = computed(() => {
-    return this.weatherService.bobsCompositeOcrsSig().length > 0 ? this.weatherService.bobsCompositeOcrsSig()[0]()?.jeocode.zip : 99999;
-  });
-
-  secondZip = computed(() => {
-    return this.weatherService.bobsCompositeOcrsSig().length > 1 ? this.weatherService.bobsCompositeOcrsSig()[1]()?.jeocode.zip : 99999;
-  });
 
   search(): void{ 
     this.funcSig.set('search');
-    this.startCheckExistinginListSig.set(true);    
     this.addNewLocation(this.newZip);
   }
 
   addNewLocation(zip: string): void {
-    this.startedSig.set(true);
     console.log('addNewLocation going for addNewLocation for zip: ' + zip+ ' ...');
 
       if (this.validateZip(zip) ) {
-        this.inprogZipSig.set(zip);
         let zipSig: WritableSignal<String | undefined> = signal(zip);
-        this.weatherService.getOneCallResponseByZip(zipSig); //.getLocationFromService(zipSig);
+        this.weatherService.getLokationByZip(zipSig); //.getLocationFromService(zipSig);
         
       }
       else {
@@ -82,17 +57,16 @@ export class Search {
   }
 
 
-    findIndexByZip(bcors: WritableSignal<BobsCompositeOcr | undefined>[],zip:String): number{
+    findIndexByZip(bcors: (Lokation | undefined)[],zip:String): number{
     //console.log(' findIndexByZip checking to see if '+zip+' is already in the array...');
     let result = -1;
     let ind = 0;
     bcors.forEach(bcor => { 
 
-      if( zip == bcor()?.jeocode.zip){
+      if( zip == bcor?.jeocode.zip){
         result = ind;
       }
       ind++;
-
     });
     //console.log(' -- findIndexByZip index = ' + result);
     return result;
@@ -101,21 +75,16 @@ export class Search {
   loadLocationsFromLocalStorage(): void {
 
     this.funcSig.set('localStorage');
-
     let delay = 250;
     
     for (const localStorageKey in localStorage) {
           
         if (localStorageKey.startsWith('storedZipCode')){  
-            const derivedZip =  localStorage.getItem(localStorageKey); 
-            
-            const bcos = this.weatherService.bobsCompositeOcrsSig();
-            delay = delay +250;       
-            let ind = this.findIndexByZip(bcos, derivedZip+'');
-            if(bcos && derivedZip && ind === -1){
+            const derivedZip =  localStorage.getItem(localStorageKey);             
+            delay = delay +250;              
+            if(derivedZip){
               console.log('loadLocationsFromLocalStorage Going for addNewLocation for '+derivedZip); 
-              setTimeout(()=>{
-                this.startedLoStZipSig.set(derivedZip);
+              setTimeout(()=>{                
                 this.addNewLocation(derivedZip);  
                },delay);             
             }
@@ -124,8 +93,6 @@ export class Search {
             }
         }
     }
-    
   }
-
 
 }

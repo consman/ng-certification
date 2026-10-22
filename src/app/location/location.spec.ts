@@ -33,8 +33,7 @@ describe('Location', () => {
 
     component.weatherService = TestBed.runInInjectionContext(() => new Nonprodweather());
 
-    //let loc = component.location();
-    let bco = component.bobsCompositeOcr();
+    let bco = component.lokationSig();
     if(bco) {
       bco.jeocode.name = 'Folsom';
 

@@ -1,4 +1,4 @@
-import { BobsCompositeOcr, Daum, Jeocode, OneCallResponse } from './funTypes';
+import { Lokation, Daum, Jeocode, OneCallResponse } from './funTypes';
 export const KNOWNGEOCODES: Jeocode [] =[
     {"zip":"95630","name":"Folsom","lat":38.6709,"lon":-121.1529,"country":"US"}
     ,{"zip":"55121","name":"Eagan","lat":44.8471,"lon":-93.1543,"country":"US"}
@@ -28,7 +28,7 @@ export const initialOneCallResponse: OneCallResponse = {
     next: ''
 }
 
-export const initialBobsCompositeOcr: BobsCompositeOcr ={
+export const initialLokation: Lokation ={
     jeocode: initialGeoCode,
     oneCallResponse: initialOneCallResponse,
     dt: 0

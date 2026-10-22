@@ -2,43 +2,43 @@
     <div class="well flex">
       <div>
 
-      @let bco = bobsCompositeOcr();
-      @if(bco){
+      @let lokation = lokationSig();
+      @if(lokation){
         <table><tr class="mylocations"><td>
 
         <h3 data-test="searchResultTitle" >
-            {{bco.jeocode.name}} ({{bco.jeocode.zip}})
+            {{lokation.jeocode.name}} ({{lokation.jeocode.zip}})
            
         </h3>
         
-        @if(bco.oneCallResponse.data[0].weather && bco.oneCallResponse.data[0].weather.length > 0){
-            <h4>Current conditions:  {{bco.oneCallResponse.data[0].weather[0].main}}</h4>
+        @if(lokation.oneCallResponse.data[0].weather && lokation.oneCallResponse.data[0].weather.length > 0){
+            <h4>Current conditions:  {{lokation.oneCallResponse.data[0].weather[0].main}}</h4>
         }
         <h4>Temperatures today:</h4>
         <span>
-            @if(bco.oneCallResponse.data[0] && bco.oneCallResponse.data[0].temp.day){ 
-                Current {{bco.oneCallResponse.data[0].temp.day}}
+            @if(lokation.oneCallResponse.data[0] && lokation.oneCallResponse.data[0].temp.day){ 
+                Current {{lokation.oneCallResponse.data[0].temp.day}}
             }
-            @if(bco.oneCallResponse.data[0].temp && bco.oneCallResponse.data[0].temp.max){ 
-                - Max {{bco.oneCallResponse.data[0].temp.max}}
+            @if(lokation.oneCallResponse.data[0].temp && lokation.oneCallResponse.data[0].temp.max){ 
+                - Max {{lokation.oneCallResponse.data[0].temp.max}}
             }
-            @if(bco.oneCallResponse.data[0].temp && bco.oneCallResponse.data[0].temp.min){ 
-                - Min {{bco.oneCallResponse.data[0].temp.min}}
+            @if(lokation.oneCallResponse.data[0].temp && lokation.oneCallResponse.data[0].temp.min){ 
+                - Min {{lokation.oneCallResponse.data[0].temp.min}}
             }
           </span>
       
     </td><td>
           
-          @if (bco.jeocode != undefined && bco.jeocode.name != undefined && bco.jeocode.zip != undefined && bco.jeocode.lon != undefined && bco.jeocode.lat != undefined){
-            <a data-test="fiveDayForecastLink" routerLink="/forecast/{{bco.jeocode.zip}}+{{spacesToDashes( bco.jeocode.name)}}+{{bco.jeocode.lat}}+{{bco.jeocode.lon}}" >
-                Show Five Day Forecast for {{bco.jeocode.name}}
+          @if (lokation.jeocode != undefined && lokation.jeocode.name != undefined && lokation.jeocode.zip != undefined && lokation.jeocode.lon != undefined && lokation.jeocode.lat != undefined){
+            <a data-test="fiveDayForecastLink" routerLink="/forecast/{{lokation.jeocode.zip}}+{{spacesToDashes( lokation.jeocode.name)}}+{{lokation.jeocode.lat}}+{{lokation.jeocode.lon}}" >
+                Show Five Day Forecast for {{lokation.jeocode.name}}
             </a>
           } 
         
       </td>
       <td>
-        @if(bco.oneCallResponse.data[0].weather && bco.oneCallResponse.data[0].weather.length > 0 && bco.oneCallResponse.data[0].weather[0].main){ 
-            <img class="iconimg" src="https://www.angulartraining.com/images/weather/{{bco.oneCallResponse.data[0].weather[0].main }}.png" alt="icon" height="auto" />
+        @if(lokation.oneCallResponse.data[0].weather && lokation.oneCallResponse.data[0].weather.length > 0 && lokation.oneCallResponse.data[0].weather[0].main){ 
+            <img class="iconimg" src="https://www.angulartraining.com/images/weather/{{lokation.oneCallResponse.data[0].weather[0].main }}.png" alt="icon" height="auto" />
         }        
         <span data-test="closeSearchResult" class="close" (click)="handleClose()" class="close">X</span>        
       </td></tr>

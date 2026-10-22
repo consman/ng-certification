@@ -60,7 +60,7 @@ export interface WeatherB {
   icon: string
 }
 
-export interface BobsCompositeOcr {
+export interface Lokation {
   jeocode:Jeocode;
   oneCallResponse:OneCallResponse;
   dt:number;
