@@ -10,19 +10,20 @@ jobs:
       fail-fast: false # https://github.com/cypress-io/github-action/issues/48
       matrix:
         containers: [1, 2] # Uses 2 parallel instances
-        node-version: [16, 18]
+        node-version: [22, 22]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Cypress run
         # Uses the official Cypress GitHub action https://github.com/cypress-io/github-action
-        uses: cypress-io/github-action@v6
+        uses: cypress-io/github-action@v7
         with:
           # Starts web server for E2E tests - replace with your own server invocation
           # https://docs.cypress.io/guides/continuous-integration/introduction#Boot-your-server
           start: npm start
           #wait-on: 'http://localhost:4200' # Waits for above
-          wait-on: 'http://[::1]:4200'
+          wait-on: 'http://127.0.0.1:4200'
+          wait-on-timeout: 120
           # Records to Cypress Cloud
           # https://docs.cypress.io/guides/cloud/projects#Set-up-a-project-to-record
           record: true
