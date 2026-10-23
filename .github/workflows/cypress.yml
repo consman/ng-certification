@@ -30,9 +30,9 @@ jobs:
       - name: Run Cypress Tests
         uses: cypress-io/github-action@v6
         with:
-          start: npx http-server dist/ng-certification/browser -p 4200 --silent
+          start: npx ng preview --port 4200 --host 127.0.0.1
           wait-on: 'http://127.0.0.1:4200'
-          wait-on-timeout: 60
+          wait-on-timeout: 180
         env:
           # For recording and parallelization to work you must set your CYPRESS_RECORD_KEY
           # in GitHub repo → Settings → Secrets → Actions
