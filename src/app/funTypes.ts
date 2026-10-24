@@ -65,3 +65,10 @@ export interface Lokation {
   oneCallResponse:OneCallResponse;
   dt:number;
 }
+
+export interface SearchResponse {
+  lokation: Lokation;
+  lokationsCount:number;
+  messageFromServer:string;
+  success:boolean;
+}

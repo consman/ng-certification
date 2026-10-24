@@ -21,5 +21,21 @@
         }
         
     </div>
-
+   
+    <div>
+      @let searchResponse = searchResponseSig();
+      @if(searchResponse && searchResponse.messageFromServer && searchResponse.success){
+        <span>searchResponse.messageFromServer = {{searchResponse.messageFromServer}}</span><br>
+        <span>searchResponse.success = {{searchResponse.success}}</span><br>
+        <span>searchResponse.lokationsCount = {{searchResponse.lokationsCount}}</span><br>
+        <span>searchResponse.lokation.oneCallResponse.lat = {{searchResponse.lokation.oneCallResponse.lat}}</span><br>
+        <span>searchResponse.lokation.jeocode.lat = {{searchResponse.lokation.jeocode.lat}}</span><br> 
+         @let lokation = this.weatherService.getNewLokByOcr();
+         @if(lokation && lokation.dt > 0 ){
+          <span>lokation.dt = {{lokation.dt}}</span>
+         }
+              
+      }
+    </div>
+    
   </ng-container>

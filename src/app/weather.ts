@@ -1,5 +1,5 @@
 import { computed, effect, Injectable, Service, Signal, signal, WritableSignal } from '@angular/core';
-import { Lokation, Jeocode, OneCallResponse } from './funTypes';
+import { Lokation, Jeocode, OneCallResponse, SearchResponse } from './funTypes';
 import { initialGeoCode, initialLokation, KNOWNGEOCODES } from './refData';
 
 //@Service()
@@ -7,17 +7,29 @@ import { initialGeoCode, initialLokation, KNOWNGEOCODES } from './refData';
 export abstract class Weather {
 
     constructor() { 
+
+      effect(() =>{
+        const inProgressSearchResponse = this.inProgressSearchResponseSig();
+        if (inProgressSearchResponse 
+          && inProgressSearchResponse.lokation 
+          && inProgressSearchResponse.lokation.jeocode 
+          &&inProgressSearchResponse.lokation.jeocode.zip 
+          && inProgressSearchResponse.success){
+            localStorage.setItem('storedZipCode' + (inProgressSearchResponse.lokation.jeocode.zip), inProgressSearchResponse.lokation.jeocode.zip);
+        }
+      });
     }
 
     public lokationsSig: WritableSignal<(Lokation| undefined)[]> =signal(new Array<Lokation| undefined>);
-    backFromMFiveDay:WritableSignal<boolean> = signal(false);
+    backFromMFiveDay:WritableSignal<boolean> = signal(false); //TODO work on this
     inProgressGeoCodeSig:WritableSignal<Jeocode | undefined> = signal(undefined);
     inProgressOneCallResponseSig:WritableSignal<OneCallResponse | undefined> =signal(undefined);
+    tempLokationsSig: WritableSignal<(Lokation| undefined)[]> =signal(new Array<Lokation| undefined>);
 
-    abstract getOneCallResponseByJeoCode(joeCode:Jeocode):void;  
+    abstract getOneCallResponseByJeoCode(joeCode:Jeocode):WritableSignal<OneCallResponse | undefined>;  
     abstract getGeoCodeInfoFromZipWoKnownGeoCodes(zipcode:WritableSignal<String | undefined>): WritableSignal<Jeocode | undefined>;
 
-    getLokationByZip(zipCodeSig:WritableSignal<String | undefined>): void {
+    getLokationByZip(zipCodeSig:WritableSignal<String | undefined>): Signal<SearchResponse | undefined> {
       const zipCode =zipCodeSig();
       if(zipCode){
         if(!this.zipAlreadyInList(zipCode)){
@@ -27,6 +39,7 @@ export abstract class Weather {
           alert('The zip code of '+zipCode+' is already in the list. ');
         }
       }
+      return this.inProgressSearchResponseSig;
     }
 
     zipAlreadyInList(zipCode:String):boolean {
@@ -72,6 +85,85 @@ export abstract class Weather {
       return result;
     }
 
+    inProgressSearchResponseSig = computed(():(SearchResponse | undefined) => {
+      const ocr = this.inProgressOneCallResponseSig();
+      const jeo = this.inProgressGeoCodeSig();
+      return ocr && jeo && ocr.lat == jeo.lat ? 
+        { lokation: {
+            jeocode: jeo,
+            oneCallResponse: this.fixMainWeatherIconName(ocr),
+            dt: new Date().getTime()
+          }, 
+        lokationsCount:this.lokationsSig().length, 
+        messageFromServer:'Good job!', 
+        success:true} : undefined;
+    }); 
+
+    handleNewLokationFromNewOcr(ocr:OneCallResponse):void{
+      const jeocode = this.inProgressGeoCodeSig();
+      if(ocr && jeocode && ocr.lat == jeocode.lat){
+        let newLokation:Lokation =  {
+              jeocode: jeocode,
+              oneCallResponse: this.fixMainWeatherIconName(ocr),
+              dt: new Date().getTime()
+            };
+         this.lokationsSig.update(loks => [...loks,newLokation]);
+         console.log('success! weather handleNewLokationFromNewOcr addded a new lok to the main list.');
+        } else {
+          console.log('bummer! weather handleNewLokationFromNewOcr something went wrong.');
+        }
+    }
+    
+
+    getNewLokByOcr():(Lokation | undefined) {
+      let result:(Lokation | undefined) = undefined;
+      const ocr = this.inProgressOneCallResponseSig();
+      const jeocode = this.inProgressGeoCodeSig();
+      if(ocr && jeocode && ocr.lat == jeocode.lat){
+        let newLokation:Lokation =  {
+              jeocode: jeocode,
+              oneCallResponse: this.fixMainWeatherIconName(ocr),
+              dt: new Date().getTime()
+            };
+            result = newLokation;
+         this.lokationsSig.update(loks => [...loks,newLokation]);
+         console.log('success! weather getNewLokByOcr addded a new lok to the main list.');
+        }
+      return result;
+    }
+/*
+    newLokationsSigComp = computed(():((Lokation| undefined)[]) => {
+      const inProgressSearchResponse =this.inProgressSearchResponseSig();
+      const inProgressGeoCode = this.inProgressGeoCodeSig();
+      return inProgressSearchResponse && inProgressGeoCode && inProgressSearchResponse.lokation.oneCallResponse.lat == inProgressGeoCode.lat ?
+      this.handleNewLokSig(inProgressSearchResponse.lokation) : []; 
+    }); 
+
+    handleNewLokSig(newLok:(Lokation | undefined)):(Lokation| undefined)[]{
+      let result:(Lokation| undefined)[] = [];
+      const lokations = this.lokationsSig();
+      result = [...lokations];
+      result.push(newLok);
+      //this.tempLokationsSig.set(result);
+      console.log('handleNewLokSig almost done .. this.tempLokationsSig().length = ' + this.tempLokationsSig().length);
+      return result;
+    }
+
+    lastLokComp = computed(():(Lokation| undefined) => {      
+      const newLokations = this.newLokationsSigComp();
+      return newLokations && newLokations.length > 0 ? newLokations[newLokations.length - 1] : undefined;      
+    });
+*/
+    cleanUpAfterZip(zip:string):void{
+      console.log('Weather going for clean up....');
+      this.lokationsSig.set(this.tempLokationsSig());
+      this.tempLokationsSig().length = 0;
+      console.log('weather service cleanUpAfterZip - this.tempLokationsSig().length = '+ this.tempLokationsSig().length + ' and this.lokationsSig().length =  '+ this.lokationsSig().length);
+      this.inProgressGeoCodeSig.set(undefined);
+      this.inProgressOneCallResponseSig.set(undefined);
+    }
+
+
   removeOneCallResponse(lok:(Lokation | undefined)):void{
     console.log('the list before removing an entry: '+this.listToString(this.lokationsSig));
     this.lokationsSig.update(b => 
@@ -86,11 +178,12 @@ export abstract class Weather {
     }
   }
 
+  /*
   genLok(jeo:Jeocode,ocr:OneCallResponse): (Lokation | undefined){
-    this.fixMainWeatherIconName(ocr);
+    let newOcr = this.fixMainWeatherIconName(ocr);
     let lokation:Lokation = {
         jeocode: jeo,
-        oneCallResponse: ocr,
+        oneCallResponse: newOcr,
         dt: new Date().getTime()
     };
     console.log('the list before: '+this.listToString(this.lokationsSig));
@@ -100,6 +193,7 @@ export abstract class Weather {
     localStorage.setItem('storedZipCode' + (jeo.zip), jeo.zip);
     return lokation;
   }
+*/
 
     listToString(arrSig:WritableSignal< (Lokation | undefined)[] >):string{
       let result = '';
@@ -126,13 +220,11 @@ export abstract class Weather {
           }
         });
       }
-      if(!found){
-        console.warn(' abstract weather service getOcrByGeoCode NOT found lokation with zip '+jeo.zip);
-      }
       return result;
     }
 
-  fixMainWeatherIconName(ocr:OneCallResponse):void{
+  fixMainWeatherIconName(prevOcr:OneCallResponse):OneCallResponse{
+    let ocr:OneCallResponse = prevOcr;
     ocr.data.forEach(da => {
       if(da.weather && da.weather.length > 0 ) {
           da.weather.forEach(w => {
@@ -142,6 +234,7 @@ export abstract class Weather {
           });
         }
     });
+    return ocr;
   }
 
   getIconFrom(input: string): string{

@@ -1,9 +1,9 @@
-import { afterNextRender, Component, computed, effect, ElementRef, inject, Signal, signal, viewChild, WritableSignal } from '@angular/core';
+import { afterNextRender, Component,  computed,  ElementRef, inject, Signal, signal, viewChild, WritableSignal } from '@angular/core';
 
 import { Location } from '../location/location';
 import { FormsModule } from '@angular/forms';
 import { Weather } from '../weather';
-import { Lokation } from '../funTypes';
+import { Lokation, SearchResponse } from '../funTypes';
 
 @Component({
   imports: [FormsModule,Location],//, AsyncPipe],
@@ -16,7 +16,8 @@ export class Search {
     weatherService = inject(Weather);
     newZip!: string;
     funcSig = signal('');
-
+    tempZip!:string;
+    searchResponseSig:Signal<SearchResponse | undefined> = signal(undefined);
 
   constructor(){
     afterNextRender( ()=> {
@@ -29,21 +30,19 @@ export class Search {
     });
   }
 
-
   search(): void{ 
     this.funcSig.set('search');
-    this.addNewLocation(this.newZip);
+    this.addNewLocation(this.newZip);    
+    this.tempZip = this.newZip;
     this.newZip ='';
   }
-
 
   addNewLocation(zip: string): void {
     console.log('addNewLocation going for addNewLocation for zip: ' + zip+ ' ...');
 
       if (this.validateZip(zip) ) {
         let zipSig: WritableSignal<String | undefined> = signal(zip);
-        this.weatherService.getLokationByZip(zipSig); //.getLocationFromService(zipSig);
-        
+        this.searchResponseSig = this.weatherService.getLokationByZip(zipSig);        
       }
       else {
         console.error('ERROR! ' + zip + ' zip is not valid');
