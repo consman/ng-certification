@@ -40,7 +40,8 @@
         @if(lokation.oneCallResponse.data[0].weather && lokation.oneCallResponse.data[0].weather.length > 0 && lokation.oneCallResponse.data[0].weather[0].main){ 
             <img class="iconimg" src="https://www.angulartraining.com/images/weather/{{lokation.oneCallResponse.data[0].weather[0].main }}.png" alt="icon" height="auto" />
         }        
-        <span data-test="closeSearchResult" class="close" (click)="handleClose()" class="close">X</span>        
+        <span data-test="closeSearchResult" class="close" (click)="handleClose()" 
+        class="close">X</span>        
       </td></tr>
     </table>
   }

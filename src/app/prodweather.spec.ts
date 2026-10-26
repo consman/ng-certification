@@ -3,6 +3,7 @@ import { Prodweather } from './prodweather';
 import {HttpClient} from '@angular/common/http';
 //import {RAWFORECASTS, RAWLOCATIONS} from './mock-data'; 
 import { of } from 'rxjs';
+import { Nonprodweather } from './nonprodweather';
 /*
 export const FAKE_HTTP_CLIENT_LOCATIONS = {
   get: (url: string |null) => of(RAWLOCATIONS)
@@ -15,14 +16,10 @@ export const FAKE_HTTP_CLIENT_FORECASTS = {
 
 describe('Prodweather', () => {
   let service: Prodweather;
+  //let weather: Prodweather;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      /*
-            providers: [{provide: HttpClient, useValue: {FAKE_HTTP_CLIENT_FORECASTS, FAKE_HTTP_CLIENT_LOCATIONS} },
-                  {provide: Location, useValue: RAWLOCATIONS[0]}]
-*/
-    });
+    TestBed.configureTestingModule({});
     service = TestBed.inject(Prodweather);
   });
 

@@ -9,7 +9,7 @@ import { HttpClient } from '@angular/common/http';
 import { of } from 'rxjs';
 import { ForecastImpl } from '../forecastImpl';
 import { Nonprodweather } from '../nonprodweather';
-import { initialGeoCode, initialLokation, initialOneCallResponse } from '../refData';
+import { initialGeoCode, initialLokation, initialOneCallResponse, initialSearchResponse } from '../refData';
 /*
 export const FAKE_HTTP_CLIENT_LOCATIONS = {
   get: (url: string |null) => of(RAWLOCATIONS)
@@ -27,12 +27,14 @@ export const FAKE_ROUTE = {
 describe('Fivedayforecast', () => {
   let component: Fivedayforecast;
   let fixture: ComponentFixture<Fivedayforecast>;
-  let weather: Nonprodweather;
+  //let weather: Nonprodweather;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Fivedayforecast] ,
-      providers:[ Nonprodweather, 
+      providers:[ 
+        {provide: Weather, useFactory: weatherServiceFactory, deps: ['IS_PROD_ENVIRONMENT']},
+        {provide: 'IS_PROD_ENVIRONMENT', useValue: false}, 
         {provide: ActivatedRoute, useValue: FAKE_ROUTE}] 
     }).compileComponents();
 
@@ -43,9 +45,10 @@ describe('Fivedayforecast', () => {
     let tempJeo = initialGeoCode;
     tempJeo.zip = '90810';
     let tempOcr = initialOneCallResponse;
-    let tempLok = {jeocode:tempJeo, oneCallResponse:tempOcr, dt: new Date().getTime()}
+    let tempLok = {jeocode:tempJeo, oneCallResponse:tempOcr, dt: new Date().getTime()};
+    let searchResponse = initialSearchResponse;
     
-    component.weatherService.lokationsSig.update(loks => [...loks, tempLok]);
+    component.weatherService.searchResponses.push(searchResponse);//update(loks => [...loks, tempLok]);
     await fixture.whenStable();
   });
 

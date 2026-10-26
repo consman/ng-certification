@@ -9,25 +9,232 @@ export abstract class Weather {
     constructor() { 
 
       effect(() =>{
-        const inProgressSearchResponse = this.inProgressSearchResponseSig();
+        const inProgressSearchResponse = this.inProgressSearchResponseComp();
         if (inProgressSearchResponse 
           && inProgressSearchResponse.lokation 
           && inProgressSearchResponse.lokation.jeocode 
           &&inProgressSearchResponse.lokation.jeocode.zip 
           && inProgressSearchResponse.success){
             localStorage.setItem('storedZipCode' + (inProgressSearchResponse.lokation.jeocode.zip), inProgressSearchResponse.lokation.jeocode.zip);
+            this.searchResponses.push(inProgressSearchResponse);
+        }
+      });
+
+      effect(() => { // 002
+        const inProgressSearchResponseSig = this.inProgressSearchResponseComp;
+        const inProgressSearchResponse = inProgressSearchResponseSig();
+        if(inProgressSearchResponse){
+          console.log('eff 002 in weather.ts says inProgressSearchResponse ='
+            +inProgressSearchResponse.success
+            +'|'+inProgressSearchResponse.messageFromServer
+            +'|'+inProgressSearchResponse.lokation.jeocode.zip);
+        }
+      });
+
+      effect(() =>{ //003
+        const jeocode = this.getJeoCodeByZipCodeComp();
+        const zip = this.inProgressZipSig()
+        if (zip && (!jeocode || !jeocode.zip)) {
+          alert('The zip code, '+this.inProgressZipSig()+', is formatted OK, but no data is returned.');
         }
       });
     }
 
+    inProgressZipSig:WritableSignal<String | undefined> = signal(undefined);
+    searchResponses:SearchResponse [] = [];
+    backFromFiveDay:WritableSignal<boolean> = signal(false); //TODO work on this
+
+    getLokationByZipSig(zipcode:WritableSignal<String | undefined>):WritableSignal<SearchResponse | undefined>{
+      let result:WritableSignal<SearchResponse | undefined> = signal(undefined);
+      const zip = zipcode();
+      if (zip){
+        this.inProgressZipSig.set(zip);
+        const searchResponse = this.inProgressSearchResponseComp();
+        if(searchResponse){
+          result.set(searchResponse);
+        }
+      }
+      return result;
+    }
+
+    abstract getGeoCodeInfoFromZipWoKnownGeoCodes(zipcode:WritableSignal<String | undefined>): WritableSignal<Jeocode | undefined>;
+    abstract getOneCallResponseByJeoCode(joeCode:Signal<Jeocode | undefined>):WritableSignal<OneCallResponse | undefined>;  
+
+    inProgressSearchResponseComp = computed(():(SearchResponse | undefined) => {
+      //let result = undefined;
+      const jeoCodeSig = this.getJeoCodeByZipCodeComp; //wrong use computed to determine next 2
+      const ocrSig = this.getOneCallResponseByJeoCode(jeoCodeSig);//this.inProgressOneCallResponseSig();
+      const jeoCode = jeoCodeSig();
+      const ocr = ocrSig();
+
+      return jeoCode && ocr && jeoCode.lat == ocr.lat ? { lokation: {
+            jeocode: jeoCode,
+            oneCallResponse: this.fixMainWeatherIconName(ocr),
+            dt: new Date().getTime()
+          }, 
+        lokationsCount:this.searchResponses.length+1,  
+        messageFromServer:'Good job!', 
+        success:true} : undefined;
+
+    });
+
+  getJeoCodeByZipCodeComp = computed(():(Jeocode | undefined) => {
+    const geoFromKnown =  this.getGeoCodeInfoFromZipWithKnownGeoCodes(this.inProgressZipSig);
+    const geoFromUnKnown = this.getGeoCodeInfoFromZipWoKnownGeoCodes(this.inProgressZipSig); 
+    return geoFromKnown || geoFromUnKnown() ? (geoFromKnown ? geoFromKnown : geoFromUnKnown()) : undefined;
+  });
+
+  getGeoCodeInfoFromZipWithKnownGeoCodes(zipCodeSig:WritableSignal<String | undefined>): (Jeocode | undefined){
+    let result:(Jeocode | undefined) = undefined;
+    const zipCode = zipCodeSig();
+    if(zipCode){
+      result = KNOWNGEOCODES.find(kgc =>(kgc.zip == zipCode));
+      if(result) {
+        console.log('success getGeoCodeInfoFromZipWithKnownGeoCodes found '+ zipCode);
+      }
+    }
+    return result;
+  }
+
+  fixMainWeatherIconName(prevOcr:OneCallResponse):OneCallResponse{
+    let ocr:OneCallResponse = prevOcr;
+    ocr.data.forEach(da => {
+      if(da.weather && da.weather.length > 0 ) {
+          da.weather.forEach(w => {
+            //console.log( 'xxxx main before: ' + w.main);
+            w.main = this.getIconFrom(w.main);
+            //console.log( 'xxxx main  after: ' + w.main);
+          });
+        }
+    });
+    return ocr;
+  }
+
+  getIconFrom(input: string): string{
+    if ( input === 'Clouds'){
+      return 'clouds';
+    }
+    if ( input === 'Sunny'){
+      return 'sun';
+    }
+    if ( input === 'Rain'){
+      return 'rain';
+    }
+    if ( input === 'Snow'){
+      return 'snow';
+    }
+    return 'sun';
+  }
+
+  getExistingSearchResponseByGeoCode(jeo:Jeocode):SearchResponse | undefined {
+    let result = undefined;
+    let found = false;
+    this.searchResponses.forEach(sr => {
+      if(sr.lokation.jeocode.lat == jeo.lat){
+        found = true;
+        result = sr;
+      }
+    });
+    console.log('weather getExistingSearchResponseByGeoCode  = ' + found);
+    return result;
+  }
+
+  printSearchResponses(srs:SearchResponse []):string{
+    let result ='';//'List:';
+    if(srs && srs.length > 0){
+      result ='List:\n';
+      srs.forEach(srs =>{
+        result = result + srs.lokation.jeocode.zip+'|'+srs.lokation.jeocode.name+'|'+srs.lokation.oneCallResponse.lat+ '\n';
+      });
+  }
+    return result;
+  }
+
+  removeOneCallResponse(lok:(Lokation | undefined)):void{
+
+    console.log('the list before removing an entry: ' + this.printSearchResponses(this.searchResponses)); //+this.listToString(this.lokationsSig));
+    let newArr = this.searchResponses.filter(sr => sr.lokation.jeocode.lat != lok?.jeocode.lat);
+    this.searchResponses = newArr;
+
+    console.log('the list after removing an entry: '+ this.printSearchResponses(this.searchResponses));  
+    
+    if (lok && lok.jeocode && lok.jeocode.zip && lok.jeocode.zip.length ==5 && null != this.getZipLocalStorageKey(lok.jeocode.zip)){
+        localStorage.removeItem('storedZipCode'+lok.jeocode.zip);
+    } 
+    else{
+      console.warn('weather removeOneCallResponse invalid zip provided when trying to remove from local storage! lok?.jeocode.zip = '+ lok?.jeocode.zip);
+    }
+  }
+
+  getZipLocalStorageKey(zipcode: string): string {
+    let result = null;
+    for (const localStorageKey in localStorage) {
+      if (localStorageKey.startsWith('storedZipCode')){
+        if (localStorage.getItem(localStorageKey) === zipcode){
+          result = localStorageKey;
+        }
+      }
+    }
+    if ( null == result){
+      result = '';
+    }
+    return result;
+  }
+
+  getSearchResponsesSig():WritableSignal<SearchResponse[]>{
+    console.log('weather getSearchResponsesSig - this.searchResponses.length = ' + this.searchResponses.length);
+    console.log('weather getSearchResponsesSig - this.searchResponses:' + this.printSearchResponses(this.searchResponses));
+    return signal(this.searchResponses);
+  }
+  /*
     public lokationsSig: WritableSignal<(Lokation| undefined)[]> =signal(new Array<Lokation| undefined>);
-    backFromMFiveDay:WritableSignal<boolean> = signal(false); //TODO work on this
     inProgressGeoCodeSig:WritableSignal<Jeocode | undefined> = signal(undefined);
     inProgressOneCallResponseSig:WritableSignal<OneCallResponse | undefined> =signal(undefined);
     tempLokationsSig: WritableSignal<(Lokation| undefined)[]> =signal(new Array<Lokation| undefined>);
+    //inProgressGeoCodeSig:WritableSignal<Jeocode | undefined> = signal(undefined);
+    //inProgressOneCallResponseSig:WritableSignal<OneCallResponse | undefined> =signal(undefined);
+*/
 
-    abstract getOneCallResponseByJeoCode(joeCode:Jeocode):WritableSignal<OneCallResponse | undefined>;  
-    abstract getGeoCodeInfoFromZipWoKnownGeoCodes(zipcode:WritableSignal<String | undefined>): WritableSignal<Jeocode | undefined>;
+
+    /*
+
+    getJeoCodeByZipCode(zipCode:WritableSignal<String | undefined>): void{
+      let result:WritableSignal<Jeocode | undefined> = signal(undefined);
+      let knownGeo = this.getGeoCodeInfoFromZipWithKnownGeoCodes(zipCode);
+      if(knownGeo){
+        result = signal(knownGeo);
+      }
+      else{
+        result = this.getGeoCodeInfoFromZipWoKnownGeoCodes(zipCode);
+      }
+      if(result && result()?.zip.length ==5 ){
+        this.inProgressGeoCodeSig.set(result());
+        console.log('success! Weather getJeoCodeByZipCode for the jeocode for '+zipCode());
+        const jeo = result();
+        if(jeo) {
+          this.getOneCallResponseByJeoCode(jeo);
+        }
+      }
+      else{
+        console.warn('weather getJeoCodeByZipCode - still cannot get a valid zip code: '+ zipCode());
+        alert('The zip code, '+zipCode()+', is formatted OK, but no data is returned.');
+      }
+    }
+
+
+     inProgressSearchResponseSig = computed(():(SearchResponse | undefined) => {
+      const ocr = this.inProgressOneCallResponseSig();
+      const jeo = this.inProgressGeoCodeSig();
+      return ocr && jeo && ocr.lat == jeo.lat ? 
+        { lokation: {
+            jeocode: jeo,
+            oneCallResponse: this.fixMainWeatherIconName(ocr),
+            dt: new Date().getTime()
+          }, 
+        lokationsCount:this.lokationsSig().length, 
+        messageFromServer:'Good job!', 
+        success:true} : undefined;
+    }); 
 
     getLokationByZip(zipCodeSig:WritableSignal<String | undefined>): Signal<SearchResponse | undefined> {
       const zipCode =zipCodeSig();
@@ -85,33 +292,23 @@ export abstract class Weather {
       return result;
     }
 
-    inProgressSearchResponseSig = computed(():(SearchResponse | undefined) => {
-      const ocr = this.inProgressOneCallResponseSig();
-      const jeo = this.inProgressGeoCodeSig();
-      return ocr && jeo && ocr.lat == jeo.lat ? 
-        { lokation: {
-            jeocode: jeo,
-            oneCallResponse: this.fixMainWeatherIconName(ocr),
-            dt: new Date().getTime()
-          }, 
-        lokationsCount:this.lokationsSig().length, 
-        messageFromServer:'Good job!', 
-        success:true} : undefined;
-    }); 
-
     handleNewLokationFromNewOcr(ocr:OneCallResponse):void{
+      console.log('success! weather handleNewLokationFromNewOcr  starting...');
       const jeocode = this.inProgressGeoCodeSig();
-      if(ocr && jeocode && ocr.lat == jeocode.lat){
-        let newLokation:Lokation =  {
-              jeocode: jeocode,
-              oneCallResponse: this.fixMainWeatherIconName(ocr),
-              dt: new Date().getTime()
-            };
-         this.lokationsSig.update(loks => [...loks,newLokation]);
-         console.log('success! weather handleNewLokationFromNewOcr addded a new lok to the main list.');
+      //setTimeout(()=>{ 
+        
+        if(ocr && jeocode && ocr.lat == jeocode.lat) {
+          let newLokation:Lokation =  {
+                jeocode: jeocode,
+                oneCallResponse: this.fixMainWeatherIconName(ocr),
+                dt: new Date().getTime()
+              };
+          this.lokationsSig.update(loks => [...loks,newLokation]);
+          console.log('success! weather handleNewLokationFromNewOcr addded a new lok to the main list.');
         } else {
           console.log('bummer! weather handleNewLokationFromNewOcr something went wrong.');
         }
+      //},1000); 
     }
     
 
@@ -153,7 +350,7 @@ export abstract class Weather {
       const newLokations = this.newLokationsSigComp();
       return newLokations && newLokations.length > 0 ? newLokations[newLokations.length - 1] : undefined;      
     });
-*/
+
     cleanUpAfterZip(zip:string):void{
       console.log('Weather going for clean up....');
       this.lokationsSig.set(this.tempLokationsSig());
@@ -164,21 +361,8 @@ export abstract class Weather {
     }
 
 
-  removeOneCallResponse(lok:(Lokation | undefined)):void{
-    console.log('the list before removing an entry: '+this.listToString(this.lokationsSig));
-    this.lokationsSig.update(b => 
-      b.filter(b => b && b.jeocode.zip !== lok?.jeocode.zip));
-    console.log('the list after removing an entry: '+this.listToString(this.lokationsSig));    
-    
-    if (lok && lok.jeocode && lok.jeocode.zip && lok.jeocode.zip.length ==5 && null != this.getZipLocalStorageKey(lok.jeocode.zip)){
-        localStorage.removeItem('storedZipCode'+lok.jeocode.zip);
-    } 
-    else{
-      console.warn('weather removeOneCallResponse invalid zip provided when trying to remove from local storage! lok?.jeocode.zip = '+ lok?.jeocode.zip);
-    }
-  }
 
-  /*
+  
   genLok(jeo:Jeocode,ocr:OneCallResponse): (Lokation | undefined){
     let newOcr = this.fixMainWeatherIconName(ocr);
     let lokation:Lokation = {
@@ -193,7 +377,7 @@ export abstract class Weather {
     localStorage.setItem('storedZipCode' + (jeo.zip), jeo.zip);
     return lokation;
   }
-*/
+
 
     listToString(arrSig:WritableSignal< (Lokation | undefined)[] >):string{
       let result = '';
@@ -223,50 +407,9 @@ export abstract class Weather {
       return result;
     }
 
-  fixMainWeatherIconName(prevOcr:OneCallResponse):OneCallResponse{
-    let ocr:OneCallResponse = prevOcr;
-    ocr.data.forEach(da => {
-      if(da.weather && da.weather.length > 0 ) {
-          da.weather.forEach(w => {
-            //console.log( 'xxxx main before: ' + w.main);
-            w.main = this.getIconFrom(w.main);
-            //console.log( 'xxxx main  after: ' + w.main);
-          });
-        }
-    });
-    return ocr;
-  }
 
-  getIconFrom(input: string): string{
-    if ( input === 'Clouds'){
-      return 'clouds';
-    }
-    if ( input === 'Sunny'){
-      return 'sun';
-    }
-    if ( input === 'Rain'){
-      return 'rain';
-    }
-    if ( input === 'Snow'){
-      return 'snow';
-    }
-    return 'sun';
-  }
 
-    getZipLocalStorageKey(zipcode: string): string {
-    let result = null;
-    for (const localStorageKey in localStorage) {
-      if (localStorageKey.startsWith('storedZipCode')){
-        if (localStorage.getItem(localStorageKey) === zipcode){
-          result = localStorageKey;
-        }
-      }
-    }
-    if ( null == result){
-      result = '';
-    }
-    return result;
-  }
+*/
 
 
 }

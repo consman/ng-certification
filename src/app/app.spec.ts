@@ -1,16 +1,24 @@
 import { TestBed } from '@angular/core/testing';
 import { App } from './app';
+import { Nonprodweather } from './nonprodweather';
 
 describe('App', () => {
+
+  let component: App;
+  let weather: Nonprodweather;
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
+      providers:[Nonprodweather]
     })
       .compileComponents();
   });
 
   it('should create the app', () => {
     //console.log('Testing component - App');
+     //component.weatherService = TestBed.runInInjectionContext(() => new Nonprodweather());
+
     const fixture = TestBed.createComponent(App);
     const app = fixture.componentInstance;
     expect(app).toBeTruthy();

@@ -1,4 +1,4 @@
-import { Component, inject, input, model, signal, WritableSignal } from '@angular/core';
+import { Component, EventEmitter, inject, input, model, Output, signal, WritableSignal } from '@angular/core';
 
 import { Weather } from '../weather';
 import { RouterModule } from '@angular/router';
@@ -17,6 +17,9 @@ export class Location {
 
    lokationSig = input<Lokation | undefined>(initialLokation); 
 
+  @Output()
+  onDelete = new EventEmitter<string>();
+
     constructor(){}
 
 
@@ -26,8 +29,9 @@ export class Location {
       this.weatherService.removeOneCallResponse(lokation);
     }
     else{
-      console.warn('Location Component handleClose - Strange! the lokation is not available when rying to remove it! ')
+      console.warn('Location Component handleClose - Strange! the lokation is not available when trying to remove it! ')
     }
+     this.onDelete.emit(lokation?.jeocode.zip);
   }
 
   spacesToDashes(locationNameWithSpaces: string): string {

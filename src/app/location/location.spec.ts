@@ -5,12 +5,11 @@ import { Weather } from '../weather';
 import { Daum, WeatherB, Temp, FeelsLike } from '../funTypes';
 import { environment } from '../../environments/environment';
 import { Nonprodweather } from '../nonprodweather';
-
+import { weatherServiceFactory } from '../weatherservice.factory';
 
 export const FAKE_ROUTE = {
   snapshot: { paramMap: {get: () => '95630+Folsom+38.6709+-121.1529'}}
 };
-
 
 describe('Location', () => {
   let component: Location;
@@ -21,8 +20,8 @@ describe('Location', () => {
     await TestBed.configureTestingModule({
       imports: [Location],
       providers:[
-        Nonprodweather, 
-        {provide: 'IS_PROD_ENVIRONMENT', useValue: environment.production},
+        {provide: Weather, useFactory: weatherServiceFactory, deps: ['IS_PROD_ENVIRONMENT']}, 
+        {provide: 'IS_PROD_ENVIRONMENT', useValue: false},
         {provide: ActivatedRoute, useValue: FAKE_ROUTE}
       ]
 

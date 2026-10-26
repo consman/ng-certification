@@ -10,15 +10,19 @@
           </button>
         </div>
       
-        @let lokations = this.weatherService.lokationsSig();
-        @if(lokations && lokations.length > 0 ){
-            @for(lokation of lokations; track lokation?.dt){                                
-                  <app-location                                 
-                  [lokationSig] = "lokation"
-                  >
-                  </app-location>              
-            }
-        }
+        @let searchResponses = searchResponsesSig();
+        @if(searchResponses){
+          @if( searchResponses.length > 0 ){
+              @for(searchResponse of searchResponsez; track searchResponse.lokation.dt){      
+                @let lokation = searchResponse.lokation;                          
+                    <app-location                                 
+                    [lokationSig] = "lokation"
+                    (onDelete) = "removeLocation($event)"
+                    >
+                    </app-location>              
+              }
+          }
+      }
         
     </div>
    
@@ -29,11 +33,14 @@
         <span>searchResponse.success = {{searchResponse.success}}</span><br>
         <span>searchResponse.lokationsCount = {{searchResponse.lokationsCount}}</span><br>
         <span>searchResponse.lokation.oneCallResponse.lat = {{searchResponse.lokation.oneCallResponse.lat}}</span><br>
+        <span>searchResponse.lokation.jeocode.zip = {{searchResponse.lokation.jeocode.zip}}</span><br> 
         <span>searchResponse.lokation.jeocode.lat = {{searchResponse.lokation.jeocode.lat}}</span><br> 
+        <!--
          @let lokation = this.weatherService.getNewLokByOcr();
          @if(lokation && lokation.dt > 0 ){
           <span>lokation.dt = {{lokation.dt}}</span>
          }
+          -->
               
       }
     </div>

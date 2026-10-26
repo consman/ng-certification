@@ -40,7 +40,10 @@ export class Fivedayforecast {
   private runThisStuffAfterComponentLoads(){
     
     if(this.jeo.zip && this.jeo.zip.length == 5){
-      this.oneCallResponse.set(this.weatherService.getExistingOcrByGeoCode(this.jeo));
+      let searchResonse = this.weatherService.getExistingSearchResponseByGeoCode(this.jeo);
+      if (searchResonse && searchResonse.lokation && searchResonse.lokation.oneCallResponse){
+        this.oneCallResponse.set(searchResonse.lokation.oneCallResponse);
+      }
     }
     else{
       console.warn('Fix this. unable to get an existing bcocr with zip '+this.jeo.zip+' from the main list which should be there! ');
@@ -66,8 +69,7 @@ export class Fivedayforecast {
   }
 
   navigateBackToMain(): void {
-    //this.weatherService.bobsCompositeOcrsSig().length = 0;
-    this.weatherService.backFromMFiveDay.set(true);
+    this.weatherService.backFromFiveDay.set(true);
     this.router.navigate(['/']);
   }
 

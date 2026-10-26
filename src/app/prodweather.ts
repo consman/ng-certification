@@ -1,4 +1,4 @@
-import { Injectable, Service , WritableSignal, computed, effect, inject, signal} from '@angular/core';
+import { Injectable, Service , Signal, WritableSignal, computed, effect, inject, signal} from '@angular/core';
 
 
 import { Weather } from './weather';
@@ -40,18 +40,27 @@ export class Prodweather extends Weather {
     return request;
   });
 
-  override getOneCallResponseByJeoCode(joeCode: Jeocode): WritableSignal<OneCallResponse | undefined> {
-    if (joeCode && joeCode.zip && joeCode.zip.length == 5){
-      this.targJeoForOneCallSig.set(joeCode);
+  override getOneCallResponseByJeoCode(jeoCodeSig: Signal<Jeocode | undefined>): WritableSignal<OneCallResponse | undefined> {
+    console.log('Prod Weather getOneCallResponseByJeoCode A');
+    let resultSig: WritableSignal<OneCallResponse | undefined> = signal(undefined);
+    const jeoCode = jeoCodeSig();
+    if (jeoCode && jeoCode.zip && jeoCode.zip.length == 5){
+      console.log('Prod Weather getOneCallResponseByJeoCode B');
+      this.targJeoForOneCallSig.set(jeoCode);
       this.startedOneCallSig.set(true);
       this.dummyForOneCallSig.set(new Date().getTime()+'');
 
-      let resultSig: WritableSignal<OneCallResponse | undefined> = this.oneCallResource.value;
-      const result = resultSig();
-      //if(result) this.handleNewLokationFromNewOcr(result);
+      resultSig = this.oneCallResource.value;
+      /* //TODO we probably do not need this crap...
+      setTimeout(()=>{ 
+        const result = resultSig();
+        if(result) this.handleNewLokationFromNewOcr(result);
+      },1000);
+      
       this.inProgressOneCallResponseSig = resultSig;
+      */
     }
-    return this.inProgressOneCallResponseSig;
+    return resultSig ; //this.inProgressOneCallResponseSig;
   }
 
   private targZipForGeoCodeSig = signal <String | undefined>('');
@@ -73,12 +82,15 @@ export class Prodweather extends Weather {
   });  
 
   override getGeoCodeInfoFromZipWoKnownGeoCodes(zipSig: WritableSignal<String | undefined>): WritableSignal<Jeocode | undefined> {
+    let result: WritableSignal<Jeocode | undefined> = signal(undefined);
     this.targZipForGeoCodeSig.set(zipSig());
     if (this.targZipForGeoCodeSig() ) this.startedForGeoSig.set(true);
     this.dummyForGeoCodeSig = signal(new Date().getTime()+''); 
-      
-    let result = this.geoCodeResource.value;      
-      //console.log(' prod getLocationFromService called and result()?.sys.id = ' + result()?.sys.id + ' and zipSig() = '+zipSig());
+      setTimeout(()=>{ 
+      let result = this.geoCodeResource.value;      
+        //console.log(' prod getLocationFromService called and result()?.sys.id = ' + result()?.sys.id + ' and zipSig() = '+zipSig());
+      return result;
+    },1000);
     return result;
   }
   
