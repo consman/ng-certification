@@ -26,7 +26,7 @@ export class Location {
   handleClose(): void {
     const lokation = this.lokationSig();
     if (lokation) {
-      this.weatherService.removeOneCallResponse(lokation);
+      //this.weatherService.removeOneCallResponse(lokation);
     }
     else{
       console.warn('Location Component handleClose - Strange! the lokation is not available when trying to remove it! ')

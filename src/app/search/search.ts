@@ -1,9 +1,9 @@
-import { afterNextRender, Component,  computed,  ElementRef, inject, Signal, signal, viewChild, WritableSignal } from '@angular/core';
+import { afterNextRender, Component,  computed,  effect,  ElementRef, inject, Signal, signal, viewChild, WritableSignal } from '@angular/core';
 
 import { Location } from '../location/location';
 import { FormsModule } from '@angular/forms';
 import { Weather } from '../weather';
-import { Lokation, SearchResponse } from '../funTypes';
+import { Jeocode, Lokation, SearchResponse } from '../funTypes';
 import { initialSearchResponse } from '../refData';
 
 @Component({
@@ -22,19 +22,99 @@ export class Search {
     searchResponsesSig:WritableSignal<(SearchResponse[] | undefined)> = signal(new Array<SearchResponse>);
     searchResponsez:SearchResponse[] = new Array<SearchResponse>;
     myInput = viewChild<ElementRef<HTMLInputElement>>('zipCodeEntry');
+    zipSig: WritableSignal<String | undefined> = signal(undefined);
+    jeocodeSig: Signal<Jeocode | undefined> = signal(undefined);
+
+    lastJeoCodeSig: WritableSignal<Jeocode | undefined> = signal(undefined);
+    jeoCodesSigsSig: WritableSignal<WritableSignal<Jeocode | undefined> [] | undefined> = signal(new Array<WritableSignal<Jeocode| undefined>>);
+    jeoCodeSigFromService: WritableSignal<Jeocode | undefined> = signal(undefined);
+
 
   constructor(){
     afterNextRender( ()=> {
       if(this.weatherService.backFromFiveDay()){
         console.log('Search constructor - back from five-day...');
-        this.refreshFromServer();
+        //this.refreshFromServer();
         this.weatherService.backFromFiveDay.set(false);
       }
       else{
         this.loadLocationsFromLocalStorage();
       }
     });
+
+    effect(() =>{ //001 
+        const zipp = this.zipSig();
+        if(zipp && zipp.length === 5){
+          const currentGeoSig = this.weatherService.getJeoCode(zipp+'');
+          const geo = currentGeoSig();
+          //const geo = geoSig();
+          if(geo && geo.zip.length == 5){
+            console.log('eff 001 and the geo.name = '+geo.name);
+            this.lastJeoCodeSig.set(geo);
+            console.log('eff 001 saved this.weatherService.getJeoCode(zipp+ to this.lastJeoCodeSig - zip = ' + geo.zip );
+              this.newZip = '';
+          }
+      }
+      });
   }
+
+    handleSaved():void{
+      const lastJeoCode = this.lastJeoCodeSig();
+      if(lastJeoCode && lastJeoCode.zip.length == 5){
+        this.jeoCodesSigsSig.update(arr => [...(arr || []), signal(lastJeoCode)]);
+        console.log('handleSaved finished and the number of entries in this.jeoCodesSigsSig = ' + this.jeoCodesSigsSig()?.length);
+      }
+    }
+
+  search(): void{ 
+    this.handleSaved();
+    this.funcSig.set('search');
+    let fResult = this.searchResponsez.find(sr => sr.lokation.jeocode.zip === this.newZip);
+    console.log('find(sr =>{sr.lokation.jeocode.zip == this.newZip}) = ' + fResult);            
+
+    if (fResult == undefined) {
+      this.addNewLocation(this.newZip);    
+      this.tempZip = this.newZip;
+      this.newZip ='';
+      //this.refreshFromServer();
+      }
+    else {
+      alert('The zip code of '+this.newZip+' is already in the list. ');
+    }
+  }
+
+  addNewLocation(zip: string): void {
+    console.log('addNewLocation going for addNewLocation for zip: ' + zip+ ' ...');
+
+      if (this.validateZip(zip) ) {
+        this.zipSig.set(zip); //: WritableSignal<String | undefined> = signal(zip);
+        //this.searchResponseSig = this.weatherService.getLokationByZipSig(zipSig);     
+        //this.jeocodeSig = this.weatherService.getJeoCode(zip);// getJeoCodeByUnKnownZipSig(this.zipSig);   
+        this.jeoCodeSigFromService = this.getJeoCodeFromService();
+        
+      }
+      else {
+        console.error('ERROR! ' + zip + ' zip is not valid');
+        alert('zip ' + zip + ' is not valid. It needs to be 5 numbers only.');        
+      }
+  }
+
+    getJeoCodeFromService(): WritableSignal<Jeocode | undefined>{
+
+      let result: WritableSignal<Jeocode | undefined> = signal(undefined);
+
+      if(this.newZip != undefined && this.newZip.length == 5){
+        this.jeoCodeSigFromService = this.weatherService.getJeoCode(this.newZip); 
+        console.log('getJeoCodeFromService() called and now this.jeoCodeSigFromService()?.name = '+ this.jeoCodeSigFromService()?.name )
+        result = this.jeoCodeSigFromService; 
+      }
+      else{
+        console.warn('getJeoCodeFromService called with a bad zip. returning undefined.');
+        result =  signal(undefined);
+      }
+      return result;
+
+    }
 
   removeLocation(zip:string):void{
     let target: SearchResponse | undefined;
@@ -48,10 +128,11 @@ export class Search {
       this.searchResponsez.splice(ind,1);
       this.searchResponsesSig.update(srs => {srs = [...this.searchResponsez]; return {...srs} });
     }
-    this.refreshFromServer();
+    //this.refreshFromServer();
   }
-
+/*
   refreshFromServer():void{
+    
     setTimeout(()=>{ 
       //console.log('this.weatherService.getSearchResponsesSig()().length = ' + this.weatherService.getSearchResponsesSig()().length);
       const srSig = this.weatherService.getSearchResponsesSig();
@@ -78,36 +159,9 @@ export class Search {
           inputElement.focus();
         }          
     },250);
+    
   }
-
-  search(): void{ 
-    this.funcSig.set('search');
-    let fResult = this.searchResponsez.find(sr => sr.lokation.jeocode.zip === this.newZip);
-    console.log('find(sr =>{sr.lokation.jeocode.zip == this.newZip}) = ' + fResult);            
-
-    if (fResult == undefined) {
-      this.addNewLocation(this.newZip);    
-      this.tempZip = this.newZip;
-      this.newZip ='';
-      this.refreshFromServer();
-      }
-    else {
-      alert('The zip code of '+this.newZip+' is already in the list. ');
-    }
-  }
-
-  addNewLocation(zip: string): void {
-    console.log('addNewLocation going for addNewLocation for zip: ' + zip+ ' ...');
-
-      if (this.validateZip(zip) ) {
-        let zipSig: WritableSignal<String | undefined> = signal(zip);
-        this.searchResponseSig = this.weatherService.getLokationByZipSig(zipSig);        
-      }
-      else {
-        console.error('ERROR! ' + zip + ' zip is not valid');
-        alert('zip ' + zip + ' is not valid. It needs to be 5 numbers only.');        
-      }
-  }
+*/
 
   validateZip(unVaidatedZip: string): boolean {
     let result = false;
@@ -151,7 +205,7 @@ export class Search {
             }
         }
     }
-    this.refreshFromServer();
+    //this.refreshFromServer();
   }
 
 }

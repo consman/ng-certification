@@ -1,4 +1,4 @@
-<ng-container>
+
     <div class="container-fluid">
   
         <div class="well"> 
@@ -23,26 +23,36 @@
               }
           }
       }
-        
-    </div>
-   
-    <div>
-      @let searchResponse = searchResponseSig();
-      @if(searchResponse && searchResponse.messageFromServer && searchResponse.success){
-        <span>searchResponse.messageFromServer = {{searchResponse.messageFromServer}}</span><br>
-        <span>searchResponse.success = {{searchResponse.success}}</span><br>
-        <span>searchResponse.lokationsCount = {{searchResponse.lokationsCount}}</span><br>
-        <span>searchResponse.lokation.oneCallResponse.lat = {{searchResponse.lokation.oneCallResponse.lat}}</span><br>
-        <span>searchResponse.lokation.jeocode.zip = {{searchResponse.lokation.jeocode.zip}}</span><br> 
-        <span>searchResponse.lokation.jeocode.lat = {{searchResponse.lokation.jeocode.lat}}</span><br> 
-        <!--
-         @let lokation = this.weatherService.getNewLokByOcr();
-         @if(lokation && lokation.dt > 0 ){
-          <span>lokation.dt = {{lokation.dt}}</span>
-         }
-          -->
-              
+      <!--
+      @if(zipSig()){
+        @let jeocSig = this.weatherService.getJeoCodeByUnKnownZipSig(zipSig);
+        @let jeoc = jeocSig();
+        @if(jeoc){
+          <p>{{jeoc.zip}}: <span> Name:{{jeoc.name}} </span> <span> Country:{{jeoc.country}} </span><span> Coords: lat ={{jeoc.lat}} lon ={{jeoc.lon}} </span> 
+          </p>
+        }
       }
-    </div>
-    
-  </ng-container>
+      -->
+
+    @let jeoCodesSigs = jeoCodesSigsSig();
+    @for ( jeocSig of jeoCodesSigs; track jeocSig()?.zip){
+
+    @let jeoc = jeocSig();
+
+    @if(jeoc && jeoc.zip.length == 5 ){
+      @if(jeoc){
+          <p>{{jeoc.zip}}: <span> Name:{{jeoc.name}} </span> <span> Country:{{jeoc.country}} </span><span> Coords: lat ={{jeoc.lat}} lon ={{jeoc.lon}} </span> 
+          </p>
+      }
+    }
+  }
+
+  @let jeocSig = jeoCodeSigFromService;
+  @let jjeoc = jeocSig();
+    @if(jjeoc){
+        <p>{{jjeoc.zip}}: <span> Name:{{jjeoc.name}} </span> <span> Country:{{jjeoc.country}} </span><span> Coords: lat ={{jjeoc.lat}} lon ={{jjeoc.lon}} </span> 
+        </p>
+    }
+        
+  
+  </div>

@@ -5,9 +5,9 @@ import { Lokation, Jeocode, OneCallResponse } from './funTypes';
 import { initialLokation, initialGeoCode, KNOWNGEOCODES } from './refData';
 
 @Injectable({ providedIn: 'root' })
-export class Nonprodweather extends Weather {
+export class Nonprodweather {//extends Weather {
 
-  override getOneCallResponseByJeoCode(jeoCodeSig: Signal<Jeocode | undefined>): WritableSignal<OneCallResponse | undefined> {
+   getOneCallResponseByJeoCode(jeoCodeSig: Signal<Jeocode | undefined>): WritableSignal<OneCallResponse | undefined> {
     let result:(OneCallResponse | undefined) = undefined;
     const jeoCode = jeoCodeSig();
     if(jeoCode){
@@ -21,7 +21,7 @@ export class Nonprodweather extends Weather {
     return signal(result);//this.inProgressOneCallResponseSig;
   }
 
-  override getGeoCodeInfoFromZipWoKnownGeoCodes(zipCodeSig: WritableSignal<String | undefined>): WritableSignal<Jeocode | undefined> {
+   getGeoCodeInfoFromZipWoKnownGeoCodes(zipCodeSig: WritableSignal<String | undefined>): WritableSignal<Jeocode | undefined> {
     let result: WritableSignal<Jeocode | undefined> = signal(undefined);
     const zipCode = zipCodeSig();
     if(zipCode){

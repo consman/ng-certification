@@ -18,7 +18,7 @@ import { initialLokation, initialGeoCode, initialOneCallResponse } from '../refD
   templateUrl: './fivedayforecast.html',
 })
 export class Fivedayforecast {
-
+/*
   weatherService = inject(Weather);
   zipParam: string | null;
 
@@ -99,5 +99,5 @@ export class Fivedayforecast {
     result = result = locationNameWithDashes.replace('-', ' ');
     return result;
   }
-
+*/
 }
