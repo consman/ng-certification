@@ -10,7 +10,6 @@ export const KNOWNGEOCODES: Jeocode [] =[
     ,{"zip":"94901","name":"San Rafael","lat":37.9691,"lon":-122.5105,"country":"US"}
 ];
 
-
 export const initialGeoCode: Jeocode = {
     zip: '',
     name: '',

@@ -12,7 +12,7 @@ import { OneCallResponse, Lokation, Jeocode } from '../funTypes';
 import { initialLokation, initialGeoCode, initialOneCallResponse } from '../refData';
 
 @Component({
-  imports: [DatePipe],
+  imports: [],//DatePipe],
   selector: 'app-fivedayforecast',
   styleUrl: '../app.css',
   templateUrl: './fivedayforecast.html',

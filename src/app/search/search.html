@@ -10,11 +10,12 @@
           </button>
         </div>
       
-        @let searchResponses = searchResponsesSig();
-        @if(searchResponses){
-          @if( searchResponses.length > 0 ){
-              @for(searchResponse of searchResponsez; track searchResponse.lokation.dt){      
-                @let lokation = searchResponse.lokation;                          
+        @let searchResponsesSigs = searchResponseSigsSig();
+        @if(searchResponsesSigs){
+          
+          @if(searchResponsesSigs &&  searchResponsesSigs.length > 0 ){
+              @for(searchResponseSig of searchResponsesSigs; track searchResponseSig()?.lokation.dt){      
+                @let lokation = searchResponseSig()?.lokation;                          
                     <app-location                                 
                     [lokationSig] = "lokation"
                     (onDelete) = "removeLocation($event)"
@@ -34,25 +35,15 @@
       }
       -->
 
-    @let jeoCodesSigs = jeoCodesSigsSig();
-    @for ( jeocSig of jeoCodesSigs; track jeocSig()?.zip){
-
-    @let jeoc = jeocSig();
-
-    @if(jeoc && jeoc.zip.length == 5 ){
-      @if(jeoc){
-          <p>{{jeoc.zip}}: <span> Name:{{jeoc.name}} </span> <span> Country:{{jeoc.country}} </span><span> Coords: lat ={{jeoc.lat}} lon ={{jeoc.lon}} </span> 
-          </p>
-      }
-    }
-  }
-
-  @let jeocSig = jeoCodeSigFromService;
-  @let jjeoc = jeocSig();
-    @if(jjeoc){
-        <p>{{jjeoc.zip}}: <span> Name:{{jjeoc.name}} </span> <span> Country:{{jjeoc.country}} </span><span> Coords: lat ={{jjeoc.lat}} lon ={{jjeoc.lon}} </span> 
-        </p>
-    }
-        
+@let searchResponseSig = searchResponseFromService;
+@let searchResponse = searchResponseSig();
+@if(searchResponse && searchResponse.lokation){
+  @let lokation = searchResponse.lokation;  
+      <app-location                                 
+        [lokationSig] = "lokation"
+        (onDelete) = "removeLocation($event)"
+        >
+      </app-location> 
+}       
   
   </div>

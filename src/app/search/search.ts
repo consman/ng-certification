@@ -18,17 +18,18 @@ export class Search {
     newZip!: string;
     funcSig = signal('');
     tempZip!:string;
-    searchResponseSig:Signal<SearchResponse | undefined> = signal(undefined);
-    searchResponsesSig:WritableSignal<(SearchResponse[] | undefined)> = signal(new Array<SearchResponse>);
-    searchResponsez:SearchResponse[] = new Array<SearchResponse>;
+
+    lastSearchResponseSig:WritableSignal<SearchResponse | undefined> = signal(undefined);
+    searchResponseSigsSig:WritableSignal<WritableSignal<SearchResponse | undefined> [] | undefined> = signal(new Array<WritableSignal<SearchResponse| undefined>>);
+    searchResponseFromService: Signal<SearchResponse | undefined> = signal(undefined);
+
     myInput = viewChild<ElementRef<HTMLInputElement>>('zipCodeEntry');
     zipSig: WritableSignal<String | undefined> = signal(undefined);
-    jeocodeSig: Signal<Jeocode | undefined> = signal(undefined);
-
+/*
     lastJeoCodeSig: WritableSignal<Jeocode | undefined> = signal(undefined);
     jeoCodesSigsSig: WritableSignal<WritableSignal<Jeocode | undefined> [] | undefined> = signal(new Array<WritableSignal<Jeocode| undefined>>);
     jeoCodeSigFromService: WritableSignal<Jeocode | undefined> = signal(undefined);
-
+*/
 
   constructor(){
     afterNextRender( ()=> {
@@ -41,56 +42,61 @@ export class Search {
         this.loadLocationsFromLocalStorage();
       }
     });
-
+/*
     effect(() =>{ //001 
         const zipp = this.zipSig();
-        if(zipp && zipp.length === 5){
-          const currentGeoSig = this.weatherService.getJeoCode(zipp+'');
-          const geo = currentGeoSig();
-          //const geo = geoSig();
-          if(geo && geo.zip.length == 5){
-            console.log('eff 001 and the geo.name = '+geo.name);
-            this.lastJeoCodeSig.set(geo);
-            console.log('eff 001 saved this.weatherService.getJeoCode(zipp+ to this.lastJeoCodeSig - zip = ' + geo.zip );
-              this.newZip = '';
+        if(zipp && zipp.length == 5){
+          this.weatherService.inProgressZipSig.set(zipp+'');
+          const searchResponse =  this.weatherService.getSearchResponse();
+          //const searchResponse = searchResponseSig();
+          if(searchResponse && searchResponse.lokation && searchResponse.lokation.jeocode 
+            && searchResponse.lokation.jeocode.zip && searchResponse.lokation.jeocode.zip.length ==5 ){
+              console.log('eff 001 and the geo.name = '+searchResponse.lokation.jeocode.name);
+              this.lastSearchResponseSig.set(searchResponse);
+              console.log('eff 001 saved the search respone from the service with a zip of '+zipp);
+              this.newZip ='';
           }
       }
       });
+      */
   }
 
     handleSaved():void{
-      const lastJeoCode = this.lastJeoCodeSig();
-      if(lastJeoCode && lastJeoCode.zip.length == 5){
-        this.jeoCodesSigsSig.update(arr => [...(arr || []), signal(lastJeoCode)]);
-        console.log('handleSaved finished and the number of entries in this.jeoCodesSigsSig = ' + this.jeoCodesSigsSig()?.length);
+      const searchResponse = this.lastSearchResponseSig();
+      if(searchResponse){
+        this.searchResponseSigsSig.update(arr => [...(arr || []), signal(searchResponse)]);
+        console.log('handleSaved finished and the number of entries in this.searchResponseSigsSig = ' + this.searchResponseSigsSig()?.length);      
       }
     }
 
   search(): void{ 
     this.handleSaved();
     this.funcSig.set('search');
-    let fResult = this.searchResponsez.find(sr => sr.lokation.jeocode.zip === this.newZip);
-    console.log('find(sr =>{sr.lokation.jeocode.zip == this.newZip}) = ' + fResult);            
-
-    if (fResult == undefined) {
       this.addNewLocation(this.newZip);    
       this.tempZip = this.newZip;
-      this.newZip ='';
-      //this.refreshFromServer();
+      
+      //this.refreshFromServer(); //TODO and the else block below.
+      /*
       }
     else {
       alert('The zip code of '+this.newZip+' is already in the list. ');
     }
+      */
   }
 
   addNewLocation(zip: string): void {
     console.log('addNewLocation going for addNewLocation for zip: ' + zip+ ' ...');
 
       if (this.validateZip(zip) ) {
-        this.zipSig.set(zip); //: WritableSignal<String | undefined> = signal(zip);
+        //this.zipSig.set(zip); //: WritableSignal<String | undefined> = signal(zip);
         //this.searchResponseSig = this.weatherService.getLokationByZipSig(zipSig);     
-        //this.jeocodeSig = this.weatherService.getJeoCode(zip);// getJeoCodeByUnKnownZipSig(this.zipSig);   
-        this.jeoCodeSigFromService = this.getJeoCodeFromService();
+        this.weatherService.setZzipSig(zip);
+        let inProgressJeoCodeFromService = this.weatherService.getJeoCode();// getJeoCodeByUnKnownZipSig(this.zipSig);   
+        
+        //this.weatherService.setInputJeoForOneCallSig(inProgressJeoCodeFromService);
+        this.weatherService.getOneCallResponseByJeo();   
+
+        this.searchResponseFromService = this.getSearchResponsFromService()
         
       }
       else {
@@ -99,6 +105,15 @@ export class Search {
       }
   }
 
+  getSearchResponsFromService(): Signal<SearchResponse | undefined>{
+    let result: Signal<SearchResponse | undefined> = signal(undefined);
+    if(this.newZip != undefined && this.newZip.length == 5){
+      this.searchResponseFromService = this.weatherService.getSearchResponse;
+      result = this.searchResponseFromService;
+    }
+    return result;
+  }
+/*
     getJeoCodeFromService(): WritableSignal<Jeocode | undefined>{
 
       let result: WritableSignal<Jeocode | undefined> = signal(undefined);
@@ -115,8 +130,9 @@ export class Search {
       return result;
 
     }
-
-  removeLocation(zip:string):void{
+*/
+  removeLocation(zip:string):void{  //TODO work on this
+    /*
     let target: SearchResponse | undefined;
     this.searchResponsez.forEach(r =>{
       if(r.lokation.jeocode.zip == zip){
@@ -129,6 +145,7 @@ export class Search {
       this.searchResponsesSig.update(srs => {srs = [...this.searchResponsez]; return {...srs} });
     }
     //this.refreshFromServer();
+    */
   }
 /*
   refreshFromServer():void{

@@ -1,43 +1,100 @@
 import { computed, effect, Injectable, Service, Signal, signal, WritableSignal } from '@angular/core';
 import { Lokation, Jeocode, OneCallResponse, SearchResponse } from './funTypes';
-import { initialGeoCode, initialLokation, initialOneCallResponse, KNOWNGEOCODES } from './refData';
+import { initialGeoCode, initialLokation, initialOneCallResponse, initialSearchResponse, KNOWNGEOCODES } from './refData';
 
 @Injectable({ providedIn: 'root' })
 export abstract class Weather {
 
     constructor() { 
+      effect(() => { // 001
+        const zip = this.zzipSig()
+        if(zip){ console.log( '001 good and zip = ' + zip); }
+      });
+      effect(() => { // 002
+        const joeCodeForOne = this.inputJeoForOneCallSig();
+        if ( joeCodeForOne && joeCodeForOne.zip.length == 5  ){ console.log( '002 good and joeCodeForOne.zip = ' + joeCodeForOne.zip); }        
+      });
+      effect(() => { // 003
+        const oneCallForSearch = this.oneCallForSearchResp();
+        if(oneCallForSearch && oneCallForSearch.lat > 1) { console.log( '003 good and oneCallForSearch.lat = ' + oneCallForSearch.lat); }
+      });
+      effect(() => { // 00
+
+      });
     }
 
     inProgressZipSig:WritableSignal<String | undefined> = signal(undefined);
-    searchResponses:SearchResponse [] = [];
+    srCount = 0;
     backFromFiveDay:WritableSignal<boolean> = signal(false); //TODO work on this
 
-    abstract getJeoCodeByUnKnownZipSig(zip:string): WritableSignal<Jeocode | undefined>;
+    //joeCodeForOneCall: WritableSignal<Jeocode | undefined> = signal(undefined);
+    oneCallForSearchResp: WritableSignal<(OneCallResponse | undefined)> = signal(undefined);
 
-        getJeoCode(zip: string): WritableSignal<Jeocode | undefined>{ // this would go in the abstract class 
-        let result : WritableSignal<Jeocode | undefined> = signal(undefined);
-        if (zip && zip.length == 5){ //This totally needs to be reworked
-            const joeCodeKSig = this.getJeoCodeByKNOWNZipSig(zip);
-            const jeoCodeK = joeCodeKSig();
-            if ( jeoCodeK && jeoCodeK.zip.length == 5 ) {
-                return joeCodeKSig;
-            }
-            else { // return the resource value                
-                return  this.getJeoCodeByUnKnownZipSig(zip);
-            }
-        } else{
-            console.warn('getJeoCode called with a bad zip - either undefined or not a length of 5 .');
-        }
+    abstract getJeoCodeByUnKnownZipSig():void;
+    abstract getOneCallResponseByJeo():void;
 
-        if(result() == undefined){
-            console.warn('Bummer unable to get the geoCode one way or another');
-        }
-        return result;      
+    protected zzipSig:WritableSignal<String | undefined>= signal(undefined);
+    protected inputJeoForOneCallSig: WritableSignal <Jeocode | undefined> = signal(undefined);
+
+    setZzipSig(zip:string):void{
+      this.zzipSig.set(zip);
+    }
+
+    setInputJeoForOneCallSig(ijfoc: WritableSignal <Jeocode | undefined>):void{      
+      const jeo = ijfoc();
+      if(jeo){
+        console.log('setInputJeoForOneCallSig running ...  and jeo.zip = ' +jeo.zip );    
+      }
+      else{
+        console.log('setInputJeoForOneCallSig running ... but with undefined. :( ');
+      }
+      this.inputJeoForOneCallSig.set(ijfoc());
     }
 
 
-    getJeoCodeByKNOWNZipSig(zip: string): WritableSignal<Jeocode | undefined> { 
+    getSearchResponse = computed(():(SearchResponse | undefined) => {
+
+      const jeoCode = this.inputJeoForOneCallSig();
+      const oneCallResponse = this.oneCallForSearchResp();
+
+      return jeoCode && oneCallResponse && oneCallResponse.lat == jeoCode.lat ?
+        { lokation: {
+            jeocode: jeoCode,
+            oneCallResponse: oneCallResponse,
+            dt: new Date().getTime()
+          }, 
+        lokationsCount:this.srCount++,  
+        messageFromServer: this.handleMessageFromServer('Good job!'), 
+        success:true} 
+        : undefined;
+    });
+
+    handleMessageFromServer(mess:string):string {
+      console.log(' We made it to the end. mess = ' + mess);
+      return mess;
+    }
+
+    getJeoCode(): void{ 
       let result : WritableSignal<Jeocode | undefined> = signal(undefined);
+      const zip = this.zzipSig();
+      if (zip && zip.length == 5){ 
+          const joeCodeKSig = this.getJeoCodeByKNOWNZipSig();
+          const jeoCodeK = joeCodeKSig();
+          if ( jeoCodeK && jeoCodeK.zip.length == 5 ) {
+              this.setInputJeoForOneCallSig(joeCodeKSig);
+          }
+          else { // return the resource value     
+              this.getJeoCodeByUnKnownZipSig();              
+          }
+          
+      } else{
+          console.warn('getJeoCode called with a bad zip - either undefined or not a length of 5 .');
+      }      
+  }
+
+    getJeoCodeByKNOWNZipSig(): WritableSignal<Jeocode | undefined> { 
+      let result : WritableSignal<Jeocode | undefined> = signal(undefined);
+      const zip = this.zzipSig();
       if (zip && zip.length == 5){
           let jeoK = KNOWNGEOCODES.find(kgc =>(kgc.zip == zip));
           if(jeoK){

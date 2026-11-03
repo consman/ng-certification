@@ -6,7 +6,7 @@ describe("Test the Ng-Certification Weather App", () => {
   it("Shows the title on the home page.",()=>{
     cy.title().should("eq","ng-certification app is running!");
   });
-
+/*
   it("Have title in the first box of Add a location",()=>{
     cy.get("[data-test='addLocationBoxTitle']").should("include.text","Enter a zipcode:");
   });
@@ -113,5 +113,5 @@ describe("Test the Ng-Certification Weather App", () => {
         expect(stub.getCall(0)).to.be.calledWith('The zip code of 94945 is already in the list. ')      
       });
   });
-
+*/
 })

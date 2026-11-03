@@ -5,35 +5,35 @@ import { Lokation, Jeocode, OneCallResponse } from './funTypes';
 import { initialLokation, initialGeoCode, KNOWNGEOCODES } from './refData';
 
 @Injectable({ providedIn: 'root' })
-export class Nonprodweather {//extends Weather {
+export class Nonprodweather extends Weather {
 
-   getOneCallResponseByJeoCode(jeoCodeSig: Signal<Jeocode | undefined>): WritableSignal<OneCallResponse | undefined> {
-    let result:(OneCallResponse | undefined) = undefined;
-    const jeoCode = jeoCodeSig();
-    if(jeoCode){
-      result = ONECALLRESPONSES.find(ocr => ocr.lat == jeoCode.lat && ocr.lon == jeoCode.lon);
-      if (result){        
-        //this.inProgressOneCallResponseSig.set(result);
-        //this.handleNewLokationFromNewOcr(result);
+  
+   override getOneCallResponseByJeo(): void {
+    let result:WritableSignal<(OneCallResponse | undefined)> = signal(undefined);
+    const jeoCode = this.inputJeoForOneCallSig();
+    if(jeoCode && jeoCode.zip.length == 5 ){
+      let ocr = ONECALLRESPONSES.find(ocr => ocr.lat == jeoCode.lat && ocr.lon == jeoCode.lon);      
+      if (ocr && ocr.lat == jeoCode.lat){ 
+        result.set(ocr);       
         console.log('success! Nonprodweather getOneCallResponseByJeo Codefound the OCR for zip ' + jeoCode.zip);
       }
-  }
-    return signal(result);//this.inProgressOneCallResponseSig;
+    }
+    this.oneCallForSearchResp = result;
   }
 
-   getGeoCodeInfoFromZipWoKnownGeoCodes(zipCodeSig: WritableSignal<String | undefined>): WritableSignal<Jeocode | undefined> {
+   override getJeoCodeByUnKnownZipSig(): void {
     let result: WritableSignal<Jeocode | undefined> = signal(undefined);
-    const zipCode = zipCodeSig();
-    if(zipCode){
+    const zip = this.zzipSig();
+    if(zip){
       GEOCODESFORNONPROD.forEach(g => {
-      if(g.zip == zipCode){
-        //result.set(g);
-        result = signal(g);
-        console.log('success! Nonprodweather  getGeoCodeInfoFromZipWoKnownGeoCodes found geo for ' + zipCode);
+      if(g.zip == zip){
+        result.set(g);
+        this.setInputJeoForOneCallSig(result);
+        console.log('success! Nonprodweather  getGeoCodeInfoFromZipWoKnownGeoCodes found geo for ' + zip);
       }
     });
     }
-    return result;
+    
   }
 
   

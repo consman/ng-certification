@@ -12,18 +12,18 @@ export class Prodweather extends Weather {
 
   wAppId = W_APP_ID;
   headers = new HttpHeaders();
-  startedOneCallSig: WritableSignal<boolean> = signal( false);
-  startedForGeoSig: WritableSignal<boolean> = signal( false);
+  //startedOneCallSig: WritableSignal<boolean> = signal( false);
+  //startedForGeoSig: WritableSignal<boolean> = signal( false);
 
-  dummyForGeoCodeSig:WritableSignal<String | undefined>= signal(new Date().getTime()+'');
-  dummyForOneCallSig:WritableSignal<String | undefined>= signal(new Date().getTime()+'');
+  //dummyForGeoCodeSig:WritableSignal<String | undefined>= signal(new Date().getTime()+'');
+  //dummyForOneCallSig:WritableSignal<String | undefined>= signal(new Date().getTime()+'');
 
-
-    private zzipSig:WritableSignal<String | undefined>= signal(undefined);
+    
     jeoCodeProdResource = httpResource<Jeocode | undefined> (() => {
         const zip = this.zzipSig();
         if (!zip ){ console.log('Prodweather - jeoCodeProdResource -  zip is not defined - returning undefined..'); return undefined; }
         else{
+            console.log('Inside the else stmt of jeoCodeProdResource and trying for zip = ' + zip);
             return {                
                 url:'https://api.openweathermap.org/geo/1.0/zip?zip='+zip+',us&units=imperial&appid=' + this.wAppId,
                 method:'GET'
@@ -31,12 +31,40 @@ export class Prodweather extends Weather {
         }
     }); 
 
-    override getJeoCodeByUnKnownZipSig(zip: string): WritableSignal<Jeocode | undefined> { 
+    override getJeoCodeByUnKnownZipSig():void{ 
+      const zip = this.zzipSig();
+      if(zip && zip.length == 5){
         console.log('\nProdweather - getJeoCodeByUnKnownZipSig and the incoming zip = ' + zip);
-        //this.jeoResult = this.jeoCodeProdResource.value;
-        this.zzipSig.set(zip);
-        return this.jeoCodeProdResource.value;
+        
+      }
+      else {console.log('\nProdweather - getJeoCodeByUnKnownZipSig and the incoming zip is not ready :( ');  }
+      this.setInputJeoForOneCallSig( this.jeoCodeProdResource.value);
     }  
   
+      oneCallResource = httpResource<OneCallResponse | undefined>( ()=> {
+        const inputJeoForOneCall = this.inputJeoForOneCallSig();
+        if(!inputJeoForOneCall){
+          console.log('inside oneCallResource but inputJeoForOneCall is undefined or not started yet inputJeoForOneCall = '+ inputJeoForOneCall);
+          return undefined;
+        } else {
+            console.log('Inside the else part of oneCallResponseResource and trying for inputJeoForOneCall.name = ' + inputJeoForOneCall.name);
+            return {
+              url:'https://api.openweathermap.org/data/4.0/onecall/timeline/1day?lat='+inputJeoForOneCall.lat+'&lon='+inputJeoForOneCall.lon+'&units=imperial&exclude=minutely,hourly,alerts&appid='+this.wAppId,
+              method: 'GET',
+            };
+        }
+    });
 
-}
+    override getOneCallResponseByJeo() { //(jeoSig: WritableSignal<Jeocode | undefined>)
+      let result:WritableSignal<OneCallResponse | undefined> = signal(undefined);
+      const inputJeoForOneCall = this.inputJeoForOneCallSig();
+      if(inputJeoForOneCall){
+        console.log('\nProdweather - getOneCallResponseByJeo and the incoming inputJeoForOneCall.zip = ' + inputJeoForOneCall.zip);
+        result =  this.oneCallResource.value;
+      } 
+      else{
+        console.log('\nProdweather - getOneCallResponseByJeo and the incoming inputJeoForOneCall is undefined :( ');
+      }
+      this.oneCallForSearchResp = result;            
+    }
+  }
