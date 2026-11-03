@@ -7,6 +7,16 @@ import { initialLokation, initialGeoCode, KNOWNGEOCODES } from './refData';
 @Injectable({ providedIn: 'root' })
 export class Nonprodweather extends Weather {
 
+
+  override getFinalOneCallResponse(): () => OneCallResponse | undefined {
+    return this.oneCallForSearchResp;
+  }
+
+
+   override getFinalJeoCode(): () => Jeocode | undefined {
+     return this.saveJeoesult;
+   }
+
   
    override getOneCallResponseByJeo(): void {
     let result:WritableSignal<(OneCallResponse | undefined)> = signal(undefined);
@@ -22,19 +32,19 @@ export class Nonprodweather extends Weather {
   }
 
    override getJeoCodeByUnKnownZipSig(): void {
-    let result: WritableSignal<Jeocode | undefined> = signal(undefined);
+    //let result: WritableSignal<Jeocode | undefined> = signal(undefined);
     const zip = this.zzipSig();
     if(zip){
       GEOCODESFORNONPROD.forEach(g => {
       if(g.zip == zip){
-        result.set(g);
-        this.setInputJeoForOneCallSig(result);
+        this.saveJeoesult.set(g);
+        this.setInputJeoForOneCallSig(this.saveJeoesult);
         console.log('success! Nonprodweather  getGeoCodeInfoFromZipWoKnownGeoCodes found geo for ' + zip);
       }
     });
-    }
-    
+    }   
   }
 
+  saveJeoesult: WritableSignal<Jeocode | undefined> = signal(undefined);
   
 }

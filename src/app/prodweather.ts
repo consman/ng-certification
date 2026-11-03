@@ -12,18 +12,22 @@ export class Prodweather extends Weather {
 
   wAppId = W_APP_ID;
   headers = new HttpHeaders();
-  //startedOneCallSig: WritableSignal<boolean> = signal( false);
-  //startedForGeoSig: WritableSignal<boolean> = signal( false);
 
-  //dummyForGeoCodeSig:WritableSignal<String | undefined>= signal(new Date().getTime()+'');
-  //dummyForOneCallSig:WritableSignal<String | undefined>= signal(new Date().getTime()+'');
-
-    
-    jeoCodeProdResource = httpResource<Jeocode | undefined> (() => {
+  override getFinalJeoCode(): () => Jeocode | undefined {
+    return this.jeoCodeProdResource.value;
+  }
+  override getFinalOneCallResponse(): () => OneCallResponse | undefined {
+    return this.oneCallResource.value;
+  }
+  
+    readonly jeoCodeProdResource = httpResource<Jeocode | undefined> (() => {
         const zip = this.zzipSig();
-        if (!zip ){ console.log('Prodweather - jeoCodeProdResource -  zip is not defined - returning undefined..'); return undefined; }
+        if (!zip ){ 
+          //console.log('Prodweather - jeoCodeProdResource -  zip is not defined - returning undefined..'); 
+          return undefined; 
+        }
         else{
-            console.log('Inside the else stmt of jeoCodeProdResource and trying for zip = ' + zip);
+            //console.log('Inside the else stmt of jeoCodeProdResource and trying for zip = ' + zip);
             return {                
                 url:'https://api.openweathermap.org/geo/1.0/zip?zip='+zip+',us&units=imperial&appid=' + this.wAppId,
                 method:'GET'
@@ -34,20 +38,20 @@ export class Prodweather extends Weather {
     override getJeoCodeByUnKnownZipSig():void{ 
       const zip = this.zzipSig();
       if(zip && zip.length == 5){
-        console.log('\nProdweather - getJeoCodeByUnKnownZipSig and the incoming zip = ' + zip);
+        //console.log('\nProdweather - getJeoCodeByUnKnownZipSig and the incoming zip = ' + zip);
         
       }
-      else {console.log('\nProdweather - getJeoCodeByUnKnownZipSig and the incoming zip is not ready :( ');  }
+      //else {console.log('\nProdweather - getJeoCodeByUnKnownZipSig and the incoming zip is not ready :( ');  }
       this.setInputJeoForOneCallSig( this.jeoCodeProdResource.value);
     }  
   
-      oneCallResource = httpResource<OneCallResponse | undefined>( ()=> {
-        const inputJeoForOneCall = this.inputJeoForOneCallSig();
-        if(!inputJeoForOneCall){
-          console.log('inside oneCallResource but inputJeoForOneCall is undefined or not started yet inputJeoForOneCall = '+ inputJeoForOneCall);
+      readonly oneCallResource = httpResource<OneCallResponse | undefined>( ()=> {
+        const inputJeoForOneCall = this.jeoCodeProdResource.value(); //this.inputJeoForOneCallSig();
+        if(!inputJeoForOneCall || !inputJeoForOneCall.lat || !inputJeoForOneCall.lon){
+          //console.log('inside oneCallResource but inputJeoForOneCall is undefined or not started yet inputJeoForOneCall = '+ inputJeoForOneCall);
           return undefined;
         } else {
-            console.log('Inside the else part of oneCallResponseResource and trying for inputJeoForOneCall.name = ' + inputJeoForOneCall.name);
+            //console.log('Inside the else part of oneCallResponseResource and trying for inputJeoForOneCall.name = ' + inputJeoForOneCall.name);
             return {
               url:'https://api.openweathermap.org/data/4.0/onecall/timeline/1day?lat='+inputJeoForOneCall.lat+'&lon='+inputJeoForOneCall.lon+'&units=imperial&exclude=minutely,hourly,alerts&appid='+this.wAppId,
               method: 'GET',
@@ -59,12 +63,10 @@ export class Prodweather extends Weather {
       let result:WritableSignal<OneCallResponse | undefined> = signal(undefined);
       const inputJeoForOneCall = this.inputJeoForOneCallSig();
       if(inputJeoForOneCall){
-        console.log('\nProdweather - getOneCallResponseByJeo and the incoming inputJeoForOneCall.zip = ' + inputJeoForOneCall.zip);
+        //console.log('\nProdweather - getOneCallResponseByJeo and the incoming inputJeoForOneCall.zip = ' + inputJeoForOneCall.zip);
         result =  this.oneCallResource.value;
       } 
-      else{
-        console.log('\nProdweather - getOneCallResponseByJeo and the incoming inputJeoForOneCall is undefined :( ');
-      }
+    
       this.oneCallForSearchResp = result;            
     }
   }

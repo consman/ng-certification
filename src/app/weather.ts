@@ -6,32 +6,18 @@ import { initialGeoCode, initialLokation, initialOneCallResponse, initialSearchR
 export abstract class Weather {
 
     constructor() { 
-      effect(() => { // 001
-        const zip = this.zzipSig()
-        if(zip){ console.log( '001 good and zip = ' + zip); }
-      });
-      effect(() => { // 002
-        const joeCodeForOne = this.inputJeoForOneCallSig();
-        if ( joeCodeForOne && joeCodeForOne.zip.length == 5  ){ console.log( '002 good and joeCodeForOne.zip = ' + joeCodeForOne.zip); }        
-      });
-      effect(() => { // 003
-        const oneCallForSearch = this.oneCallForSearchResp();
-        if(oneCallForSearch && oneCallForSearch.lat > 1) { console.log( '003 good and oneCallForSearch.lat = ' + oneCallForSearch.lat); }
-      });
-      effect(() => { // 00
-
-      });
     }
 
     inProgressZipSig:WritableSignal<String | undefined> = signal(undefined);
     srCount = 0;
     backFromFiveDay:WritableSignal<boolean> = signal(false); //TODO work on this
 
-    //joeCodeForOneCall: WritableSignal<Jeocode | undefined> = signal(undefined);
     oneCallForSearchResp: WritableSignal<(OneCallResponse | undefined)> = signal(undefined);
 
     abstract getJeoCodeByUnKnownZipSig():void;
     abstract getOneCallResponseByJeo():void;
+    abstract getFinalJeoCode():  () => Jeocode | undefined;
+    abstract getFinalOneCallResponse(): () => OneCallResponse | undefined;
 
     protected zzipSig:WritableSignal<String | undefined>= signal(undefined);
     protected inputJeoForOneCallSig: WritableSignal <Jeocode | undefined> = signal(undefined);
@@ -43,7 +29,7 @@ export abstract class Weather {
     setInputJeoForOneCallSig(ijfoc: WritableSignal <Jeocode | undefined>):void{      
       const jeo = ijfoc();
       if(jeo){
-        console.log('setInputJeoForOneCallSig running ...  and jeo.zip = ' +jeo.zip );    
+        //console.log('setInputJeoForOneCallSig running ...  and jeo.zip = ' +jeo.zip );    
       }
       else{
         console.log('setInputJeoForOneCallSig running ... but with undefined. :( ');
@@ -54,13 +40,13 @@ export abstract class Weather {
 
     getSearchResponse = computed(():(SearchResponse | undefined) => {
 
-      const jeoCode = this.inputJeoForOneCallSig();
-      const oneCallResponse = this.oneCallForSearchResp();
+      const jeoCode = this.getFinalJeoCode()(); //this.inputJeoForOneCallSig();
+      const oneCallResponse = this.getFinalOneCallResponse()();
 
       return jeoCode && oneCallResponse && oneCallResponse.lat == jeoCode.lat ?
         { lokation: {
             jeocode: jeoCode,
-            oneCallResponse: oneCallResponse,
+            oneCallResponse: this.fixMainWeatherIconName(oneCallResponse),
             dt: new Date().getTime()
           }, 
         lokationsCount:this.srCount++,  
@@ -98,11 +84,11 @@ export abstract class Weather {
       if (zip && zip.length == 5){
           let jeoK = KNOWNGEOCODES.find(kgc =>(kgc.zip == zip));
           if(jeoK){
-              console.log('success getJeoCodeByKNOWNZipSig found '+ zip);
+              //console.log('success getJeoCodeByKNOWNZipSig found '+ zip);
               result = signal(jeoK);
           }
           else {
-              console.log('getJeoCodeByKNOWNZipSig unable to get the geoCode from KNOWN - hoping to run getJeoCodeByUnKnownZipSig .');
+              //console.log('getJeoCodeByKNOWNZipSig unable to get the geoCode from KNOWN - hoping to run getJeoCodeByUnKnownZipSig .');
               result = signal(undefined);
           }
       }
@@ -112,6 +98,36 @@ export abstract class Weather {
       return result;   
   }
 
+
+  fixMainWeatherIconName(prevOcr:OneCallResponse):OneCallResponse{
+    let ocr:OneCallResponse = prevOcr;
+    ocr.data.forEach(da => {
+      if(da.weather && da.weather.length > 0 ) {
+          da.weather.forEach(w => {
+            //console.log( 'xxxx main before: ' + w.main);
+            w.main = this.getIconFrom(w.main);
+            //console.log( 'xxxx main  after: ' + w.main);
+          });
+        }
+    });
+    return ocr;
+  }
+
+  getIconFrom(input: string): string{
+    if ( input === 'Clouds'){
+      return 'clouds';
+    }
+    if ( input === 'Sunny'){
+      return 'sun';
+    }
+    if ( input === 'Rain'){
+      return 'rain';
+    }
+    if ( input === 'Snow'){
+      return 'snow';
+    }
+    return 'sun';
+  }
     
   /*  
     getLokationByZipSig(zipcode:WritableSignal<String | undefined>):WritableSignal<SearchResponse | undefined>{
@@ -211,35 +227,6 @@ export abstract class Weather {
     return result;
   }
 
-  fixMainWeatherIconName(prevOcr:OneCallResponse):OneCallResponse{
-    let ocr:OneCallResponse = prevOcr;
-    ocr.data.forEach(da => {
-      if(da.weather && da.weather.length > 0 ) {
-          da.weather.forEach(w => {
-            //console.log( 'xxxx main before: ' + w.main);
-            w.main = this.getIconFrom(w.main);
-            //console.log( 'xxxx main  after: ' + w.main);
-          });
-        }
-    });
-    return ocr;
-  }
-
-  getIconFrom(input: string): string{
-    if ( input === 'Clouds'){
-      return 'clouds';
-    }
-    if ( input === 'Sunny'){
-      return 'sun';
-    }
-    if ( input === 'Rain'){
-      return 'rain';
-    }
-    if ( input === 'Snow'){
-      return 'snow';
-    }
-    return 'sun';
-  }
 
   getExistingSearchResponseByGeoCode(jeo:Jeocode):SearchResponse | undefined {
     let result = undefined;

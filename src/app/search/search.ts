@@ -25,15 +25,10 @@ export class Search {
 
     myInput = viewChild<ElementRef<HTMLInputElement>>('zipCodeEntry');
     zipSig: WritableSignal<String | undefined> = signal(undefined);
-/*
-    lastJeoCodeSig: WritableSignal<Jeocode | undefined> = signal(undefined);
-    jeoCodesSigsSig: WritableSignal<WritableSignal<Jeocode | undefined> [] | undefined> = signal(new Array<WritableSignal<Jeocode| undefined>>);
-    jeoCodeSigFromService: WritableSignal<Jeocode | undefined> = signal(undefined);
-*/
 
   constructor(){
     afterNextRender( ()=> {
-      if(this.weatherService.backFromFiveDay()){
+      if(this.weatherService.backFromFiveDay()){ //TODO deal with this
         console.log('Search constructor - back from five-day...');
         //this.refreshFromServer();
         this.weatherService.backFromFiveDay.set(false);
@@ -42,30 +37,26 @@ export class Search {
         this.loadLocationsFromLocalStorage();
       }
     });
-/*
-    effect(() =>{ //001 
-        const zipp = this.zipSig();
-        if(zipp && zipp.length == 5){
-          this.weatherService.inProgressZipSig.set(zipp+'');
-          const searchResponse =  this.weatherService.getSearchResponse();
-          //const searchResponse = searchResponseSig();
+
+    effect(() =>{ //009           
+          const searchResponseSig = this.weatherService.getSearchResponse; //this.searchResponseFromService ; // this.getSearchResponsFromService();
+          const searchResponse = searchResponseSig();
           if(searchResponse && searchResponse.lokation && searchResponse.lokation.jeocode 
             && searchResponse.lokation.jeocode.zip && searchResponse.lokation.jeocode.zip.length ==5 ){
-              console.log('eff 001 and the geo.name = '+searchResponse.lokation.jeocode.name);
+              //console.log(' - - - - - - eff 009 and the geo.name = '+searchResponse.lokation.jeocode.name);
               this.lastSearchResponseSig.set(searchResponse);
-              console.log('eff 001 saved the search respone from the service with a zip of '+zipp);
+              console.log('- - - eff 009 saved the search respone from the service with a zip of '+searchResponse.lokation.jeocode.zip);
               this.newZip ='';
           }
-      }
       });
-      */
+      
   }
 
     handleSaved():void{
       const searchResponse = this.lastSearchResponseSig();
       if(searchResponse){
         this.searchResponseSigsSig.update(arr => [...(arr || []), signal(searchResponse)]);
-        console.log('handleSaved finished and the number of entries in this.searchResponseSigsSig = ' + this.searchResponseSigsSig()?.length);      
+        //console.log('handleSaved finished and the number of entries in this.searchResponseSigsSig = ' + this.searchResponseSigsSig()?.length);      
       }
     }
 
@@ -113,24 +104,7 @@ export class Search {
     }
     return result;
   }
-/*
-    getJeoCodeFromService(): WritableSignal<Jeocode | undefined>{
 
-      let result: WritableSignal<Jeocode | undefined> = signal(undefined);
-
-      if(this.newZip != undefined && this.newZip.length == 5){
-        this.jeoCodeSigFromService = this.weatherService.getJeoCode(this.newZip); 
-        console.log('getJeoCodeFromService() called and now this.jeoCodeSigFromService()?.name = '+ this.jeoCodeSigFromService()?.name )
-        result = this.jeoCodeSigFromService; 
-      }
-      else{
-        console.warn('getJeoCodeFromService called with a bad zip. returning undefined.');
-        result =  signal(undefined);
-      }
-      return result;
-
-    }
-*/
   removeLocation(zip:string):void{  //TODO work on this
     /*
     let target: SearchResponse | undefined;
@@ -147,38 +121,6 @@ export class Search {
     //this.refreshFromServer();
     */
   }
-/*
-  refreshFromServer():void{
-    
-    setTimeout(()=>{ 
-      //console.log('this.weatherService.getSearchResponsesSig()().length = ' + this.weatherService.getSearchResponsesSig()().length);
-      const srSig = this.weatherService.getSearchResponsesSig();
-      const sr = srSig();
-
-      this.searchResponsez.length = 0;
-      sr.forEach(item =>{
-        this.searchResponsez.push(item);
-      });
-      console.log('number of searchResponsez = ' + this.searchResponsez.length);
-      this.searchResponsez.forEach(sr => {
-        console.log('   - sr.lokation.jeocode.zip = '+sr.lokation.jeocode.zip);
-      });
-      this.searchResponsesSig.set(this.searchResponsez);
-      console.log('Search removeLocation - removal complete. number of searchResponsez = ' + this.searchResponsez.length);
-
-      const inputElement = this.myInput()?.nativeElement;
-        if (inputElement) {
-          inputElement.focus();
-          inputElement.value = ' ';
-          inputElement.dispatchEvent(new Event('input', { bubbles: true }));
-          inputElement.value = '';
-          inputElement.dispatchEvent(new Event('input', { bubbles: true }));
-          inputElement.focus();
-        }          
-    },250);
-    
-  }
-*/
 
   validateZip(unVaidatedZip: string): boolean {
     let result = false;
