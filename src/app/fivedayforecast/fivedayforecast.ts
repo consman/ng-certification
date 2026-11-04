@@ -18,8 +18,9 @@ import { initialLokation, initialGeoCode, initialOneCallResponse } from '../refD
   templateUrl: './fivedayforecast.html',
 })
 export class Fivedayforecast {
-/*
+
   weatherService = inject(Weather);
+
   zipParam: string | null;
 
   oneCallResponse: WritableSignal<OneCallResponse | undefined> = signal(initialOneCallResponse);
@@ -32,11 +33,11 @@ export class Fivedayforecast {
     this.getDataFromZipParam(this.zipParam);
 
     afterNextRender( ()=> {
-      this.runThisStuffAfterComponentLoads();
+      //this.runThisStuffAfterComponentLoads();
     });
     
   }
-
+/*
   private runThisStuffAfterComponentLoads(){
     
     if(this.jeo.zip && this.jeo.zip.length == 5){
@@ -49,7 +50,7 @@ export class Fivedayforecast {
       console.warn('Fix this. unable to get an existing bcocr with zip '+this.jeo.zip+' from the main list which should be there! ');
     }
   }
-
+*/
   getDataFromZipParam(zp: string | null): void{
 
     if ( null != zp && zp !== '' && zp.length > 0) {
@@ -99,5 +100,5 @@ export class Fivedayforecast {
     result = result = locationNameWithDashes.replace('-', ' ');
     return result;
   }
-*/
+
 }

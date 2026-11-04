@@ -6,12 +6,14 @@ import { initialGeoCode, initialLokation, initialOneCallResponse, initialSearchR
 export abstract class Weather {
 
     constructor() { 
+      /*
       effect(() => { //200
         const inputJeoForOneCall = this.inputJeoForOneCallSig();
         if(inputJeoForOneCall){
-          console.log('//eff 200 and  inputJeoForOneCall.name = '+ inputJeoForOneCall.name );
+          //console.log('//eff 200 and  inputJeoForOneCall.name = '+ inputJeoForOneCall.name );
         }
       });
+      */
     }
 
     inProgressZipSig:WritableSignal<String | undefined> = signal(undefined);
@@ -38,10 +40,10 @@ export abstract class Weather {
     setInputJeoForOneCallSig(ijfoc: WritableSignal <Jeocode | undefined>):void{      
       const jeo = ijfoc();
       if(jeo){
-        console.log('setInputJeoForOneCallSig running ...  and jeo.zip = ' +jeo.zip );    
+        //console.log('setInputJeoForOneCallSig running ...  and jeo.zip = ' +jeo.zip );    
       }
       else{
-        console.log('setInputJeoForOneCallSig running ... but with undefined. :( ');
+        //console.log('setInputJeoForOneCallSig running ... but with undefined. :( ');
       }
       this.inputJeoForOneCallSig = ijfoc; // .set(ijfoc());
     }
@@ -68,7 +70,7 @@ export abstract class Weather {
     });
 
     handleMessageFromServer(mess:string):string {
-      console.log(' We made it to the end. mess = ' + mess);
+      //console.log(' We made it to the end. mess = ' + mess);
       return mess;
     }
 
@@ -236,7 +238,7 @@ export abstract class Weather {
     if(zipCode){
       result = KNOWNGEOCODES.find(kgc =>(kgc.zip == zipCode));
       if(result) {
-        console.log('success getGeoCodeInfoFromZipWithKnownGeoCodes found '+ zipCode);
+        //console.log('success getGeoCodeInfoFromZipWithKnownGeoCodes found '+ zipCode);
       }
     }
     return result;
@@ -252,7 +254,7 @@ export abstract class Weather {
         result = sr;
       }
     });
-    console.log('weather getExistingSearchResponseByGeoCode  = ' + found);
+    //console.log('weather getExistingSearchResponseByGeoCode  = ' + found);
     return result;
   }
 
@@ -269,11 +271,11 @@ export abstract class Weather {
 
   removeOneCallResponse(lok:(Lokation | undefined)):void{
 
-    console.log('the list before removing an entry: ' + this.printSearchResponses(this.searchResponses)); //+this.listToString(this.lokationsSig));
+    //console.log('the list before removing an entry: ' + this.printSearchResponses(this.searchResponses)); //+this.listToString(this.lokationsSig));
     let newArr = this.searchResponses.filter(sr => sr.lokation.jeocode.lat != lok?.jeocode.lat);
     this.searchResponses = newArr;
 
-    console.log('the list after removing an entry: '+ this.printSearchResponses(this.searchResponses));  
+    //console.log('the list after removing an entry: '+ this.printSearchResponses(this.searchResponses));  
     
     if (lok && lok.jeocode && lok.jeocode.zip && lok.jeocode.zip.length ==5 && null != this.getZipLocalStorageKey(lok.jeocode.zip)){
         localStorage.removeItem('storedZipCode'+lok.jeocode.zip);
@@ -299,8 +301,8 @@ export abstract class Weather {
   }
 
   getSearchResponsesSig():WritableSignal<SearchResponse[]>{
-    console.log('weather getSearchResponsesSig - this.searchResponses.length = ' + this.searchResponses.length);
-    console.log('weather getSearchResponsesSig - this.searchResponses:' + this.printSearchResponses(this.searchResponses));
+    //console.log('weather getSearchResponsesSig - this.searchResponses.length = ' + this.searchResponses.length);
+    //console.log('weather getSearchResponsesSig - this.searchResponses:' + this.printSearchResponses(this.searchResponses));
     return signal(this.searchResponses);
   }
 
@@ -320,7 +322,7 @@ export abstract class Weather {
         const inProgressSearchResponseSig = this.inProgressSearchResponseComp;
         const inProgressSearchResponse = inProgressSearchResponseSig();
         if(inProgressSearchResponse){
-          console.log('eff 002 in weather.ts says inProgressSearchResponse ='
+          //console.log('eff 002 in weather.ts says inProgressSearchResponse ='
             +inProgressSearchResponse.success
             +'|'+inProgressSearchResponse.messageFromServer
             +'|'+inProgressSearchResponse.lokation.jeocode.zip);

@@ -2,7 +2,8 @@ import { LocationT } from './location';
 import { Forecast } from './forecast';
 import { Jeocode, OneCallResponse } from './funTypes';
 
-export const GEOCODESFORNONPROD: Jeocode [] =[
+
+export const UNKNOWNGEOCODESFORNONPROD: Jeocode [] =[
   {"zip":"94945","name":"Novato","lat":38.1163,"lon":-122.5714,"country":"US"},
   {"zip":"93727","name":"Fresno","lat":36.7528,"lon":-119.7061,"country":"US"},
   {"zip":"95757","name":"Elk Grove","lat":38.4081,"lon":-121.4294,"country":"US"},

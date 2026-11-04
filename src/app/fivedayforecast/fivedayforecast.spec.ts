@@ -27,20 +27,20 @@ export const FAKE_ROUTE = {
 describe('Fivedayforecast', () => {
   let component: Fivedayforecast;
   let fixture: ComponentFixture<Fivedayforecast>;
-  //let weather: Nonprodweather;
+  let weatherService: Nonprodweather;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Fivedayforecast] ,
       providers:[ 
-        {provide: Weather, useFactory: weatherServiceFactory, deps: ['IS_PROD_ENVIRONMENT']},
-        {provide: 'IS_PROD_ENVIRONMENT', useValue: false}, 
+        {provide: Weather, useValue:weatherService}, 
         {provide: ActivatedRoute, useValue: FAKE_ROUTE}] 
     }).compileComponents();
 
     fixture = TestBed.createComponent(Fivedayforecast);
     component = fixture.componentInstance;
-    component.weatherService = TestBed.runInInjectionContext(() => new Nonprodweather());
+    weatherService = TestBed.inject(Nonprodweather);
+    //component.Weather = TestBed.runInInjectionContext(() => new Nonprodweather());
     
     let tempJeo = initialGeoCode;
     tempJeo.zip = '90810';
@@ -48,7 +48,7 @@ describe('Fivedayforecast', () => {
     let tempLok = {jeocode:tempJeo, oneCallResponse:tempOcr, dt: new Date().getTime()};
     let searchResponse = initialSearchResponse;
     
-    component.weatherService.searchResponses.push(searchResponse);//update(loks => [...loks, tempLok]);
+    //component.weatherService.getSearchResponse().push(searchResponse);//update(loks => [...loks, tempLok]);
     await fixture.whenStable();
   });
 

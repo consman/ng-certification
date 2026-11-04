@@ -29,7 +29,7 @@ export class Search {
   constructor(){
     afterNextRender( ()=> {
       if(this.weatherService.backFromFiveDay()){ //TODO deal with this
-        console.log('Search constructor - back from five-day...');
+        //console.log('Search constructor - back from five-day...');
         //this.refreshFromServer();
         this.weatherService.backFromFiveDay.set(false);
       }
@@ -45,7 +45,7 @@ export class Search {
             && searchResponse.lokation.jeocode.zip && searchResponse.lokation.jeocode.zip.length ==5 ){
               //console.log(' - - - - - - eff 009 and the geo.name = '+searchResponse.lokation.jeocode.name);
               this.lastSearchResponseSig.set(searchResponse);
-              console.log('- - - eff 009 saved the search respone from the service with a zip of '+searchResponse.lokation.jeocode.zip);
+              //console.log('- - - eff 009 saved the search respone from the service with a zip of '+searchResponse.lokation.jeocode.zip);
               this.newZip ='';
           }
       });
@@ -76,7 +76,7 @@ export class Search {
   }
 
   addNewLocation(zip: string): void {
-    console.log('addNewLocation going for addNewLocation for zip: ' + zip+ ' ...');
+    //console.log('addNewLocation going for addNewLocation for zip: ' + zip+ ' ...');
 
       if (this.validateZip(zip) ) {
         //this.zipSig.set(zip); //: WritableSignal<String | undefined> = signal(zip);
@@ -154,7 +154,7 @@ export class Search {
             const derivedZip =  localStorage.getItem(localStorageKey);             
             delay = delay +250;              
             if(derivedZip){
-              console.log('loadLocationsFromLocalStorage Going for addNewLocation for '+derivedZip); 
+              //console.log('loadLocationsFromLocalStorage Going for addNewLocation for '+derivedZip); 
               setTimeout(()=>{         //TODO remember to deal with this!         
                 this.addNewLocation(derivedZip);  
                },delay);             

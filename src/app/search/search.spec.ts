@@ -54,7 +54,7 @@ describe('Search', () => {
     it('should add a new location', () => {
       component.weatherService = TestBed.runInInjectionContext(() => new Nonprodweather());
       expect(component.addNewLocation('90810'));
-      expect(component.searchResponseSig()?.lokation.oneCallResponse.lat ==  33.8193); //.length == 2);//
+      expect(component.lastSearchResponseSig()?.lokation.oneCallResponse.lat ==  33.8193); //.length == 2);//
     });
 
 });

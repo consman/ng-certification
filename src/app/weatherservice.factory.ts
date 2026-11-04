@@ -10,7 +10,7 @@ export function weatherServiceFactory(isProd: boolean, http: HttpClient): Prodwe
     return new Prodweather();
   }
   else{
-    console.log('weatherServiceFactory - going for Nonprodweather.');
+    //console.log('weatherServiceFactory - going for Nonprodweather.');
     return new Nonprodweather();
   }
 }

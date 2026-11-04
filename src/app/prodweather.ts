@@ -14,12 +14,14 @@ export class Prodweather extends Weather {
 
   constructor(){
     super();
+    /*
     effect(() => { //201
         const val = this.jeoCodeProdResource.value();
         if(val){
-          console.log('//eff 201 and  val.name = '+ val.name );
+          //console.log('//eff 201 and  val.name = '+ val.name );
         }
       });
+      */
   }
 
   override getFinalOneCallResponse(): () => OneCallResponse | undefined {
@@ -29,11 +31,11 @@ export class Prodweather extends Weather {
     readonly jeoCodeProdResource = httpResource<Jeocode | undefined> (() => {
         const zip = this.zzipSig();
         if (!zip ){ 
-          console.log('Prodweather - jeoCodeProdResource -  zip is not defined - returning undefined..'); 
+          //console.log('Prodweather - jeoCodeProdResource -  zip is not defined - returning undefined..'); 
           return undefined; 
         }
         else{
-            console.log('Inside the else stmt of jeoCodeProdResource and trying for zip = ' + zip);
+            //console.log('Inside the else stmt of jeoCodeProdResource and trying for zip = ' + zip);
             return {                
                 url:'https://api.openweathermap.org/geo/1.0/zip?zip='+zip+',us&units=imperial&appid=' + this.wAppId,
                 method:'GET'
@@ -44,7 +46,7 @@ export class Prodweather extends Weather {
     override getJeoCodeByUnKnownZipSig():void{ 
       const zip = this.zzipSig();
       if(zip && zip.length == 5){
-        console.log('\nProdweather - getJeoCodeByUnKnownZipSig and the incoming zip = ' + zip);        
+        //console.log('\nProdweather - getJeoCodeByUnKnownZipSig and the incoming zip = ' + zip);        
       }
       //else {console.log('\nProdweather - getJeoCodeByUnKnownZipSig and the incoming zip is not ready :( ');  }
       this.setInputJeoForOneCallSig( this.jeoCodeProdResource.value);
