@@ -84,7 +84,7 @@ export class Search {
         this.weatherService.setZzipSig(zip);
         let inProgressJeoCodeFromService = this.weatherService.getJeoCode();// getJeoCodeByUnKnownZipSig(this.zipSig);   
         
-        //this.weatherService.setInputJeoForOneCallSig(inProgressJeoCodeFromService);
+        
         this.weatherService.getOneCallResponseByJeo();   
 
         this.searchResponseFromService = this.getSearchResponsFromService()

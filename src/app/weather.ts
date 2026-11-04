@@ -6,21 +6,30 @@ import { initialGeoCode, initialLokation, initialOneCallResponse, initialSearchR
 export abstract class Weather {
 
     constructor() { 
+      effect(() => { //200
+        const inputJeoForOneCall = this.inputJeoForOneCallSig();
+        if(inputJeoForOneCall){
+          console.log('//eff 200 and  inputJeoForOneCall.name = '+ inputJeoForOneCall.name );
+        }
+      });
     }
 
     inProgressZipSig:WritableSignal<String | undefined> = signal(undefined);
     srCount = 0;
     backFromFiveDay:WritableSignal<boolean> = signal(false); //TODO work on this
+    known:boolean =false;
 
     oneCallForSearchResp: WritableSignal<(OneCallResponse | undefined)> = signal(undefined);
 
     abstract getJeoCodeByUnKnownZipSig():void;
     abstract getOneCallResponseByJeo():void;
-    abstract getFinalJeoCode():  () => Jeocode | undefined;
     abstract getFinalOneCallResponse(): () => OneCallResponse | undefined;
 
     protected zzipSig:WritableSignal<String | undefined>= signal(undefined);
     protected inputJeoForOneCallSig: WritableSignal <Jeocode | undefined> = signal(undefined);
+    protected responseFromOneCallSig: WritableSignal <OneCallResponse | undefined> = signal(undefined);
+
+    getFinalJeoCode():  () => Jeocode | undefined {return this.inputJeoForOneCallSig() ? this.inputJeoForOneCallSig :  signal(undefined)};
 
     setZzipSig(zip:string):void{
       this.zzipSig.set(zip);
@@ -29,19 +38,22 @@ export abstract class Weather {
     setInputJeoForOneCallSig(ijfoc: WritableSignal <Jeocode | undefined>):void{      
       const jeo = ijfoc();
       if(jeo){
-        //console.log('setInputJeoForOneCallSig running ...  and jeo.zip = ' +jeo.zip );    
+        console.log('setInputJeoForOneCallSig running ...  and jeo.zip = ' +jeo.zip );    
       }
       else{
         console.log('setInputJeoForOneCallSig running ... but with undefined. :( ');
       }
-      this.inputJeoForOneCallSig.set(ijfoc());
+      this.inputJeoForOneCallSig = ijfoc; // .set(ijfoc());
     }
 
+    setResponseFromOneCallSig(ocrSig:WritableSignal <OneCallResponse | undefined>):void{
+      this.responseFromOneCallSig = ocrSig;
+    }
 
     getSearchResponse = computed(():(SearchResponse | undefined) => {
 
-      const jeoCode = this.getFinalJeoCode()(); //this.inputJeoForOneCallSig();
-      const oneCallResponse = this.getFinalOneCallResponse()();
+      const jeoCode = this.getFinalJeoCode()(); 
+      const oneCallResponse = this.getFinalOneCallResponse()(); 
 
       return jeoCode && oneCallResponse && oneCallResponse.lat == jeoCode.lat ?
         { lokation: {
@@ -66,13 +78,16 @@ export abstract class Weather {
       if (zip && zip.length == 5){ 
           const joeCodeKSig = this.getJeoCodeByKNOWNZipSig();
           const jeoCodeK = joeCodeKSig();
-          if ( jeoCodeK && jeoCodeK.zip.length == 5 ) {
-              this.setInputJeoForOneCallSig(joeCodeKSig);
+          if ( jeoCodeK && jeoCodeK.zip.length == 5 ) { 
+            this.known = true;
+            this.setInputJeoForOneCallSig(joeCodeKSig);
+            this.known = false;
           }
           else { // return the resource value     
-              this.getJeoCodeByUnKnownZipSig();              
-          }
-          
+            if(!this.known){
+              this.getJeoCodeByUnKnownZipSig();                            
+            }             
+          }          
       } else{
           console.warn('getJeoCode called with a bad zip - either undefined or not a length of 5 .');
       }      
