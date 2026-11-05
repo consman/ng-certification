@@ -9,8 +9,8 @@ export class Nonprodweather extends Weather {
 
 constructor(){
     super();
-    //console.log('Nonprodweather constructor running ... ' );
-/*
+    console.log('Nonprodweather constructor running ... ' );
+
         effect(() => { //206
         const nonprodjeo = this.inputJeoForOneCallSig();
         if(nonprodjeo){
@@ -25,7 +25,7 @@ constructor(){
           //console.log('//eff 207 ocr is undefined.');
         }
       });
-      */
+      
   }
 
   override getFinalOneCallResponse(): () => OneCallResponse | undefined {

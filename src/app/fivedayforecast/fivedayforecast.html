@@ -1,4 +1,4 @@
-<!--
+
 <div class="container-fluid">
     <div class="panel panel-default">
       <div class="panel-heading">
@@ -6,37 +6,50 @@
       </div>
 
 
-      
+    @let srSigsFromServerA = this.weatherService.getSearchResponseSigsSigForFiveDay();   
+    @let srSigsFromServer = srSigsFromServerA();
+    @if(srSigsFromServer && srSigsFromServer.length > 0){
+        @for (srSig of srSigsFromServer; track srSig()?.lokation?.dt ){
+            @let sr = srSig();
+            @if(sr && sr.lokation.oneCallResponse && sr.lokation.jeocode.zip == jeo.zip){
+                @let ocr = sr.lokation.oneCallResponse;
+    
+    
+<!--
       @if(oneCallResponse()) {
            @let  ocr = oneCallResponse();
-           @if (ocr && ocr.data && ocr.data.length > 0) {
-            @let days = ocr.data;
-            @if (days.length > 0){
-                @for (day of days; track day){
-                    @if(day){
-                        <ul class="list-group">
-                          
-                        <li data-test="tdForecastItem" class="list-group-item">            
-        
-                            {{convertEpocToDayofWeek(day.dt) | date: 'EEEE'}}:
-                            @if(day.weather){
-                            {{day.weather[0].description}}
+           -->
+            @if (ocr && ocr.data && ocr.data.length > 0) {
+                @let days = ocr.data;
+                        @if (days.length > 0){
+                            @for (day of days; track day){
+                                @if(day){
+                                    <ul class="list-group">
+                                    
+                                    <li data-test="tdForecastItem" class="list-group-item">            
+                    
+                                        {{convertEpocToDayofWeek(day.dt) | date: 'EEEE'}}:
+                                        @if(day.weather){
+                                        {{day.weather[0].description}}
+                                        }
+                                    - Min: {{day.temp.min}}
+                                    - Max: {{day.temp.max}}
+                                    @if ( day.weather){
+                                        <img class="icon" src="https://www.angulartraining.com/images/weather/{{getIconFrom(day.weather[0].main)}}.png">                
+                                    }
+                                    </li>
+                                    
+                                </ul>
+                                }  
                             }
-                        - Min: {{day.temp.min}}
-                        - Max: {{day.temp.max}}
-                        @if ( day.weather){
-                            <img class="icon" src="https://www.angulartraining.com/images/weather/{{getIconFrom(day.weather[0].main)}}.png">                
                         }
-                        </li>
-                        
-                    </ul>
-                    }  
+                    }
                 }
-            }
-           }
-      }
- 
+             }
+        }
+    
+
       </div>
     <button data-test="backToMainPageButton" class="btn btn-success" tabindex="0" id="mainPageBtn" (click)="navigateBackToMain()">&lt; Back to main page</button>
   </div>
-  -->
+  

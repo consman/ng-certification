@@ -2,7 +2,7 @@ import { Component, EventEmitter, inject, input, model, Output, signal, Writable
 
 import { Weather } from '../weather';
 import { RouterModule } from '@angular/router';
-import { Lokation } from '../funTypes';
+import { Lokation, SearchResponse } from '../funTypes';
 import { initialLokation } from '../refData';
 
 @Component({
@@ -15,12 +15,17 @@ export class Location {
 
   weatherService = inject(Weather);
 
-   lokationSig = input<Lokation | undefined>(initialLokation); 
+  lokationSig = input<Lokation | undefined>(initialLokation); 
+  //srSigsFromServer:WritableSignal<WritableSignal<SearchResponse | undefined> [] | undefined> = signal(undefined);
 
   @Output()
-  onDelete = new EventEmitter<string>();
+  onDelete = new EventEmitter<string>();  
+  @Output()
+  onHeadedtoFiveDay = new EventEmitter<string>();
 
-    constructor(){}
+    constructor(){
+     
+    }
 
 
   handleClose(): void { //TODO work on this. it does nothing.
@@ -32,6 +37,11 @@ export class Location {
       console.warn('Location Component handleClose - Strange! the lokation is not available when trying to remove it! ')
     }
      this.onDelete.emit(lokation?.jeocode.zip);
+  }
+
+  handleHeadedtoFiveDay():void{
+    console.log('location component handleHeadedtoFiveDay running..');
+    this.onHeadedtoFiveDay.emit('junk');    
   }
 
   spacesToDashes(locationNameWithSpaces: string): string {

@@ -29,8 +29,8 @@ export class Search {
   constructor(){
     afterNextRender( ()=> {
       if(this.weatherService.backFromFiveDay()){ //TODO deal with this
-        //console.log('Search constructor - back from five-day...');
-        //this.refreshFromServer();
+        console.log('Search constructor - back from five-day...');
+        this.searchResponseSigsSig = this.weatherService.getSearchResponseSigsSigForFiveDay();
         this.weatherService.backFromFiveDay.set(false);
       }
       else{
@@ -54,9 +54,25 @@ export class Search {
 
     handleSaved():void{
       const searchResponse = this.lastSearchResponseSig();
+      let found = false;
       if(searchResponse){
-        this.searchResponseSigsSig.update(arr => [...(arr || []), signal(searchResponse)]);
-        //console.log('handleSaved finished and the number of entries in this.searchResponseSigsSig = ' + this.searchResponseSigsSig()?.length);      
+        const searchResponseSigs = this.searchResponseSigsSig();
+        if(searchResponseSigs && searchResponseSigs.length > 0) {
+          searchResponseSigs.forEach(srSig => {
+            const sr = srSig();
+            if(sr && searchResponse && sr.lokation.jeocode.zip == searchResponse.lokation.jeocode.zip ){
+              found = true;
+            }
+          });
+          //console.log('handleSaved finished and the number of entries in this.searchResponseSigsSig = ' + this.searchResponseSigsSig()?.length);    
+        }
+        if(!found) {
+          this.searchResponseSigsSig.update(arr => [...(arr || []), signal(searchResponse)]);
+        }        
+        else {
+          console.log('warning -- handleSaved already in big array..');
+        }
+
       }
     }
 
@@ -105,7 +121,13 @@ export class Search {
     return result;
   }
 
+  handleHeadedtoFiveDay(foo:string):void{
+    console.log("search running handleHeadedtoFiveDay");
+    this.handleSaved();
+    this.weatherService.setSearchResponseSigsSigForFiveDay(this.searchResponseSigsSig);
+  }
   removeLocation(zip:string):void{  //TODO work on this
+    console.log("TODO work on this - removeLocation");
     /*
     let target: SearchResponse | undefined;
     this.searchResponsez.forEach(r =>{

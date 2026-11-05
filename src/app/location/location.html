@@ -30,7 +30,7 @@
     </td><td>
           
           @if (lokation.jeocode != undefined && lokation.jeocode.name != undefined && lokation.jeocode.zip != undefined && lokation.jeocode.lon != undefined && lokation.jeocode.lat != undefined){
-            <a data-test="fiveDayForecastLink" routerLink="/forecast/{{lokation.jeocode.zip}}+{{spacesToDashes( lokation.jeocode.name)}}+{{lokation.jeocode.lat}}+{{lokation.jeocode.lon}}" >
+            <a data-test="fiveDayForecastLink" routerLink="/forecast/{{lokation.jeocode.zip}}+{{spacesToDashes( lokation.jeocode.name)}}+{{lokation.jeocode.lat}}+{{lokation.jeocode.lon}}" (click)="handleHeadedtoFiveDay()" >
                 Show Five Day Forecast for {{lokation.jeocode.name}}
             </a>
           } 

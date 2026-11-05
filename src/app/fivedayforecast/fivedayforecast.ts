@@ -12,7 +12,7 @@ import { OneCallResponse, Lokation, Jeocode } from '../funTypes';
 import { initialLokation, initialGeoCode, initialOneCallResponse } from '../refData';
 
 @Component({
-  imports: [],//DatePipe],
+  imports: [DatePipe],
   selector: 'app-fivedayforecast',
   styleUrl: '../app.css',
   templateUrl: './fivedayforecast.html',
@@ -24,7 +24,7 @@ export class Fivedayforecast {
   zipParam: string | null;
 
   oneCallResponse: WritableSignal<OneCallResponse | undefined> = signal(initialOneCallResponse);
-  bobsCompositeOcrSig: Signal<Lokation | undefined> = signal(initialLokation);
+  //bobsCompositeOcrSig: Signal<Lokation | undefined> = signal(initialLokation);
   jeo :Jeocode = initialGeoCode;
   localBcorsSig:WritableSignal<WritableSignal<Lokation | undefined>[]> = signal(new Array<WritableSignal<Lokation>>);
   
@@ -37,9 +37,9 @@ export class Fivedayforecast {
     });
     
   }
-/*
+
   private runThisStuffAfterComponentLoads(){
-    
+    /*
     if(this.jeo.zip && this.jeo.zip.length == 5){
       let searchResonse = this.weatherService.getExistingSearchResponseByGeoCode(this.jeo);
       if (searchResonse && searchResonse.lokation && searchResonse.lokation.oneCallResponse){
@@ -49,8 +49,9 @@ export class Fivedayforecast {
     else{
       console.warn('Fix this. unable to get an existing bcocr with zip '+this.jeo.zip+' from the main list which should be there! ');
     }
+      */
   }
-*/
+
   getDataFromZipParam(zp: string | null): void{
 
     if ( null != zp && zp !== '' && zp.length > 0) {

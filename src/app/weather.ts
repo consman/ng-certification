@@ -31,7 +31,16 @@ export abstract class Weather {
     protected inputJeoForOneCallSig: WritableSignal <Jeocode | undefined> = signal(undefined);
     protected responseFromOneCallSig: WritableSignal <OneCallResponse | undefined> = signal(undefined);
 
+    protected searchResponseSigsSigForFiveDay:WritableSignal<WritableSignal<SearchResponse | undefined> [] | undefined> = signal(new Array<WritableSignal<SearchResponse| undefined>>);
+
     getFinalJeoCode():  () => Jeocode | undefined {return this.inputJeoForOneCallSig() ? this.inputJeoForOneCallSig :  signal(undefined)};
+
+    setSearchResponseSigsSigForFiveDay(inSig:WritableSignal<WritableSignal<SearchResponse | undefined> [] | undefined>):void{
+      this.searchResponseSigsSigForFiveDay = inSig;
+    }
+    getSearchResponseSigsSigForFiveDay():WritableSignal<WritableSignal<SearchResponse | undefined> [] | undefined>{
+      return this.searchResponseSigsSigForFiveDay;
+    }
 
     setZzipSig(zip:string):void{
       this.zzipSig.set(zip);
@@ -101,7 +110,7 @@ export abstract class Weather {
       if (zip && zip.length == 5){
           let jeoK = KNOWNGEOCODES.find(kgc =>(kgc.zip == zip));
           if(jeoK){
-              //console.log('success getJeoCodeByKNOWNZipSig found '+ zip);
+              console.log('success getJeoCodeByKNOWNZipSig found '+ zip);
               result = signal(jeoK);
           }
           else {
