@@ -18,7 +18,7 @@ export abstract class Weather {
 
     inProgressZipSig:WritableSignal<String | undefined> = signal(undefined);
     srCount = 0;
-    backFromFiveDay:WritableSignal<boolean> = signal(false); //TODO work on this
+    backFromFiveDay:WritableSignal<boolean> = signal(false); 
     known:boolean =false;
 
     oneCallForSearchResp: WritableSignal<(OneCallResponse | undefined)> = signal(undefined);
@@ -110,7 +110,7 @@ export abstract class Weather {
       if (zip && zip.length == 5){
           let jeoK = KNOWNGEOCODES.find(kgc =>(kgc.zip == zip));
           if(jeoK){
-              console.log('success getJeoCodeByKNOWNZipSig found '+ zip);
+              //console.log('success getJeoCodeByKNOWNZipSig found '+ zip);
               result = signal(jeoK);
           }
           else {

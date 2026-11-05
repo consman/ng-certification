@@ -29,11 +29,10 @@ constructor(){
   }
 
   override getFinalOneCallResponse(): () => OneCallResponse | undefined {
-    //console.log('208 getFinalOneCallResponse - this.oneCallForSearchResp()?.lat = '+ this.oneCallForSearchResp()?.lat );
+    console.log('208 getFinalOneCallResponse - this.oneCallForSearchResp()?.lat = '+ this.oneCallForSearchResp()?.lat );
     return this.oneCallForSearchResp;
   }
 
-  
    override getOneCallResponseByJeo(): void {
     let result:WritableSignal<(OneCallResponse | undefined)> = signal(undefined);
     const jeoCode = this.inputJeoForOneCallSig();
@@ -52,14 +51,14 @@ constructor(){
 
    override getJeoCodeByUnKnownZipSig(): void { 
     let result: WritableSignal<Jeocode | undefined> = signal(undefined);
-    //console.log(' Nonprodweather  getGeoCodeInfoFromZipWoKnownGeoCodes running...'); 
+    //console.log(' Nonprodweather  getJeoCodeByUnKnownZipSig running...'); 
     const zip = this.zzipSig();
     if(zip){
       UNKNOWNGEOCODESFORNONPROD.forEach(g => {
       if(g.zip == zip){
         result.set(g);
         this.setInputJeoForOneCallSig(result);
-        //console.log('success! Nonprodweather  getGeoCodeInfoFromZipWoKnownGeoCodes found geo for ' + zip);
+        console.log('success! Nonprodweather  getJeoCodeByUnKnownZipSig found geo for ' + zip);
       }
     });
     }   

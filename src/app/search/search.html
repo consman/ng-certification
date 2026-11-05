@@ -21,6 +21,7 @@
                     <app-location                                 
                     [lokationSig] = "lokation"
                     (onDelete) = "removeLocation($event)"
+                    (onHeadedtoFiveDay) = "handleHeadedtoFiveDay($event)"                   
                     >
                     </app-location>              
               }
@@ -48,5 +49,5 @@
         >
       </app-location> 
 }       
-  
+  <p>searchResponseSigsSig().length = {{searchResponseSigsSig()?.length}}</p>
   </div>

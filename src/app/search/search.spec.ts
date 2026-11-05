@@ -1,24 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Search } from './search';
 import { Weather } from '../weather';
-//import { environment } from '../../environments/environment';
 import { weatherServiceFactory } from '../weatherservice.factory';
-import {HttpClient} from '@angular/common/http';
 import { Nonprodweather } from '../nonprodweather';
-import { initialGeoCode, initialOneCallResponse, initialSearchResponse } from '../refData';
 
-
-//import {RAWFORECASTS, RAWLOCATIONS} from '../mock-data';
-//import { from, of } from 'rxjs';
-/*
-export const FAKE_HTTP_CLIENT_LOCATIONS = {
-  get: (url: string |null) => of(RAWLOCATIONS)
-} as HttpClient;
-
-export const FAKE_HTTP_CLIENT_FORECASTS = {
-  get: (url: string |null) => of(RAWFORECASTS)
-} as HttpClient;
-*/
 describe('Search', () => {
   
     let component: Search;
@@ -33,16 +18,8 @@ describe('Search', () => {
 
       fixture = TestBed.createComponent(Search);
       component = fixture.componentInstance;
-      /*
-      let tempJeo = initialGeoCode;
-      tempJeo.zip = '90810';
-      let tempOcr = initialOneCallResponse;
-      let tempLok = {jeocode:tempJeo, oneCallResponse:tempOcr, dt: 1792683866818};
-      let searchResponse = initialSearchResponse;
-      searchResponse.lokation = tempLok;
-      component.weatherService.searchResponses =[];
-      component.weatherService.searchResponses.push(searchResponse);
-*/
+      
+      
       await fixture.whenStable();
     });
 

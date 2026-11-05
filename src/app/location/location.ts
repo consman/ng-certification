@@ -28,7 +28,7 @@ export class Location {
     }
 
 
-  handleClose(): void { //TODO work on this. it does nothing.
+  handleClose(): void { 
     const lokation = this.lokationSig();
     if (lokation) {
       //this.weatherService.removeOneCallResponse(lokation);
