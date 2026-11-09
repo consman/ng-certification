@@ -28,7 +28,7 @@ export class Location {
     }
 
 
-  handleClose(): void { 
+  handleClose(): void { //TODO if there are 2, sometimes closing one removed it but then displays 2 of the other. Other time close button does not work. 
     const lokation = this.lokationSig();
     if (lokation) {
       //this.weatherService.removeOneCallResponse(lokation);
@@ -40,7 +40,7 @@ export class Location {
   }
 
   handleHeadedtoFiveDay():void{
-    console.log('location component handleHeadedtoFiveDay running..');
+    //console.log('location component handleHeadedtoFiveDay running..');
     this.onHeadedtoFiveDay.emit('junk');    
   }
 

@@ -27,18 +27,8 @@
               }
           }
       }
-      <!--
-      @if(zipSig()){
-        @let jeocSig = this.weatherService.getJeoCodeByUnKnownZipSig(zipSig);
-        @let jeoc = jeocSig();
-        @if(jeoc){
-          <p>{{jeoc.zip}}: <span> Name:{{jeoc.name}} </span> <span> Country:{{jeoc.country}} </span><span> Coords: lat ={{jeoc.lat}} lon ={{jeoc.lon}} </span> 
-          </p>
-        }
-      }
-      -->
 
-@let searchResponseSig = searchResponseFromService;
+@let searchResponseSig = searchResponseFromService; 
 @let searchResponse = searchResponseSig();
 @if(searchResponse && searchResponse.lokation){
   @let lokation = searchResponse.lokation;  
@@ -49,5 +39,10 @@
         >
       </app-location> 
 }       
+
+<!--
+  <p>This.lastSearchResponseSig()?.lokation?.oneCallResponse?.lat = {{ this.lastSearchResponseSig()?.lokation?.oneCallResponse?.lat}}</p>
   <p>searchResponseSigsSig().length = {{searchResponseSigsSig()?.length}}</p>
-  </div>
+  <p>this.weatherService.getSearchResponse()?.lokation?.oneCallResponse?.lat =  {{this.weatherService.getSearchResponse()?.lokation?.oneCallResponse?.lat}}</p>
+  -->
+</div>

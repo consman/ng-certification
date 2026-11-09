@@ -27,20 +27,14 @@ describe('Fivedayforecast', () => {
     fixture = TestBed.createComponent(Fivedayforecast);
     component = fixture.componentInstance;
     weatherService = TestBed.inject(Nonprodweather);
-    //component.Weather = TestBed.runInInjectionContext(() => new Nonprodweather());
     
     let tempJeo = initialGeoCode;
     tempJeo.zip = '90810';
-    let tempOcr = initialOneCallResponse;
-    let tempLok = {jeocode:tempJeo, oneCallResponse:tempOcr, dt: new Date().getTime()};
-    let searchResponse = initialSearchResponse;
     
-    //component.weatherService.getSearchResponse().push(searchResponse);//update(loks => [...loks, tempLok]);
     await fixture.whenStable();
   });
 
   it('should create', () => {
-    //console.log('Testing Component - Fivedayforecast');
     expect(component).toBeTruthy();
   });
 });

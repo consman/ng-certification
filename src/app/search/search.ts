@@ -28,7 +28,7 @@ export class Search {
   constructor(){
     afterNextRender( ()=> {
       if(this.weatherService.backFromFiveDay()){ 
-        console.log('Search constructor - back from five-day...');
+        //console.log('Search constructor - back from five-day...');
         this.searchResponseSigsSig = this.weatherService.getSearchResponseSigsSigForFiveDay();
         this.weatherService.backFromFiveDay.set(false);
       }
@@ -44,10 +44,11 @@ export class Search {
             && searchResponse.lokation.jeocode.zip && searchResponse.lokation.jeocode.zip.length ==5 ){
               //console.log(' - - - - - - eff 009 and the geo.name = '+searchResponse.lokation.jeocode.name);
               this.lastSearchResponseSig.set(searchResponse);
+              //console.log('- - - eff 009 set  '+searchResponse.lokation.jeocode.zip + ' to the lastResponse');
               const func = this.funcSig();
               if (func == 'search'){
                 localStorage.setItem('storedZipCode' + (searchResponse.lokation.jeocode.zip), searchResponse.lokation.jeocode.zip);
-                console.log('- - - eff 009 saved the search respone from the service with a zip of '+searchResponse.lokation.jeocode.zip);
+                //console.log('- - - eff 009 saved  '+searchResponse.lokation.jeocode.zip + ' to local storage');
               }
               this.newZip ='';
           }
@@ -60,8 +61,11 @@ export class Search {
       let found = false;
       let ziip ='';
       if(searchResponse){
+        //console.log(' inside handleSaved A for ziip = '+ziip);
+        //console.log('handleSaved F and BEFORE the number of entries in this.searchResponseSigsSig = ' + this.searchResponseSigsSig()?.length);    
         const searchResponseSigs = this.searchResponseSigsSig();
         if(searchResponseSigs && searchResponseSigs.length > 0) {
+          //console.log(' inside handleSaved B for ziip = '+ziip);
           searchResponseSigs.forEach(srSig => {
             const sr = srSig();
             if(sr && searchResponse && sr.lokation.jeocode.zip == searchResponse.lokation.jeocode.zip ){
@@ -69,41 +73,41 @@ export class Search {
               ziip = sr.lokation.jeocode.zip;
             }
           });
-          console.log('handleSaved finished '+searchResponse.lokation.jeocode.zip+' and the number of entries in this.searchResponseSigsSig = ' + this.searchResponseSigsSig()?.length);    
+          //console.log('handleSaved finished '+searchResponse.lokation.jeocode.zip+' and the number of entries in this.searchResponseSigsSig = ' + this.searchResponseSigsSig()?.length);    
         }
         if(!found) {
           this.searchResponseSigsSig.update(arr => [...(arr || []), signal(searchResponse)]);
+          //console.log('inside handleSaved C this.searchResponseSigsSig()?.length = ' + this.searchResponseSigsSig()?.length +' for ziip = '+ziip);
+          this.lastSearchResponseSig.set(undefined);
+          this.searchResponseFromService = signal(undefined);
         }        
         else {
-          console.log('warning -- handleSaved already in big array..');
+          //console.log('warning -- handleSaved already in big array.. for ziip = '+ziip);
         }
-
       }
+      else{
+        //console.log(' inside handleSaved D - searchResponse is undefined for ziip = '+ziip);
+      }
+      //console.log('handleSaved G and AFTER the number of entries in this.searchResponseSigsSig = ' + this.searchResponseSigsSig()?.length);    
     }
 
   search(): void{ 
     this.handleSaved();
     this.funcSig.set('search');
       this.addNewLocation(this.newZip);    
-      this.tempZip = this.newZip;
-      
-      
+      this.tempZip = this.newZip;           
   }
 
   addNewLocation(zip: string): void {
     //console.log('addNewLocation going for addNewLocation for zip: ' + zip+ ' ...');
-
       if (this.validateZip(zip) ) {
         //this.zipSig.set(zip); //: WritableSignal<String | undefined> = signal(zip);
         //this.searchResponseSig = this.weatherService.getLokationByZipSig(zipSig);     
         this.weatherService.setZzipSig(zip);
         let inProgressJeoCodeFromService = this.weatherService.getJeoCode();// getJeoCodeByUnKnownZipSig(this.zipSig);   
-        
-        
+                
         this.weatherService.getOneCallResponseByJeo();   
-
-        this.searchResponseFromService = this.getSearchResponsFromService()
-        
+        this.searchResponseFromService = this.getSearchResponsFromService()        
       }
       else {
         console.error('ERROR! ' + zip + ' zip is not valid');
@@ -121,36 +125,29 @@ export class Search {
   }
 
   handleHeadedtoFiveDay(foo:string):void{
-    console.log("search running handleHeadedtoFiveDay");
+    //console.log("search running handleHeadedtoFiveDay");
     this.handleSaved();
     this.weatherService.setSearchResponseSigsSigForFiveDay(this.searchResponseSigsSig);
   }
 
   removeLocation(zip:string):void{  
-  
+    this.handleSaved();
     let targetSr = this.lastSearchResponseSig();
     if (targetSr && targetSr.lokation.jeocode.zip == zip){
+      //console.log('removeLocation A - the location, '+zip+ ', is the last response  ');
       this.lastSearchResponseSig.set(undefined);
       this.searchResponseFromService = signal(undefined);
+      localStorage.removeItem('storedZipCode'+zip);
     }
     const sigs = this.searchResponseSigsSig();
-    let targetSrSig: Signal<SearchResponse | undefined> = signal(undefined);
-    let tempArr: WritableSignal<SearchResponse | undefined> []  = [];
-    if(sigs){
-      sigs.forEach(srSig => {
-        const sr = srSig();
-        if (sr?.lokation.jeocode.zip == zip){
-          targetSrSig = srSig;
-          console.log('removeLocation - found the target ...');
-          localStorage.removeItem('storedZipCode'+sr.lokation.jeocode.zip);
-        }
-        else {
-          tempArr.push (srSig);
-        }
-      });
-    }
-    this.searchResponseSigsSig.set(tempArr);
-    
+    //console.log('removeLocation - sigs?.length BEFORE = ' +sigs?.length);
+    //let targetSrSig: Signal<SearchResponse | undefined> = signal(undefined);
+    this.searchResponseSigsSig.update(srSigs => [...(srSigs ?? []).filter(srSig => srSig()?.lokation.jeocode.zip !== zip)]);
+    localStorage.removeItem('storedZipCode'+zip);
+
+    const sigsB = this.searchResponseSigsSig();
+    //console.log('removeLocation - sigsB?.length AFTER = ' +sigsB?.length);
+    this.searchResponseFromService = signal(undefined);    
   }
 
   validateZip(unVaidatedZip: string): boolean {
@@ -177,30 +174,38 @@ export class Search {
   loadLocationsFromLocalStorage(): void {
 
     this.funcSig.set('localStorage');
-    let delay = 100;
+    let delay = 500;
+    let ind = 0;
     
     for (const localStorageKey in localStorage) {
-          
+        delay = delay +800;  
         if (localStorageKey.startsWith('storedZipCode')){  
             const derivedZip =  localStorage.getItem(localStorageKey);             
-            delay = delay +100;              
+                        
             if(derivedZip){
-              //console.log('loadLocationsFromLocalStorage Going for addNewLocation for '+derivedZip); 
-              setTimeout(()=>{         //TODO remember to deal with this!         
+              
+              setTimeout(()=>{         //TODO remember to deal with this!     
+                //console.log('loadLocationsFromLocalStorage Going for addNewLocation for '+derivedZip);     
                 this.addNewLocation(derivedZip);  
                 const searchResponse = this.weatherService.getSearchResponse();// this.lastSearchResponseSig();
                 if(searchResponse){
                   this.searchResponseSigsSig.update(arr => [...(arr || []), signal(searchResponse)]);
-                  console.log('Added ' +searchResponse.lokation.jeocode.zip+ ' to the array');
+                  //console.log('loadLocationsFromLocalStorage Added ' +searchResponse.lokation.jeocode.zip+ ' to the array and ind = ' + ++ind);
                 }
+                else{
+                  //console.log('loadLocationsFromLocalStorage - search Response is still undefined.');
+                }
+                this.handleSaved();
+                
                },delay);             
             }
             else{
-              //console.log('loadLocationsFromLocalStorage not handling '+ derivedZip+'' + ' locs = ' + locs + ' locs.length = '+ locs.length + ' ind = ' + ind);              
+              //console.log('loadLocationsFromLocalStorage not handling '+ derivedZip+'' + ' locs = ' + this.searchResponseSigsSig + ' locs.length = '+ this.searchResponseSigsSig()?.length + ' ind = ' + ind);              
             }
         }
+        
+        
     }
-    this.handleSaved();
   }
 
 }

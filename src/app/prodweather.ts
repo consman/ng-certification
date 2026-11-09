@@ -14,17 +14,18 @@ export class Prodweather extends Weather {
 
   constructor(){
     super();
-    /*
+    
     effect(() => { //201
-        const val = this.jeoCodeProdResource.value();
+        const val = this.oneCallResource.value();
         if(val){
-          //console.log('//eff 201 and  val.name = '+ val.name );
+          //console.log('//eff 201 and  val.lat = '+ val.lat );
         }
       });
-      */
+      
   }
 
   override getFinalOneCallResponse(): () => OneCallResponse | undefined {
+    //console.log('408 getFinalOneCallResponse PROD - this.oneCallForSearchResp()?.lat = '+ this.oneCallForSearchResp()?.lat );
     return this.oneCallResource.value;
   }
   
@@ -59,7 +60,7 @@ export class Prodweather extends Weather {
           //console.log('inside oneCallResource but inputJeoForOneCall is undefined or not started yet inputJeoForOneCall = '+ inputJeoForOneCall);
           return undefined;
         } else {
-            //console.log('Inside the else part of oneCallResponseResource and trying for inputJeoForOneCall.name = ' + inputJeoForOneCall.name);
+            //console.log('Inside the else part of oneCallResponseResource and trying for inputJeoForOneCall.name = ' + inputJeoForOneCall.name + ' and the lat is: '+inputJeoForOneCall.lat);
             return {
               url:'https://api.openweathermap.org/data/4.0/onecall/timeline/1day?lat='+inputJeoForOneCall.lat+'&lon='+inputJeoForOneCall.lon+'&units=imperial&exclude=minutely,hourly,alerts&appid='+this.wAppId,
               method: 'GET',

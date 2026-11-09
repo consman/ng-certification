@@ -9,7 +9,7 @@ export class Nonprodweather extends Weather {
 
 constructor(){
     super();
-    console.log('Nonprodweather constructor running ... ' );
+    //console.log('Nonprodweather constructor running ... ' );
 
         effect(() => { //206
         const nonprodjeo = this.inputJeoForOneCallSig();
@@ -29,12 +29,13 @@ constructor(){
   }
 
   override getFinalOneCallResponse(): () => OneCallResponse | undefined {
-    console.log('208 getFinalOneCallResponse - this.oneCallForSearchResp()?.lat = '+ this.oneCallForSearchResp()?.lat );
+    //console.log('getFinalOneCallResponse NON PROD - this.oneCallForSearchResp()?.lat = '+ this.oneCallForSearchResp()?.lat );
     return this.oneCallForSearchResp;
   }
 
    override getOneCallResponseByJeo(): void {
     let result:WritableSignal<(OneCallResponse | undefined)> = signal(undefined);
+    //console.log('208 > > > Nonprodweather getOneCallResponseByJeo starting.');
     const jeoCode = this.inputJeoForOneCallSig();
     if(jeoCode && jeoCode.zip.length == 5 ){
       let ocr = ONECALLRESPONSES.find(ocr => ocr.lat == jeoCode.lat && ocr.lon == jeoCode.lon);      
@@ -43,7 +44,7 @@ constructor(){
         this.oneCallForSearchResp.set(ocr);   
         //this.setResponseFromOneCallSig
         this.setResponseFromOneCallSig(result);
-        //console.log('success! Nonprodweather getOneCallResponseByJeo Codefound the OCR for zip ' + jeoCode.zip);
+        //console.log('208 > > > success! Nonprodweather getOneCallResponseByJeo Codefound the OCR for zip ' + jeoCode.zip + ' and result = ' + result()?.lat);
       }
     }
     this.oneCallForSearchResp = result;
@@ -58,7 +59,7 @@ constructor(){
       if(g.zip == zip){
         result.set(g);
         this.setInputJeoForOneCallSig(result);
-        console.log('success! Nonprodweather  getJeoCodeByUnKnownZipSig found geo for ' + zip);
+        //console.log('success! Nonprodweather  getJeoCodeByUnKnownZipSig found geo for ' + zip);
       }
     });
     }   
