@@ -17,8 +17,6 @@ export class Search {
     newZip!: string;
     funcSig = signal('');
     tempZip!:string;
-    //TODO fix rounding problem between the two resources - evaluate based on if it is close 
-    //TODO handle 404 like zip code 99999
 
     lastSearchResponseSig:WritableSignal<SearchResponse | undefined> = signal(undefined);
     searchResponseSigsSig:WritableSignal<WritableSignal<SearchResponse | undefined> [] | undefined> = signal(new Array<WritableSignal<SearchResponse| undefined>>);
@@ -54,28 +52,17 @@ export class Search {
               }
               this.newZip ='';
           }
-      });
-      
+      });      
   }
 
     handleSaved():void{
       const searchResponse = this.lastSearchResponseSig();
       let found = false;
-      let ziip ='';
       if(searchResponse){
         //console.log(' inside handleSaved A for ziip = '+ziip);
         //console.log('handleSaved F and BEFORE the number of entries in this.searchResponseSigsSig = ' + this.searchResponseSigsSig()?.length);    
-        const searchResponseSigs = this.searchResponseSigsSig();
-        if(searchResponseSigs && searchResponseSigs.length > 0) {
-          //console.log(' inside handleSaved B for ziip = '+ziip);
-          searchResponseSigs.forEach(srSig => {
-            const sr = srSig();
-            if(sr && searchResponse && sr.lokation.jeocode.zip == searchResponse.lokation.jeocode.zip ){
-              found = true;
-              ziip = sr.lokation.jeocode.zip;
-            }
-          });
-          //console.log('handleSaved finished '+searchResponse.lokation.jeocode.zip+' and the number of entries in this.searchResponseSigsSig = ' + this.searchResponseSigsSig()?.length);    
+        if(this.alreadyInTheList(searchResponse.lokation.jeocode.zip)){
+          found = true;
         }
         if(!found) {
           this.searchResponseSigsSig.update(arr => [...(arr || []), signal(searchResponse)]);
@@ -100,22 +87,37 @@ export class Search {
       this.tempZip = this.newZip;           
   }
 
-  notAlreadyInTheList(zip:string):boolean{
-    let result = true;
-      //TODO finish for last cypress test, but refactor handleSaved to break out list iteration into a separate function to be used here too.
+  alreadyInTheList(zip:string):boolean{
+    let result = false;
+        const searchResponseSigs = this.searchResponseSigsSig();
+        if(searchResponseSigs && searchResponseSigs.length > 0) {
+          //console.log(' inside handleSaved B for ziip = '+ziip);
+          searchResponseSigs.forEach(srSig => {
+            const sr = srSig();
+            if(sr && sr.lokation.jeocode.zip == zip ){
+              result = true;              
+            }
+          });
+          //console.log('handleSaved finished '+searchResponse.lokation.jeocode.zip+' and the number of entries in this.searchResponseSigsSig = ' + this.searchResponseSigsSig()?.length);    
+        }
     return result;
   }
 
   addNewLocation(zip: string): void {
     //console.log('addNewLocation going for addNewLocation for zip: ' + zip+ ' ...');
-      if (this.validateZip(zip) && this.notAlreadyInTheList(zip)) {
-        //this.zipSig.set(zip); //: WritableSignal<String | undefined> = signal(zip);
-        //this.searchResponseSig = this.weatherService.getLokationByZipSig(zipSig);     
-        this.weatherService.setZzipSig(zip);
-        let inProgressJeoCodeFromService = this.weatherService.getJeoCode();// getJeoCodeByUnKnownZipSig(this.zipSig);   
-                
-        this.weatherService.getOneCallResponseByJeo();   
-        this.searchResponseFromService = this.getSearchResponsFromService()        
+      if (this.validateZip(zip)) {
+        if(!this.alreadyInTheList(zip) && this.lastSearchResponseSig()?.lokation.jeocode.zip !== zip){
+          //this.zipSig.set(zip); //: WritableSignal<String | undefined> = signal(zip);
+          //this.searchResponseSig = this.weatherService.getLokationByZipSig(zipSig);     
+          this.weatherService.setZzipSig(zip);
+          let inProgressJeoCodeFromService = this.weatherService.getJeoCode();// getJeoCodeByUnKnownZipSig(this.zipSig);   
+                  
+          this.weatherService.getOneCallResponseByJeo();   
+          this.searchResponseFromService = this.getSearchResponsFromService()   ;
+        }     
+        else{
+          alert('The zip code of '+zip+' is already in the list. ');
+        }
       }
       else {
         console.error('ERROR! ' + zip + ' zip is not valid');

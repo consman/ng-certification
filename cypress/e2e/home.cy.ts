@@ -94,7 +94,7 @@ describe("Test the Ng-Certification Weather App", () => {
     });
     
   });
-/*  
+
   it("should provide a separate alert if the zip code's location is already in the search results.", ()=>{
 
     const stub = cy.stub()  
@@ -113,5 +113,5 @@ describe("Test the Ng-Certification Weather App", () => {
         expect(stub.getCall(0)).to.be.calledWith('The zip code of 94945 is already in the list. ')      
       });
   });
-*/
+
 })

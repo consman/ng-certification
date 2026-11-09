@@ -53,15 +53,20 @@ constructor(){
    override getJeoCodeByUnKnownZipSig(): void { 
     let result: WritableSignal<Jeocode | undefined> = signal(undefined);
     //console.log(' Nonprodweather  getJeoCodeByUnKnownZipSig running...'); 
+    let found = false;
     const zip = this.zzipSig();
     if(zip){
       UNKNOWNGEOCODESFORNONPROD.forEach(g => {
       if(g.zip == zip){
         result.set(g);
         this.setInputJeoForOneCallSig(result);
+        found = true;
         //console.log('success! Nonprodweather  getJeoCodeByUnKnownZipSig found geo for ' + zip);
       }
     });
+    if(!found){
+      alert('The zip code, '+zip+', is formatted OK, but no data is returned.');
+    }
     }   
   }
 

@@ -87,7 +87,7 @@ export abstract class Weather {
     }
 
     prOcr(ocr:OneCallResponse | undefined):OneCallResponse | undefined{
-      console.log(' prOcr Inside getSearchResponse and the oneCallResponse.lat = ' + ocr?.lat + ' and  oneCallResponse.long =  ' + ocr?.lon );
+      //console.log(' prOcr Inside getSearchResponse and the oneCallResponse.lat = ' + ocr?.lat + ' and  oneCallResponse.long =  ' + ocr?.lon );
       return ocr;
     }
 
