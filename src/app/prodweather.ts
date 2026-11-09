@@ -1,7 +1,7 @@
 import { Injectable, Service , Signal, WritableSignal, computed, effect, inject, signal} from '@angular/core';
 
 import { Weather } from './weather';
-import {HttpHeaders, httpResource, HttpResourceRequest} from '@angular/common/http';
+import {HttpErrorResponse, HttpHeaders, httpResource, HttpResourceRequest} from '@angular/common/http';
 import { Jeocode, Lokation, OneCallResponse } from './funTypes';
 
 declare const W_APP_ID: string;
@@ -11,17 +11,26 @@ export class Prodweather extends Weather {
 
   wAppId = W_APP_ID;
   headers = new HttpHeaders();
+  tempZip:String = '';
 
   constructor(){
     super();
-    
+  /*  
     effect(() => { //201
         const val = this.oneCallResource.value();
         if(val){
           //console.log('//eff 201 and  val.lat = '+ val.lat );
         }
       });
-      
+      */
+    effect(() => {
+      const notFound = this.isNotFound();
+      const zip = this.zzipSig();
+      if (zip && notFound){
+        alert('The zip code, '+this.tempZip+', is formatted OK, but no data is returned.');
+        this.inputJeoForOneCallSig.set(undefined);
+      }
+    });
   }
 
   override getFinalOneCallResponse(): () => OneCallResponse | undefined {
@@ -47,7 +56,8 @@ export class Prodweather extends Weather {
     override getJeoCodeByUnKnownZipSig():void{ 
       const zip = this.zzipSig();
       if(zip && zip.length == 5){
-        //console.log('\nProdweather - getJeoCodeByUnKnownZipSig and the incoming zip = ' + zip);        
+        //console.log('\nProdweather - getJeoCodeByUnKnownZipSig and the incoming zip = ' + zip);  
+        this.tempZip = zip;      
       }
       //else {console.log('\nProdweather - getJeoCodeByUnKnownZipSig and the incoming zip is not ready :( ');  }
       this.setInputJeoForOneCallSig( this.jeoCodeProdResource.value);
@@ -77,4 +87,15 @@ export class Prodweather extends Weather {
       } 
       this.oneCallForSearchResp = result;            
     }
+
+  isNotFound = computed(() => { 
+    const errr = this.jeoCodeProdResource.error(); //this.oneCallResource.error();
+    //const targJeo = this.targJeoForOneCallSig();
+    //const startedJeo = this.startedForGeoSig();
+    let result = errr instanceof HttpErrorResponse && errr.status == 404;
+    if(result){// && startedJeo){// && targJeo && targJeo.zip.length == 5 ) {
+      console.log('inside computed logic for isNotFound ');// .... and targJeo. = ' + JSON.stringify(targJeo));
+    }    
+    return result;
+  });
   }

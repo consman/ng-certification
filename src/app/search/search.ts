@@ -17,6 +17,8 @@ export class Search {
     newZip!: string;
     funcSig = signal('');
     tempZip!:string;
+    //TODO fix rounding problem between the two resources - evaluate based on if it is close 
+    //TODO handle 404 like zip code 99999
 
     lastSearchResponseSig:WritableSignal<SearchResponse | undefined> = signal(undefined);
     searchResponseSigsSig:WritableSignal<WritableSignal<SearchResponse | undefined> [] | undefined> = signal(new Array<WritableSignal<SearchResponse| undefined>>);
@@ -98,9 +100,15 @@ export class Search {
       this.tempZip = this.newZip;           
   }
 
+  notAlreadyInTheList(zip:string):boolean{
+    let result = true;
+      //TODO finish for last cypress test, but refactor handleSaved to break out list iteration into a separate function to be used here too.
+    return result;
+  }
+
   addNewLocation(zip: string): void {
     //console.log('addNewLocation going for addNewLocation for zip: ' + zip+ ' ...');
-      if (this.validateZip(zip) ) {
+      if (this.validateZip(zip) && this.notAlreadyInTheList(zip)) {
         //this.zipSig.set(zip); //: WritableSignal<String | undefined> = signal(zip);
         //this.searchResponseSig = this.weatherService.getLokationByZipSig(zipSig);     
         this.weatherService.setZzipSig(zip);

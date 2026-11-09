@@ -38,8 +38,8 @@ constructor(){
     //console.log('208 > > > Nonprodweather getOneCallResponseByJeo starting.');
     const jeoCode = this.inputJeoForOneCallSig();
     if(jeoCode && jeoCode.zip.length == 5 ){
-      let ocr = ONECALLRESPONSES.find(ocr => ocr.lat == jeoCode.lat && ocr.lon == jeoCode.lon);      
-      if (ocr && ocr.lat == jeoCode.lat){ 
+      let ocr = ONECALLRESPONSES.find(ocr => ocr.lat  == (Math.round(jeoCode.lat*10000)/10000) && ocr.lon == (Math.round(jeoCode.lon*10000)/10000));      
+      if (ocr && ocr.lat == (Math.round(jeoCode.lat*10000)/10000)){ 
         result.set(ocr);
         this.oneCallForSearchResp.set(ocr);   
         //this.setResponseFromOneCallSig

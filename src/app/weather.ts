@@ -87,7 +87,7 @@ export abstract class Weather {
     }
 
     prOcr(ocr:OneCallResponse | undefined):OneCallResponse | undefined{
-      //console.log(' prOcr Inside getSearchResponse and the oneCallResponse.lat = ' + ocr?.lat)
+      console.log(' prOcr Inside getSearchResponse and the oneCallResponse.lat = ' + ocr?.lat + ' and  oneCallResponse.long =  ' + ocr?.lon );
       return ocr;
     }
 
@@ -97,7 +97,7 @@ export abstract class Weather {
       const oneCallResponse =  this.prOcr(this.getFocr()()); //this.prOcr(this.getFinalOneCallResponse()()) ;
 
       return jeoCode && 
-      oneCallResponse && oneCallResponse.lat == jeoCode.lat ?
+      oneCallResponse && oneCallResponse.lat == (Math.round(jeoCode.lat*10000)/10000) ?
         { lokation: {
             jeocode: jeoCode,
             oneCallResponse: this.fixMainWeatherIconName(oneCallResponse),

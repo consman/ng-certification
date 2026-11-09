@@ -6,7 +6,7 @@ describe("Test the Ng-Certification Weather App", () => {
   it("Shows the title on the home page.",()=>{
     cy.title().should("eq","ng-certification app is running!");
   });
-/*
+
   it("Have title in the first box of Add a location",()=>{
     cy.get("[data-test='addLocationBoxTitle']").should("include.text","Enter a zipcode:");
   });
@@ -87,14 +87,14 @@ describe("Test the Ng-Certification Weather App", () => {
     const stub = cy.stub()  
     cy.on ('window:alert', stub)
 
-    cy.get("[data-test='locationField']").type("88888");
+    cy.get("[data-test='locationField']").type("99999");
     cy.get("[data-test='searchButton']").click().wait(2000)
     .then(() => {    
-      expect(stub.getCall(0)).to.be.calledWith('The zip code, 88888, is formatted OK, but no data is returned.');            
+      expect(stub.getCall(0)).to.be.calledWith('The zip code, 99999, is formatted OK, but no data is returned.');            
     });
     
   });
-  
+/*  
   it("should provide a separate alert if the zip code's location is already in the search results.", ()=>{
 
     const stub = cy.stub()  
